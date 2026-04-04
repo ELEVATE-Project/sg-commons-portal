@@ -1,0 +1,23 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+
+export default defineConfig({
+  server: {
+    port: 3000
+  },
+  plugins: [react()],
+  resolve: {
+    alias: {
+      'store': path.resolve(__dirname, 'src/store'),
+      'hooks': path.resolve(__dirname, 'src/hooks'),
+      'api': path.resolve(__dirname, 'src/api'),
+      'configure': path.resolve(__dirname, 'src/configure'),
+      'utils': path.resolve(__dirname, 'src/utils'),
+      'constants': path.resolve(__dirname, 'src/constants'),
+      'services': path.resolve(__dirname, 'src/services'),
+      'components': path.resolve(__dirname, 'src/components'),
+      'pages': path.resolve(__dirname, 'src/pages'),
+    },
+  },
+})
