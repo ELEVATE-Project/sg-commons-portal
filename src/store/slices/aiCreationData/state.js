@@ -48,62 +48,91 @@ export const INITIAL_STATE = (set, get, store) => ({
 
     setBotMessageName: botMessageName => set({ botMessageName }),
     getBotMessageName: () => get().botMessageName,
+    
     setMedia: media => set({ media }),
     getMedia: () => get().media,
+
     setPreferredLanguage: preferredLanguage => set({ preferredLanguage }),
     getPreferredLanguage: () => get().preferredLanguage,
+
     setIsReadOnly: isReadOnly => set({ isReadOnly }),
     getIsReadOnly: () => get().isReadOnly,
+
     setUserText: userText => set({ userText }),
     getUserText: () => get().userText,
+
     setChatHistory: chatHistory => set({ chatHistory }),
     getChatHistory: () => get().chatHistory,
+
     setErrorText: errorText => set({ errorText }),
     getErrorText: () => get().errorText,
+
     setCurrentPage: currentPage => set({ currentPage }),
     getCurrentPage: () => get().currentPage,
+
     setActionItemSource: actionItemSource => set({ actionItemSource }),
     getActionItemSource: () => get().actionItemSource,
+
     setSelectedAction: selectedAction => set({ selectedAction }),
     getSelectedAction: () => get().selectedAction,
+
     setUserProblemStatement: userProblemStatement => set({ userProblemStatement }),
     getUserProblemStatement: () => get().userProblemStatement,
+
     setSelectedObjective: selectedObjective => set({ selectedObjective }),
     getSelectedObjective: () => get().selectedObjective,
+
     setProfileId: profileId => set({ profileId }),
     getProfileId: () => get().profileId,
+
     setSystemError: systemError => set({ systemError }),
     getSystemError: () => get().systemError,
+
     setActionList: actionList => set({ actionList }),
     getActionList: () => get().actionList,
+
     setLastFetchedActionListObjective: lastFetchedActionListObjective => set({ lastFetchedActionListObjective }),
     getLastFetchedActionListObjective: () => get().lastFetchedActionListObjective,
+
     setIsChatVisible: isChatVisible => set({ isChatVisible }),
     getIsChatVisible: () => get().isChatVisible,
+
     setSession: session => set({ session }),
     getSession: () => get().session,
+
     setIntroMessage: introMessage => set({ introMessage }),
     getIntroMessage: () => get().introMessage,
+
     setBotName: botName => set({ botName }),
     getBotName: () => get().botName,
+
     setFirstName: firstName => set({ firstName }),
     getFirstName: () => get().firstName,
+
     setObjective: objective => set({ objective }),
     getObjective: () => get().objective,
+
     setObjectiveSource: objectiveSource => set({ objectiveSource }),
     getObjectiveSource: () => get().objectiveSource,
+
     setHasClickedObjAddMore: hasClickedObjAddMore => set({ hasClickedObjAddMore }),
     getHasClickedObjAddMore: () => get().hasClickedObjAddMore,
+
     setHasClickedActionAddMore: hasClickedActionAddMore => set({ hasClickedActionAddMore }),
     getHasClickedActionAddMore: () => get().hasClickedActionAddMore,
+
     setCompany: company => set({ company }),
     getCompany: () => get().company,
+
     setIntroEndContext: introEndContext => set({ introEndContext }),
     getIntroEndContext: () => get().introEndContext,
+
     getChunks: () => get().chunks,
     setChunks: () => chunks => set({ chunks }),
+
     getProjectTitle: () => get().projectTitle,
     setProjectTitle: projectTitle => set({ projectTitle }),
+
     getSelectedWeek: () => get().selectedWeek,
     setSelectedWeek: selectedWeek => set({ selectedWeek }),
 
