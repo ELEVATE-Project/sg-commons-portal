@@ -40,7 +40,7 @@ function SelectObjective({
   handleLoaderState,
   getLoaderState,
 }) {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
 
   const objectiveChatHistory = useAICreationSessionStore(state => state.objectiveChatHistory);
   const selectedObjective = useAICreationSessionStore(state => state.selectedObjective) || null;

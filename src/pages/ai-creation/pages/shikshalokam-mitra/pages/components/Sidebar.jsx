@@ -29,7 +29,7 @@ export default function Sidebar({
   handleNewMIPClick,
   isNewChatDisabled = false,
 }) {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     if (tab === ACTIVE_TABS.WELCOME) {

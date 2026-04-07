@@ -209,7 +209,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode }) {
    
   // Removed unused variables
   return (
-    <section className="px-1 md:px-4 pb-4 pt-1 max-w-[1670px]">
+    <section className="px-1 pb-4 pt-1 max-w-[1670px]">
       <div className="flex flex-col md:flex-row items-center justify-between mb-6">
         <div className="w-full mb-3">
           <h2 className="text-lg font-semibold text-gray-900 mb-1">

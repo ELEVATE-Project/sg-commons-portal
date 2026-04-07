@@ -22,7 +22,7 @@ const BotMessage = ({
   customClassNames = {},
   showChatStyle = false,
 }) => {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   const { wrapperStyles = "" } = customClassNames;
 
   const botMessageName = useAICreationSessionStore(state => state.botMessageName);

@@ -1,9 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import dotenv from 'dotenv'
+
+dotenv.config({ path: '.env' })
+
+const rootPath = process.env.VITE_ROOT_PATH ? `/${process.env.VITE_ROOT_PATH}` : ''
 
 export default defineConfig({
-  base: '/sg/',
+  base: rootPath,
   server: {
     port: 3000
   },

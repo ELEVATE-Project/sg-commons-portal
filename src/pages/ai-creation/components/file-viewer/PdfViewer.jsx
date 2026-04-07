@@ -12,7 +12,7 @@ import { IoShareSocialOutline } from "react-icons/io5";
 import { BsDownload } from "react-icons/bs";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import BotMessage from "../../pages/shikshalokam-mitra/mitra-pages/components/chat-message/BotMessage";
+import BotMessage from "../../pages/shikshalokam-mitra/pages/components/chat-message/BotMessage";
 import { useAICreationSessionStore } from "store";
 import { trackSolutionDownload } from "api/endpoints/analytics";
 
@@ -25,7 +25,7 @@ function PdfViewer({
   fileType,
   visibilityConfig = {},
 }) {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
 
   const {
     isShareVisible = true,

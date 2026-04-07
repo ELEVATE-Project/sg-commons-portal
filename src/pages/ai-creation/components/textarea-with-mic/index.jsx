@@ -43,7 +43,7 @@ function TextareaWithVoice({
   textareaId = "textarea-with-voice",
   setIsRecording
 }) {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   const textareaRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const intervalRef = useRef(null); 

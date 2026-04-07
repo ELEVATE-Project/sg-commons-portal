@@ -2,36 +2,36 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 /* api services and utils */
-import { handleAI4BharatTTSRequest } from "../../apiServices/ai4bharat_services";
+import { handleAI4BharatTTSRequest } from "../../api/ai4bharat_services";
 
 import { setLanguage } from "../../../../i18n";
 /* components */
-import StateMachineDefineChallenge from "./mitra-pages/StateMachineDefineChallenge";
-import Sidebar from "./mitra-pages/components/Sidebar";
-import ConversationWrapperCard from "./mitra-pages/components/ConversationWrapperCard";
+import StateMachineDefineChallenge from "./pages/StateMachineDefineChallenge";
+import Sidebar from "./pages/components/Sidebar";
+import ConversationWrapperCard from "./pages/components/ConversationWrapperCard";
 import Footer from "../../../shikshagraha-repository/common/Footer";
 import Header from "../../../shikshagraha-repository/listing/Header";
-import ActionItems from "./mitra-pages/ActionItems";
-import WeeksSelection from "./mitra-pages/WeeksSelection";
-import TitleGeneration from "./mitra-pages/TitleGeneration";
-import SelectObjective from "./mitra-pages/SelectObjective";
+import ActionItems from "./pages/ActionItems";
+import WeeksSelection from "./pages/WeeksSelection";
+import TitleGeneration from "./pages/TitleGeneration";
+import SelectObjective from "./pages/SelectObjective";
 import Popup from "../../../../components/Popup/index";
 import PrivacyPolicyPopup from "../../../../components/TnC/privacyPolicyPopup";
-import FAQ from "./mitra-pages/components/FAQ";
-import CommonFlow from "./mitra-pages/CommonFlow";
+import FAQ from "./pages/components/FAQ";
+import CommonFlow from "./pages/CommonFlow";
 import Notification, { showNotification } from "../../../../components/ToastMessage/TotastMessage"
 
 /* constants */
 import { ACTIVE_TABS } from "../../constants/mitra.constants";
 import { LOADER_KEYS } from "../../constants/common";
 import { useAICreationSessionStore } from "store";
-import InitialSwitch from "./mitra-pages/InitialSwitch";
+import InitialSwitch from "./pages/InitialSwitch";
 import { getTranslatedIntroMessageApi } from "../../../../api/endpoints/ai";
 import { bot_routes, FLOW_TYPES } from "../../../../configure";
 import { compareFlowTypesEquality } from "../../utils/common_flow";
 
 function MainPage() {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   const { t: tncTranslation } = useTranslation();
   const [activeTab, setActiveTab] = useState(ACTIVE_TABS.CONVERSATION);
   const [audioCache, setAudioCache] = useState({});
@@ -616,7 +616,7 @@ function MainPage() {
 export default MainPage;
 
 export function ShowLoader({ showFirstLoader = true, loadingText = "" }) {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   return (
     <>
       <div className="login-load-spinner">

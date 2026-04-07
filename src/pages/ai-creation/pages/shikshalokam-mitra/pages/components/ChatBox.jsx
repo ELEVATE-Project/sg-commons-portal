@@ -46,7 +46,7 @@ function ChatBox({
   isReadOnly = false,
   isCommonFlow = false,
 }) {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
   
   // Recording state - now internal to ChatBox

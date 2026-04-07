@@ -12,7 +12,7 @@ const UserMessage = ({
   chatId,
   showChatStyle = false,
 }) => {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   
   if (showChatStyle) {
     return (

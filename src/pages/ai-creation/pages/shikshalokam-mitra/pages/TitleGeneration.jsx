@@ -32,7 +32,7 @@ function TitleGeneration({
   handleLoaderState,
   getLoaderState,
 }) {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const preferredLanguage = useAICreationSessionStore(state => state.preferredLanguage) || {};

@@ -5,13 +5,14 @@ import { apiClient } from "../client"
  * Fire-and-forget - does not block navigation and silently ignores errors
  * @param {string|number} resourceId - The ID of the resource being viewed
  */
-export const trackResourceView = (resourceId) => {
+export const trackResourceView = async (resourceId) => {
   if (!resourceId) return
 
-  // Fire-and-forget: don't await, catch errors silently
-  apiClient.post(`/api/track-view/${resourceId}/`).catch(() => {
-    // Silently ignore errors - analytics should not impact user experience
-  })
+  try {
+    await apiClient.post(`/api/track-view/${resourceId}/`)
+  } catch {
+    console.error('Error tracking resource view')
+  }
 }
 
 /**
@@ -19,13 +20,14 @@ export const trackResourceView = (resourceId) => {
  * Fire-and-forget - does not block download and silently ignores errors
  * @param {string|number} resourceId - The ID of the resource being downloaded
  */
-export const trackResourceDownload = (resourceId) => {
+export const trackResourceDownload = async (resourceId) => {
   if (!resourceId) return
 
-  // Fire-and-forget: don't await, catch errors silently
-  apiClient.post(`/api/track-download/${resourceId}/`).catch(() => {
-    // Silently ignore errors - analytics should not impact user experience
-  })
+  try {
+    await apiClient.post(`/api/track-download/${resourceId}/`)
+  } catch {
+    console.error('Error tracking resource download')
+  }
 }
 
 /**
@@ -33,11 +35,12 @@ export const trackResourceDownload = (resourceId) => {
  * Fire-and-forget - does not block download and silently ignores errors
  * @param {string} projectId - The project ID from create-project API response
  */
-export const trackSolutionDownload = (projectId) => {
+export const trackSolutionDownload = async (projectId) => {
   if (!projectId) return
 
-  // Fire-and-forget: don't await, catch errors silently
-  apiClient.post(`/api/track-solution-download/${projectId}/`).catch(() => {
-    // Silently ignore errors - analytics should not impact user experience
-  })
+  try {
+    await apiClient.post(`/api/track-solution-download/${projectId}/`)
+  } catch {
+    console.error('Error tracking solution download')
+  }
 }

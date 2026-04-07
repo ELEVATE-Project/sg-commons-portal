@@ -11,7 +11,7 @@ const ActionItemsSwiper = ({
   hasClickedOnAddmore
 }) => {
 
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   
   const actionItems = useMemo(() => {
     if (isViewMode) {

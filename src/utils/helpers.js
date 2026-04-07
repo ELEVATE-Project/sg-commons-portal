@@ -4,7 +4,6 @@ import { languageList } from "../constants/enum"
 import { sessionFlowName } from "../constants/session"
 import { STORAGE_KEYS } from "./constants"
 import env from "./env"
-import { bot_routes } from "../configure"
 import { useAICreationSessionStore } from "../store"
 
 /**
@@ -56,7 +55,7 @@ export const shouldShowLanguageButton = languageButtonSelect => {
   return languageButtonSelect && ![null, ""].includes(languageButtonSelect)
 }
 
-export function buildWebSocketUrl({ searchParams, storageFlow, selectedType, wssProtocol = 'wss://' }) {
+export function buildWebSocketUrl({ searchParams, storageFlow }) {
   if (searchParams.get("code")) {
     // NOTE: revert this code after testing
     // return `${wssProtocol}${window.location.host}/ws/chat/company/`;
@@ -68,37 +67,16 @@ export function buildWebSocketUrl({ searchParams, storageFlow, selectedType, wss
 
   // Direct flow to websocket mapping
   const websocketConfig = {
-    [sessionFlowName.GuestDiscussion]: bot_websocket.shikshalokam_chaupal,
-    [sessionFlowName.LoginDiscussion]: bot_websocket.shikshalokam_chaupal,
-    [sessionFlowName.ListeningActivity]: bot_websocket.listening_activity,
-    [sessionFlowName.ParentPerceptionSurvey]: bot_websocket.parent_perception_survey,
     [sessionFlowName.Creation]: bot_websocket.creation,
     [sessionFlowName.FreeFlow]: bot_websocket.free_flow,
     [sessionFlowName.LFA]: bot_websocket.lfa,
     [sessionFlowName.LCF]: bot_websocket.lcf,
   }
 
-  const normalTypeConfig = {
-    normal: {
-      [sessionFlowName.LoginMiStory]: bot_websocket.normal,
-      [sessionFlowName.GuestMiStory]: bot_websocket.guest_normal,
-    },
-    oneshot: {
-      [sessionFlowName.LoginMiStory]: bot_websocket.oneshot,
-      [sessionFlowName.GuestMiStory]: bot_websocket.guest_oneshot,
-    },
-  }
-
 
   // Check direct flow mapping first
   if (websocketConfig[currentFlow]) {
     return `${baseUrl}${websocketConfig[currentFlow]}`
-  }
-
-  // Check type-based mapping
-  const selectedTypeConfig = normalTypeConfig[selectedType]
-  if (selectedTypeConfig && selectedTypeConfig[currentFlow]) {
-    return `${baseUrl}${selectedTypeConfig[currentFlow]}`
   }
 
   return null
@@ -116,52 +94,13 @@ export const isSilentAudio = async (blob, silenceThreshold = 0.01) => {
   return rms < silenceThreshold
 }
 
-export function getSessionRoute(storageFlow, selectedType) {
-  const currentFlow = storageFlow
-  console.log("Current Flow:", currentFlow)
-  console.log("Is the flow equal", currentFlow === sessionFlowName.ListeningActivity)
-
-  // Configuration mapping flow names to bot routes
-  const flowToRouteMap = {
-    [sessionFlowName.GuestDiscussion]: bot_routes.shikshalokam_chaupal,
-    [sessionFlowName.LoginDiscussion]: bot_routes.shikshalokam_chaupal,
-    [sessionFlowName.ListeningActivity]: bot_routes.listening_activity,
-  }
-
-  const typeBasedRouteMap = {
-    normal: {
-      [sessionFlowName.LoginMiStory]: bot_routes.normal,
-      [sessionFlowName.GuestMiStory]: bot_routes.guest_normal,
-    },
-    oneshot: {
-      [sessionFlowName.LoginMiStory]: bot_routes.oneshot,
-      [sessionFlowName.GuestMiStory]: bot_routes.guest_oneshot,
-    },
-  }
-
-  // Check direct flow mapping first
-  if (currentFlow && flowToRouteMap[currentFlow]) {
-    return flowToRouteMap[currentFlow]
-  }
-
-  // Check type-based mapping
-  const routeMap = selectedType === "normal" ? typeBasedRouteMap.normal : typeBasedRouteMap.oneshot
-
-  if (currentFlow && routeMap[currentFlow]) {
-    return routeMap[currentFlow]
-  }
-
-  // Default route
-  return bot_routes.reflection
-}
-
 export const formatTime = secs => {
   const minutes = Math.floor(secs / 60)
   const seconds = secs % 60
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
 }
 
-export function clearMitraSessionStorage(avoidLogout = false) {
+export function clearMitraSessionStorage() {
   // Clear the Zustand store and its persisted storage
   useAICreationSessionStore.persist.clearStorage();
   useAICreationSessionStore.getState().reset();

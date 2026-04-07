@@ -21,7 +21,7 @@ const SuggestOrAddCta = ({
   const buttonStyle =
     "flex items-center font-sans font-normal text-base leading-[1.4] text-right text-[#1177FF]";
 
-  const {t} =  useTranslation("ai_creation_translation")
+  const {t} =  useTranslation()
 
 
   return (

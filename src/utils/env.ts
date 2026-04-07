@@ -25,13 +25,9 @@ export const env = {
   WEBSOCKET_RETRY_NUM: () => parseInt(getEnv("VITE_WEBSOCKET_RETRY_NUM", "2"), 10),
   S3_UPLOAD_RETRY_NUM: () => parseInt(getEnv("VITE_S3_UPLOAD_RETRY_NUM", "3"), 10),
 
-  // Profile IDs
-  MEGA_PTM_PROFILE_ID: () => getEnv("VITE_MEGA_PTM_PROFILE_ID", "3"),
-  YLC_PROFILE_ID: () => getEnv("VITE_YLC_PROFILE_ID", "127"),
-
   // Paths
   AUDIO_PATH: () => getEnv("VITE_AUDIO_PATH", "/mohini/"),
-  ROOT_PATH: () => getEnv("VITE_ROOT_PATH", "mohini"),
+  ROOT_PATH: () => getEnv("VITE_ROOT_PATH", "/"),
 
   // URLs
   RECORD_STORY_URL: () => getEnv("VITE_RECORD_STORY_URL", ""),

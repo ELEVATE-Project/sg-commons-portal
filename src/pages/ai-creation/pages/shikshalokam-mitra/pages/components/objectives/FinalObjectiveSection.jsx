@@ -23,7 +23,7 @@ export function FinalObjectiveSection({
     appendEmptyTextarea = false,
   }) {
   
-    const { t } = useTranslation("ai_creation_translation");
+    const { t } = useTranslation();
     
     const [{ objectiveList, selectedIds }, setObjectiveState] = useState(() => {
       const timestamp = Date.now();

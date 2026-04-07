@@ -1,6 +1,5 @@
 import { API_ENDPOINTS } from "constants/urls"
 import { apiClient } from "../client"
-import env from "utils/env"
 
 /**
  * Creates a new user profile

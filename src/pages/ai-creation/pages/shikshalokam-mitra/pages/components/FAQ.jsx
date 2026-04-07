@@ -79,7 +79,7 @@ const FAQSection = ({ title, questions, sectionIndex, openItems, onToggle }) => 
 
 // Main FAQ Component
 export default function FAQ({ onBack }) {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   const [openItems, setOpenItems] = useState({});
 
   const handleToggle = (itemKey) => {

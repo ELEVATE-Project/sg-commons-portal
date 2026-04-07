@@ -50,7 +50,7 @@ function ActionItems({
   handleLoaderState,
   getLoaderState,
 }) {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
 
   const actionListChatHistory = useAICreationSessionStore(state => state.actionListChatHistory);
   const objective = useAICreationSessionStore(state => state.selectedObjective);
@@ -676,7 +676,7 @@ export function FinalActionPage({
   const preferredLanguage = useAICreationSessionStore(state => state.preferredLanguage) || {};
   const language = preferredLanguage?.value || "en";
   
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   const errorRef = useRef(null);
   const normalizeContent = (content) =>
   typeof content === "string"

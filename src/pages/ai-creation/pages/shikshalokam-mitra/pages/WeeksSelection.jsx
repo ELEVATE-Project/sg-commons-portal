@@ -39,7 +39,7 @@ function WeeksSelection({
   const [isLoadingIntro, setIsLoadingIntro] = useState(true);
   const { commonsNetworkReconnectionPopup } = useConfirmationPopup()
 
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
 
   const durationChatHistory = useAICreationSessionStore(state => state.durationChatHistory);
   const durationIntroMessage = useAICreationSessionStore(state => state.durationIntroMessage);

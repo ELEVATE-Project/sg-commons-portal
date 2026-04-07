@@ -32,7 +32,7 @@ export default function Header({
   onSidebarToggle,
   isSidebarOpen = false,
 }) {
-  const { t } = useTranslation("ai_creation_translation");
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
