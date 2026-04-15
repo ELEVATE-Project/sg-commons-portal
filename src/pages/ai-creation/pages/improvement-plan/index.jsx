@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Header from "../../../shikshagraha-repository/listing/Header";
-import Footer from "../../../shikshagraha-repository/common/Footer";
+import Header from "../../../../components/header/Header";
+import Footer from "../../../../components/footer/Footer";
 import FileViewer from "../../components/file-viewer";
 import { useParams } from "react-router-dom";
 import { useAICreationSessionStore } from "store";

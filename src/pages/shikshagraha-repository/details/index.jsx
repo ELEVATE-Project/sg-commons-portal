@@ -5,7 +5,7 @@ import ReviewForm from "./ReviewForm";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
 import { toast, ToastContainer } from "react-toastify";
-import Footer from "../common/Footer";
+import Footer from "components/footer/Footer";
 import ROUTES from "../../../url";
 import { trackResourceDownload } from "api/endpoints/analytics";
 

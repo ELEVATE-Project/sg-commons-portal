@@ -1,6 +1,6 @@
 import { GrEmptyCircle } from "react-icons/gr";
-import Footer from "../common/Footer";
-import Header from "../listing/Header";
+import Footer from "../../../components/footer/Footer";
+import Header from "../../../components/header/Header";
 
 function NotFound() {
   return (

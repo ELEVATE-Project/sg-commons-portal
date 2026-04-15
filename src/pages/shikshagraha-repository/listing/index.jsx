@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import Header from "./Header.jsx";
+import Header from "../../../components/header/Header.jsx";
 import Filters from "./Filters.jsx";
 import BrowseResources from "./BrowseResources.jsx";
 import Pagination from "./Pagination.jsx";
-import Footer from "../common/Footer.jsx";
+import Footer from "../../../components/footer/Footer.jsx";
 import MitraAiAssistantAside from "./MitraAiAssistantAside.jsx";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore.js";
 import { GrResources } from "react-icons/gr";
