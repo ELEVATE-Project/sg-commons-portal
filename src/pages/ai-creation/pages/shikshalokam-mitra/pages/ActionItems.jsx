@@ -337,16 +337,22 @@ function ActionItems({
         handleLoaderState(LOADER_KEYS.LOAD_WEEKS_SELECTION, true);
         setSelectedActionStore(actionListToStore)
         const currentSession = getSession();
+        const actionPlanText = hasClickedOnAddmore
+          ? t("actionItems.craftYourOwnActionPlan")
+          : t("actionItems.finalizeActionList");
+        const actionStepText = hasClickedOnAddmore
+          ? t("actionItems.addEachStep")
+          : t("actionItems.editReorderDeleteActions");
         const botMessage = {
           role: BOT,
           message:
-            t("actionItems.takeActionItems") + "\n" + hasClickedOnAddmore
-              ? t("actionItems.craftYourOwnActionPlan")
-              : t("actionItems.finalizeActionList") + "\n" + hasClickedOnAddmore
-              ? t("actionItems.addEachStep")
-              : t("actionItems.editReorderDeleteActions") +
-                "\n" +
-                JSON.stringify(getActionListStore()),
+            t("actionItems.takeActionItems") +
+            "\n" +
+            actionPlanText +
+            "\n" +
+            actionStepText +
+            "\n" +
+            JSON.stringify(getActionListStore()),
           messageId: "7_1",
         };
 

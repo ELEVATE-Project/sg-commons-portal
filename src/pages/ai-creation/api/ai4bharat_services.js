@@ -24,25 +24,19 @@ export const handleAI4BharatTTSRequest = async (text, id, language, audioCache, 
             audio = audioRef.current;
 
             audio.onended = () => {
-
                 setIsBotTalking(false);
             };
         } else {
-            audio_result = await getAI4BharatAudioApi(text, language, bot_routes.mitra_create);
-            if (audio_result?.length) {
-                cachedAudioUrl = `data:audio/wav;base64,${audio_result}`;
-                setAudioCache((prevCache) => ({
-                    ...prevCache,
-                    [id]: cachedAudioUrl,
-                }));
-            }
             setIsBotTalking(false);
         }
-        try {
-            await audio.play();
-        } catch (error) {
-            console.error('Error playing audio:', error);
-            setIsBotTalking(false);
+
+        if (audio) {
+            try {
+                await audio.play();
+            } catch (error) {
+                console.error('Error playing audio:', error);
+                setIsBotTalking(false);
+            }
         }
     } catch (error) {
         console.error('Error in handleAI4BharatTTSRequest:', error);

@@ -1,5 +1,6 @@
 // ResourceDetailPage.jsx
 import React, { useEffect, useRef, useState } from "react";
+import DOMPurify from "dompurify";
 import { ArrowLeft, Download, Heart, Share2, Star } from "lucide-react";
 import ReviewForm from "./ReviewForm";
 import { useNavigate, useParams } from "react-router-dom";
@@ -235,7 +236,7 @@ function OverviewContent({ overview }) {
             <li
               className="text-gray-600  leading-relaxed mt-2 mb-2 font-sans"
               key={index}
-              dangerouslySetInnerHTML={{ __html: item }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item) }}
             />
           ))}
         </ul>
@@ -249,7 +250,7 @@ function OverviewContent({ overview }) {
             <div
               className="d-block"
               key={index}
-              dangerouslySetInnerHTML={{ __html: item }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item) }}
             />
           ))}
         </div>

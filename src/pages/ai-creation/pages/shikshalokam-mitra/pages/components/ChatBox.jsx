@@ -51,9 +51,9 @@ function ChatBox({
   
   // Recording state - now internal to ChatBox
   const [hasStartedRecording, setHasStartedRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const mediaRecorderRef = useRef(null);
+  const intervalIdRef = useRef(null);
   const [seconds, setSeconds] = useState(0);
-  const [intervalId, setIntervalId] = useState(null);
   const [isFetchingData, setIsFetchingData] = useState(false);
   
   const sessionRoute = "/guided_guest";
@@ -75,24 +75,23 @@ function ChatBox({
       const id = setInterval(() => {
         setSeconds((prev) => prev + 1);
       }, 1000);
-      setIntervalId(id);
+      intervalIdRef.current = id;
     } else {
-      clearInterval(intervalId);
+      clearInterval(intervalIdRef.current);
+      intervalIdRef.current = null;
       setSeconds(0);
     }
 
-    return () => clearInterval(intervalId);
+    return () => clearInterval(intervalIdRef.current);
   }, [hasStartedRecording]);
 
   // Cleanup effect when component unmounts
   useEffect(() => {
     return () => {
-      if (mediaRecorder && mediaRecorder.state === "recording") {
-        mediaRecorder.stop();
+      if (mediaRecorderRef.current?.state === "recording") {
+        mediaRecorderRef.current.stop();
       }
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      clearInterval(intervalIdRef.current);
     };
   }, []);
 
@@ -103,8 +102,8 @@ function ChatBox({
   }, [autoFocus, disabled, isReadOnly]);
 
   const stopRecording = () => {
-    if (mediaRecorder) {
-      mediaRecorder.stop();
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
       setHasStartedRecording(false);
     }
   };
@@ -124,7 +123,7 @@ function ChatBox({
             audioBitsPerSecond: 16000,
           };
           const recorder = new MediaRecorder(stream, options);
-          setMediaRecorder(recorder);
+          mediaRecorderRef.current = recorder;
 
           const localAudioChunks = [];
 

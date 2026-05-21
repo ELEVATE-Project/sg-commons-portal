@@ -14,7 +14,7 @@ const apiClient = axios.create({
 
 const apiClientV2 = axios.create({
   baseURL: API_BASE_URL_V2,
-  timeout: 10000,
+  timeout: 20000,
   headers: { "Content-Type": "application/json" },
 })
 
@@ -51,7 +51,7 @@ const listMedia = async (params = {}) => {
  * @returns {Promise<Object>} Media detail object.
  * @throws {Error} Throws if ID is not provided.
  */
-const getMediaById = async id => {
+const getMediaById = async (id) => {
   if (!id) throw new Error("Media ID is required")
   const response = await apiClient.get(`/${id}/`)
   return response.data
