@@ -1,0 +1,272 @@
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: Montserrat, sans-serif;
+  margin: 0;
+  min-height: 100%;
+  background-color: #fff;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333;
+}
+
+.footer h2 {
+  font-size: 32px;
+  line-height: 36px;
+  margin-top: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.footer p {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.footer {
+  background-color: #7f3289;
+  background-image: url("https://shikshagraha.org/images/Screenshot-2024-11-26-at-7.39.21-PM.png");
+  background-position: 30% 0;
+  background-repeat: no-repeat;
+  background-size: 110px;
+  justify-content: center;
+  align-items: center;
+  padding-top: 55px;
+  padding-bottom: 140px;
+  display: flex;
+  position: relative;
+}
+
+.footer .footer-image1 {
+  position: absolute;
+  inset: auto 0% 0%;
+}
+
+.footer .footer-image2 {
+  z-index: 0;
+  width: 30px;
+  position: absolute;
+  bottom: 50px;
+  right: 30%;
+}
+
+.footer .footer-image3 {
+  z-index: 0;
+  width: 80px;
+  position: absolute;
+  inset: auto 50% 160px auto;
+}
+
+.footer .small.da a {
+  color: white;
+  text-decoration: none;
+}
+
+.footer .frame {
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  max-width: 1670px;
+  display: flex;
+  position: relative;
+}
+
+.footer .frame.up {
+  align-items: flex-start;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.footer .frame.up.sx {
+  grid-column-gap: 60px;
+  grid-row-gap: 60px;
+  align-items: stretch;
+}
+
+.footer .fotter-f {
+  width: 25%;
+}
+
+.footer .fotter-f.swd {
+  width: 28%;
+}
+
+.footer .fotter-f.xas {
+  flex-flow: column;
+  justify-content: space-between;
+  display: flex;
+}
+
+.footer .fotter-f.xas.kk {
+  width: 20%;
+}
+
+.footer .image-25 {
+  margin-bottom: 27px;
+}
+
+.footer img {
+  max-width: 100%;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.footer .small {
+  color: #fff;
+  text-transform: none;
+  border-bottom: 4px solid #fff;
+  padding-bottom: 10px;
+  font-size: 19px;
+  font-weight: 300;
+  line-height: 24px;
+}
+
+.footer .small.da {
+  text-transform: capitalize;
+  border-bottom-style: none;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 18px;
+  line-height: 41px;
+  text-decoration: none;
+}
+
+.footer .fotter-f.xas.kk.asdf {
+  padding-top: 91px;
+}
+
+.footer .fotter-f.xas.kk.jn {
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 91px;
+}
+
+.footer .w-inline-block {
+  max-width: 100%;
+  display: inline-block;
+}
+
+.footer .image-14 {
+  width: 43px;
+}
+
+.footer .fotter-f.join {
+  background-color: #fa830b;
+  border-radius: 20px;
+  padding: 31px;
+  text-decoration: none;
+}
+
+.footer .small.da.dcd {
+  text-transform: none;
+  line-height: 29px;
+}
+
+.footer .div-block-85 {
+  grid-column-gap: 20px;
+  grid-row-gap: 20px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-top: 24px;
+  display: flex;
+}
+
+.footer .small.da.cdc {
+  text-transform: lowercase;
+  border-top: 1px solid #fff;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  margin-top: 16px;
+  padding-top: 25px;
+  padding-bottom: 25px;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+@media screen and (max-width: 991px) {
+  .footer {
+    display: block;
+    padding: 60px 20px;
+  }
+
+  .footer .frame.up,
+  .footer .frame.up.sx {
+    grid-column-gap: 30px;
+    grid-row-gap: 30px;
+    flex-flow: column;
+    width: 100%;
+  }
+
+  .footer .fotter-f.xas.kk.asdf,
+  .footer .fotter-f.xas.kk.jn {
+    padding-top: 0px;
+  }
+
+  .footer .fotter-f.join {
+    width: 100%;
+  }
+
+  .footer .footer-image1 {
+    max-width: 100%;
+  }
+
+  .footer .footer-image2,
+  .footer .footer-image3 {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .footer .footer-image2 {
+    z-index: 0;
+  }
+
+  .footer .frame {
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .footer .frame.up {
+    grid-column-gap: 20px;
+    grid-row-gap: 20px;
+    flex-flow: column;
+  }
+
+  .footer .frame.up.sx {
+    grid-column-gap: 40px;
+    grid-row-gap: 40px;
+  }
+
+  .footer .fotter-f.swd {
+    width: 100%;
+  }
+
+  .footer .fotter-f.xas.kk {
+    width: 100%;
+  }
+
+  .footer .fotter-f.xas.kk.asdf {
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .footer .fotter-f.xas.kk.jn {
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1670px;
+    padding-top: 0;
+  }
+}
