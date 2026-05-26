@@ -7,18 +7,24 @@ import env from "./utils/env"
 
 const chatLanguageLocal = useSiteDataSessionStore.getState().getChatLanguage()
 const languageToUse = chatLanguageLocal || LANGUAGE_ENUMS.ENGLISH
+const rootPath = env.ROOT_PATH() ? `/${env.ROOT_PATH()}` : ""
 
 i18n
   .use(HttpApi)
   .use(initReactI18next)
   .init({
+    ns: ["translation"],
+    defaultNS: "translation",
     lng: languageToUse,
-    debug: true,
+    fallbackLng: "en",
+    supportedLngs: ["en", "hi", "te", "kn"],
+    debug: false,
+    returnNull: false,
     interpolation: {
       escapeValue: false,
     },
     backend: {
-      loadPath: `${env.ROOT_PATH() ? `/${env.ROOT_PATH()}` : ""}/locales/{{lng}}/{{ns}}.json`,
+      loadPath: `${rootPath}/locales/{{lng}}/{{ns}}.json`,
     },
   })
 

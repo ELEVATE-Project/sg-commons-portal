@@ -11,12 +11,13 @@ import "./Header.css"
 const BASE_URL = "https://shikshagraha.org"
 
 export default function Header({ isHeroSection = true, isBackButton = false, onSidebarToggle, isSidebarOpen = false }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation("ai_creation_translation")
   const navigate = useNavigate()
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
+  // Dropdown open state
   const [dropdownOpen, setDropdownOpen] = useState(false)
 
   useEffect(() => {
@@ -46,10 +47,10 @@ export default function Header({ isHeroSection = true, isBackButton = false, onS
                 </div>}
               </div>
             </div>
-            <div className="section_full bhj break-words mb-0">
+            <div className="section_full bhj break-words mb-0 mt-3 md:mt-4">
               <div className="frame hb">
                 <div className="div-block-16 hidden md:block" />
-                <p className="paragraph asd break-words w-full">A people's movement towards education equity</p>
+                <p className="paragraph asd break-words w-full">A people’s movement towards education equity</p>
               </div>
             </div>
           </>
@@ -77,14 +78,19 @@ export default function Header({ isHeroSection = true, isBackButton = false, onS
             )}
           </div>
         )}
+        {/* {isHeroSection && (
+          <div className="mt-[-1rem] flex justify-start w-full">
+            <HeroSection />
+          </div>
+        )}{" "} */}
       </header>
       {isHeroSection && (
-        <div className="flex justify-start w-full">
+        <div className="mt-4 md:mt-6 relative left-1/2 -translate-x-1/2 w-[100vw] max-w-[100vw] overflow-hidden">
           <HeroSection />
         </div>
       )}{" "}
       {menuOpen && (
-        <div className="w-screen h-[100dvh] fixed z-[999] top-0 left-0" onClick={() => setMenuOpen(false)}>
+        <div className="w-screen h-[100dvh]  absolute z-[999] top-0" onClick={() => setMenuOpen(false)}>
           <div className="w-nav-overlay active w-full h-[calc(100vh-9rem)] top-[9rem]" data-wf-ignore="" id="w-nav-overlay-0" style={menuOpen ? { display: "block" } : { height: "0px", display: "none" }}>
             <nav role="navigation" className={" " + (menuOpen ? "nav-menu w-nav-menu" : "nav-menu w-nav-menu")} onClick={e => e.stopPropagation()}>
               <div className="grid">

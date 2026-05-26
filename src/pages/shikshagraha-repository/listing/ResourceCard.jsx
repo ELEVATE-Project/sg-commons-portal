@@ -3,6 +3,8 @@ import { Star, Download, FileSpreadsheet, FileText, FileType, File, Eye } from "
 import ROUTES from "../../../url"
 import env from "../../../utils/env"
 import { trackResourceView } from "api/endpoints/analytics"
+import { theme } from "../../../theme"
+import { useTranslation } from "react-i18next"
 
 const MEDIA_FILE_TYPE = {
   PDF: "PDF",
@@ -44,7 +46,9 @@ export const getMediaFileTypeStyles = (label_value, cardBackground) => {
 
 
 export default function ResourceCard({ resource, index }) {
-  const card_background = ["bg-[#D52C1A] text-white", "bg-[#382280] text-white", "bg-[#B8062B] text-white", "bg-[#E68000] text-white", "bg-[#D40A6F] text-white", "bg-[#802C81] text-white", "bg-[#BAE6FD] text-black", "bg-[#9CA3AF] text-white"][index % 8] || "bg-red-100"
+  const { t } = useTranslation()
+  const cardTheme = theme.cardPalette[index % theme.cardPalette.length] || theme.cardPalette[0]
+  const card_background = cardTheme.text === "#000000" ? "text-black" : "text-white"
   const { background: fileTypeBg, textColor, Icon: FileIcon } = getMediaFileTypeStyles(resource?.media_type_display, card_background)
   
   return (
@@ -75,7 +79,11 @@ export default function ResourceCard({ resource, index }) {
               <img className="object-cover rounded-[20px] w-full max-h-[154px]" src={resource.thumbnail_url} />
             </div>
           ) : (
-            <div className={card_background + " w-full h-full rounded-[10px]"} aria-label="Image placeholder">
+            <div
+              className={card_background + " w-full h-full rounded-[10px]"}
+              aria-label={t("repository.imagePlaceholder")}
+              style={{ backgroundColor: cardTheme.background }}
+            >
                         {/* Title over image */}
           <h3 className={"absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-manrope font-bold text-[16px] leading-[22px] max-w-[300px] h-[22px] flex items-center justify-center z-30 text-center " + card_background}>{resource?.title}</h3>
 
@@ -96,13 +104,13 @@ export default function ResourceCard({ resource, index }) {
         <div className="flex flex-col gap-2 max-w-[320px] w-full">
           {/* Description */}
           <div className="flex flex-col justify-center gap-1.5 py-2 w-full overflow-hidden" aria-label="Resource description">
-            <h4 className="font-semibold text-[1rem] text-md leading-[22px] text-black">{resource?.title || "Not Available"}</h4>
-            <p className="font-normal  leading-[20px] text-zinc-500 overflow-hidden line-clamp-2">{resource?.description || "Not Available"}</p>
+            <h4 className="font-semibold text-[1rem] text-md leading-[22px] text-black">{resource?.title || t("repository.notAvailable")}</h4>
+            <p className="font-normal leading-[20px] text-zinc-500 overflow-hidden line-clamp-2">{resource?.description || t("repository.notAvailable")}</p>
           </div>
 
           <div className="flex items-center justify-between gap-2 border border-[#D6D6D6] py-2 !border-l-0 !border-r-0">
             <div className="flex items-center gap-2">
-              <p className="text-[#27272A] text-xs">File type</p>
+              <p className="text-[#27272A] text-xs">{t("repository.fileType")}</p>
               <div className={`rounded-md uppercase px-2 py-1 text-xs flex items-center gap-1 ${fileTypeBg} ${textColor}`}>
                 <FileIcon className="w-3 h-3" />
                 {resource?.media_type_display}
@@ -129,7 +137,7 @@ export default function ResourceCard({ resource, index }) {
                 </span>
               ) : null
             )}
-            {resource?.tag_names?.length > 2 && <span className="bg-[#E5E7EB] rounded-full py-[2px] px-[10px] font-inter font-medium text-[12px] leading-[16px] text-[#374151]">+{resource?.tag_names?.length - 2} more</span>}
+            {resource?.tag_names?.length > 2 && <span className="bg-[#E5E7EB] rounded-full py-[2px] px-[10px] font-inter font-medium text-[12px] leading-[16px] text-[#374151]">+{resource?.tag_names?.length - 2} {t("repository.more")}</span>}
           </div>
         </div>
       </div>
@@ -160,7 +168,7 @@ export default function ResourceCard({ resource, index }) {
               <Download className="w-[1.125rem] h-[1.125rem]" />
               <div className="flex flex-row gap-1">
                 <span className="font-urbanist font-medium text-xs leading-[20px] text-zinc-500">{resource?.downloads}</span>
-                <span className="font-urbanist font-medium text-xs leading-[20px] text-zinc-500">Downloads</span>
+                <span className="font-urbanist font-medium text-xs leading-[20px] text-zinc-500">{t("repository.downloads")}</span>
               </div>
             </div>
           ) : (
@@ -178,7 +186,7 @@ export default function ResourceCard({ resource, index }) {
               window.open(resource?.organization_url, "_blank")
             }}
           >
-            <img src={resource?.org_logo} alt="Shikshagraha Logo" className="h-6" />
+            <img src={resource?.org_logo} alt={t("repository.organizationLogoAlt")} className="h-6" />
           </button>
         )}
       </div>
