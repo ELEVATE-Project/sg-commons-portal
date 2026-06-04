@@ -26,7 +26,7 @@ export const useRepositoryStore = create((set, get) => ({
   q: "",
   searchInput: "", // current value in search textarea (not submitted yet)
   pagination: {
-    limit: 12,
+    limit: 6,
     offset: 0,
   },
   sortBy: "-created_at",

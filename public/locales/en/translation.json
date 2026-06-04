@@ -162,9 +162,9 @@
     "noResourceFoundTitle": "No matching solutions found. Please modify your prompt.",
     "sortDisabledTooltipText": "AI Search sorts results by relevance automatically. Manual sorting is disabled.",
     "heroTitle": "Shikshagraha Commons",
-    "heroDescription": "Shared for Public use (CC BY-SA)",
+    "heroDescription": "Catalyzing collective action for empowering education leaders through shared knowledge.",
     "mitraAiAssistant": "Program Design AI assistant",
-    "generateMicroImprovementProjectsDescription": "Helps you design programs using the SG-Commons curated knowledge base",
+    "generateMicroImprovementProjectsDescription": "Are you a program designer? Discover, learn from, reuse, and build new program solutions using the SG Commons knowledge base.",
     "generateImprovementProjects": "Get Started",
     "networkWarning": "Slow network detected. Please check your connection and try again",
     "offlineNetwork": "You are offline. Please check your internet connection.",
@@ -176,4 +176,36 @@
     "popUpChanges": "<div class='text-class'>\n    You've been inactive for a while.\n    Do you want to continue?\n</div>",
     "confirmChanges": "Yes",
     "denyButton": "No"
+    ,
+    "repository": {
+        "browseResources": "Browse Resources",
+        "browseResourcesDescription": "Discover high quality resources for your project",
+        "resultsCount_one": "{{count}} result",
+        "resultsCount_other": "{{count}} results",
+        "sortByLabel": "Sort by",
+        "perPage": "Per Page",
+        "selectPrefix": "Select",
+        "clearAll": "Clear All",
+        "unknownOption": "Unknown",
+        "notAvailable": "Not Available",
+        "fileType": "File type",
+        "fileSize": "File Size",
+        "dateAdded": "Date Added",
+        "lastUpdated": "Last Updated",
+        "downloadResource": "Download Resource",
+        "linkCopied": "Link copied to clipboard",
+        "downloads": "Downloads",
+        "more": "more",
+        "overview": "Overview",
+        "organizationLogoAlt": "Organization logo",
+        "imagePlaceholder": "Image placeholder",
+        "sort": {
+            "titleAsc": "Title (A-Z)",
+            "titleDesc": "Title (Z-A)",
+            "dateAddedOldest": "Date Added (Oldest First)",
+            "dateAddedNewest": "Date Added (Newest First)",
+            "dateModifiedOldest": "Date Modified (Oldest First)",
+            "dateModifiedNewest": "Date Modified (Newest First)"
+        }
+    }
 }

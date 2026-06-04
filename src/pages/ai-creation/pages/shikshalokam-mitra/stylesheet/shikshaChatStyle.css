@@ -560,7 +560,7 @@
     padding-right: 0.5rem;
     margin-right: 0.75rem;
     display: flex;
-    background-color: #f9fafb;
+    background-color: #fff;
     border-radius: 0.375rem;
     align-items: center;
 }
@@ -746,14 +746,14 @@
 }
 
 .button-10 {
-    background-color: #f9fafb;
+    background-color: #fff;
     border-radius: 9999px;
     color: #64748b;
     font-size: 1.1rem;
 }
 
 .button-11 {
-    background-color: #f9fafb;
+    background-color: #fff;
     border-radius: 9999px;
     color: #64748b;
     font-size: 1.1rem;

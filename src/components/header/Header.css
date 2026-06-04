@@ -43,8 +43,8 @@ body {
 }
 
 .header-container .brand {
-  margin-top: 11px;
-  margin-bottom: 11px;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }
 
 .w-nav-menu {
@@ -263,6 +263,7 @@ body {
 
 .section_full.bhj {
   margin-top: 0;
+  margin-bottom: 0;
 }
 
 .frame {

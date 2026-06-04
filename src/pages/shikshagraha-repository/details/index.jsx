@@ -1,16 +1,22 @@
 // ResourceDetailPage.jsx
 import React, { useEffect, useRef, useState } from "react";
-import DOMPurify from "dompurify";
 import { ArrowLeft, Download, Heart, Share2, Star } from "lucide-react";
+import left1 from "../../../assets/dandelion-left-1.png";
+import left2 from "../../../assets/dandelion-left-2.png";
+import right1 from "../../../assets/dandelion-right-1.png";
+import right2 from "../../../assets/dandelion-right-2.png";
 import ReviewForm from "./ReviewForm";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
 import { toast, ToastContainer } from "react-toastify";
-import Footer from "components/footer/Footer";
+import Footer from "../../../components/footer/Footer";
 import ROUTES from "../../../url";
 import { trackResourceDownload } from "api/endpoints/analytics";
+import { theme } from "../../../theme";
+import { useTranslation } from "react-i18next";
 
 export default function ResourceDetailPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const navigate = useNavigate();
   const resourceData = useRepositoryStore((state) => state.selectedMedia);
@@ -46,12 +52,25 @@ export default function ResourceDetailPage() {
 
   return (
     <>
-      {" "}
-      <div className="max-w-[1100px] mx-auto px-4 py-8 relative" ref={containerRef}>
+      <div
+        className="fixed top-0 left-0 right-0 w-screen h-screen pointer-events-none z-0"
+        style={{
+          backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
+          backgroundPosition: "left 0px top 400px, right 0px top 500px, left 0px bottom 0px, right 0px bottom 0px",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "160px, 160px, 200px, 200px",
+        }}
+      />
+      <div
+        className="w-full py-8 relative repository-detail-page overflow-visible z-10 bg-white"
+        ref={containerRef}
+        style={{...theme.vars, backgroundImage: "none"}}
+      >
+        <section className="relative z-10 min-h-screen max-w-[1500px] mx-auto px-6">
         <ToastContainer />
         {isLoading && (
           <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-black bg-opacity-75 text-white h-screen">
-            Please wait we are loading your data
+            {t("common.loadingText")}
           </div>
         )}
         <BackButton />
@@ -61,6 +80,7 @@ export default function ResourceDetailPage() {
         </div>
         <Tabs tab={tab} setTab={setTab} />
         <TabContent tab={tab} resource={resourceData} />
+        </section>
       </div>
       <Footer />
     </>
@@ -101,6 +121,8 @@ export function ResourceImages({ images }) {
 }
 
 function ResourceMeta({ resource }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex-1 flex flex-col gap-2">
       <h1 className="text-2xl font-bold">{resource?.title}</h1>
@@ -132,15 +154,15 @@ function ResourceMeta({ resource }) {
       </div>
       <div className="flex gap-8 mt-2 items-center text-gray-600 text-sm">
         <div>
-          <span>File type</span>
+          <span>{t("repository.fileType")}</span>
           <div className="font-bold mt-1">{resource?.media_type_display}</div>
         </div>
         <div>
-          <span>File Size</span>
-          <div className="font-bold mt-1">{resource?.size || "N/A"}</div>
+          <span>{t("repository.fileSize")}</span>
+          <div className="font-bold mt-1">{resource?.size || t("repository.notAvailable")}</div>
         </div>
         <div>
-          <span>Date Added</span>
+          <span>{t("repository.dateAdded")}</span>
           <div className="font-bold mt-1">
             {new Date(resource?.created_at).toLocaleDateString("en-US", {
               month: "long",
@@ -150,7 +172,7 @@ function ResourceMeta({ resource }) {
           </div>
         </div>
         <div>
-          <span>Last Updated</span>
+          <span>{t("repository.lastUpdated")}</span>
           <div className="font-bold mt-1">
             {new Date(resource?.updated_at).toLocaleDateString("en-US", {
               month: "long",
@@ -166,6 +188,8 @@ function ResourceMeta({ resource }) {
 }
 
 function Actions({ downloadUrl, resourceId }) {
+  const { t } = useTranslation();
+
   const handleDownload = () => {
     trackResourceDownload(resourceId)
     window.open(downloadUrl, "_blank")
@@ -174,10 +198,10 @@ function Actions({ downloadUrl, resourceId }) {
   return (
     <div className="flex gap-2 mt-4">
       <button
-        className="flex gap-1 items-center justify-center bg-blue-600 text-white px-6 py-2 rounded shadow font-medium"
+        className="flex gap-1 items-center justify-center bg-[var(--listing-primary)] text-white px-6 py-2 rounded shadow font-medium hover:bg-[var(--listing-primary-hover)] transition-colors"
         onClick={handleDownload}
       >
-        <Download size={16} /> Download Resource
+        <Download size={16} /> {t("repository.downloadResource")}
       </button>
       {/* <button className="border p-2 rounded">
         <Heart />
@@ -186,7 +210,7 @@ function Actions({ downloadUrl, resourceId }) {
         className="border p-2 rounded"
         onClick={() => {
           navigator.clipboard.writeText(window.location.href);
-          toast("Link copied to clipboard");
+          toast(t("repository.linkCopied"));
         }}
       >
         <Share2 />
@@ -198,19 +222,21 @@ function Actions({ downloadUrl, resourceId }) {
 const TABS_LIST = ["Overview"]; //"Review", "Related"
 
 function Tabs({ tab, setTab }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex gap-8 border-b pt-8 mb-2 sticky top-0 bg-white">
       {TABS_LIST.map((name) => (
-        <button
+          <button
           key={name}
           className={`px-2 py-2 outline-none border-b-2 transition ${
             tab === name
-              ? "border-blue-600 text-blue-600 font-medium"
+              ? "border-[var(--listing-primary)] text-[var(--listing-primary)] font-medium"
               : "border-transparent text-gray-600"
           }`}
           onClick={() => setTab(name)}
         >
-          {name}
+          {name === "Overview" ? t("repository.overview") : name}
         </button>
       ))}
     </div>
@@ -236,7 +262,7 @@ function OverviewContent({ overview }) {
             <li
               className="text-gray-600  leading-relaxed mt-2 mb-2 font-sans"
               key={index}
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item) }}
+              dangerouslySetInnerHTML={{ __html: item }}
             />
           ))}
         </ul>
@@ -250,7 +276,7 @@ function OverviewContent({ overview }) {
             <div
               className="d-block"
               key={index}
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item) }}
+              dangerouslySetInnerHTML={{ __html: item }}
             />
           ))}
         </div>
@@ -264,7 +290,7 @@ function OverviewContent({ overview }) {
       {/* Paste overview markdown/html as needed */}
       {overview?.map(({ key, value }, index) => (
         <div key={index} className="mb-6">
-          <h2 className="capitalize text-2xl font-semibold text-blue-600 mb-4">
+          <h2 className="capitalize text-2xl font-semibold text-[var(--listing-secondary)] mb-4">
             {index + 1}. {String(key).toLowerCase()}
           </h2>
           <div>{processValue(value)}</div>{" "}
@@ -276,7 +302,7 @@ function OverviewContent({ overview }) {
 function ReviewsSection({ reviews }) {
   return (
     <div className="py-8">
-      <h2 className="text-[1.5rem] font-semibold text-blue-700 mb-6">
+      <h2 className="text-[1.5rem] font-semibold text-[var(--listing-secondary)] mb-6">
         User Feedback
       </h2>
       <div className="flex flex-col gap-6">

@@ -8,7 +8,7 @@ import { IoMicOutline } from "react-icons/io5"
 import { FaRegStopCircle } from "react-icons/fa"
 import { TbSend2 } from "react-icons/tb"
 /** Hooks OR Stores */
-import { useSiteDataSessionStore } from "store"
+import { useSiteDataLocalStore } from "store"
 import { useAudio } from "hooks/useAudio"
 import { useChatStorage } from "hooks/useStorage"
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore"
@@ -22,7 +22,7 @@ import { formatTime, isSilentAudio } from "../../../utils/helpers"
 import { bot_routes } from "configure"
 
 export default function Filters() {
-  const globalSearchValue = useRepositoryStore(state => state.q)
+  // removed unused `globalSearchValue`
 
   const filters = useRepositoryStore(state => state.filters)
   // fetch master list
@@ -35,28 +35,29 @@ export default function Filters() {
   const setFilters = useRepositoryStore(state => state.setFilters)
   const setGlobalSearch = useRepositoryStore(state => state.setSearch)
   const setSearchInput = useRepositoryStore(state => state.setSearchInput)
+  const search = useRepositoryStore(state => state.searchInput)
+  const loadingList = useRepositoryStore(state => state.loadingList)
 
-  const languageToUse = useSiteDataSessionStore(state => state.chatLanguage)
+  const languageToUse = useSiteDataLocalStore(state => state.chatLanguage)
   const sessionId = useChatStorage()(state => state.sessionId)
 
-  const [search, setSearch] = useState("")
   const [mediaRecorder, setMediaRecorder] = useState(null)
   const [hasStartedRecording, setHasStartedRecording] = useState(false)
   // const [isConvertingVoiceToText, setIsFetchingData] = useState(false)
   const [isConvertingVoiceToText, setIsConvertingVoiceToText] = useState(false)
 
   const [seconds, setSeconds] = useState(0)
-  const [intervalId, setIntervalId] = useState(null)
+  const intervalIdRef = useRef(null)
   const [hasStartedListening, setHasStartedListening] = useState(false)
 
   const textAreaRef = useRef(null)
   const [isMaxLengthReached, setIsMaxLengthReached] = useState(false)
 
-  const { recordings, HiddenRecorder } = useVoiceRecord()
+  const { HiddenRecorder } = useVoiceRecord()
 
   const { t } = useTranslation()
 
-  const { stopAllAudio, audioRef } = useAudio()
+  const { audioRef } = useAudio()
 
   // const [debouncedSearch] = useDebounce(
   //   () => {
@@ -68,11 +69,137 @@ export default function Filters() {
   //   [search]
   // )
 
+  const [shouldScrollToTop, setShouldScrollToTop] = useState(false)
+
+  const [isSticky, setIsSticky] = useState(false)
+  const filtersRef = useRef(null)
+  const stickySentinelRef = useRef(null)
+  const placeholderRef = useRef(null)
+
+  useEffect(() => {
+    if (!stickySentinelRef.current || typeof IntersectionObserver === "undefined") {
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const nextStickyState = !entry.isIntersecting
+        setIsSticky(prev => (prev === nextStickyState ? prev : nextStickyState))
+      },
+      {
+        threshold: 0,
+        rootMargin: "-1px 0px 0px 0px",
+      }
+    )
+
+    observer.observe(stickySentinelRef.current)
+
+    return () => observer.disconnect()
+  }, [])
+
+  // Fallback: also update sticky state from scroll position to handle layouts
+  useEffect(() => {
+    const sentinel = stickySentinelRef.current
+    const el = sentinel || filtersRef.current
+    if (!el) return
+
+    const handleScroll = () => {
+      const rect = el.getBoundingClientRect()
+      const nextSticky = rect.top <= 0
+      setIsSticky(prev => (prev === nextSticky ? prev : nextSticky))
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    // initial check
+    handleScroll()
+
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  // rAF polling fallback to ensure `isSticky` updates in all environments
+  useEffect(() => {
+    let rafId
+    const check = () => {
+      const sentinel = stickySentinelRef.current
+      const el = sentinel || filtersRef.current
+      if (el) {
+        const rect = el.getBoundingClientRect()
+        const nextSticky = rect.top <= 0
+        setIsSticky(prev => (prev === nextSticky ? prev : nextSticky))
+      }
+      rafId = requestAnimationFrame(check)
+    }
+    rafId = requestAnimationFrame(check)
+    return () => cancelAnimationFrame(rafId)
+  }, [])
+
+  // When isSticky toggles, apply inline fixed positioning to the filters element
+  useEffect(() => {
+    const el = filtersRef.current
+    const placeholder = placeholderRef.current
+    if (!el || !placeholder) return
+
+    if (isSticky) {
+      // measure before changing position
+      const rect = el.getBoundingClientRect()
+      placeholder.style.height = `${rect.height}px`
+      placeholder.style.display = 'block'
+
+      el.style.position = 'fixed'
+      el.style.top = '0px'
+      el.style.left = `${rect.left}px`
+      el.style.width = `${rect.width}px`
+      el.style.zIndex = '1000'
+      el.style.boxShadow = '0 0 4px rgba(0,0,0,0.2)'
+    } else {
+      placeholder.style.height = '0px'
+      placeholder.style.display = 'none'
+
+      el.style.position = ''
+      el.style.top = ''
+      el.style.left = ''
+      el.style.width = ''
+      el.style.zIndex = ''
+      el.style.boxShadow = ''
+    }
+
+    return () => {
+      if (el) {
+        el.style.position = ''
+        el.style.top = ''
+        el.style.left = ''
+        el.style.width = ''
+        el.style.zIndex = ''
+        el.style.boxShadow = ''
+      }
+      if (placeholder) {
+        placeholder.style.height = '0px'
+        placeholder.style.display = 'none'
+      }
+    }
+  }, [isSticky])
+
+  useEffect(() => {
+    if (!loadingList && shouldScrollToTop) {
+      scrollToBrowseResources()
+      setShouldScrollToTop(false)
+    }
+  }, [loadingList, shouldScrollToTop])
+
+  function scrollToBrowseResources() {
+    const browseSection = document.querySelector('[data-browse-resources]')
+    if (browseSection) {
+      browseSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   function handleSendMessage(event) {
     if (event) {
       event.preventDefault()
       event.stopPropagation()
     }
+
+    if (loadingList) return;
 
     if (audioRef.current) {
       audioRef.current.pause()
@@ -81,13 +208,15 @@ export default function Filters() {
 
     if (!search.trim()) return
 
-    if (!!search && search?.length > 3) {
+    if (!!search && search?.length > 0) {
       setGlobalSearch(search)
+      scrollToBrowseResources()
     }
   }
 
   const handleChange = (key, value) => {
     setFilters({ [key]: value }, true)
+    scrollToBrowseResources()
   }
 
   const stopRecording = () => {
@@ -112,7 +241,7 @@ export default function Filters() {
   const startRecording = () => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       handleOnStopSpeaking()
-      setSearch("")
+      setSearchInput("")
       navigator.mediaDevices
         .getUserMedia({ audio: true })
         .then(stream => {
@@ -133,6 +262,7 @@ export default function Filters() {
           }
 
           recorder.onstop = async () => {
+            setHasStartedRecording(false)
             if (localAudioChunks.length > 0) {
               const audioBlob = new Blob(localAudioChunks, {
                 type: "audio/webm;codecs=opus",
@@ -149,6 +279,7 @@ export default function Filters() {
                     style: { fontWeight: "bold" },
                   },
                 })
+                setIsConvertingVoiceToText(false)
                 return
               }
 
@@ -172,8 +303,23 @@ export default function Filters() {
                   },
                 })
               } else {
-                setSearch(transcriptResult)
-                // setGlobalSearch(transcriptResult)
+                const storedRoute = bot_routes.search_bot
+                transcriptResult = await ai4BharatASRApi(s3Url, languageToUse, storedRoute)
+                if (!transcriptResult || transcriptResult === "") {
+                  showNotification({
+                    message: t("asrError"),
+                    type: "error",
+                    options: {
+                      position: "top-center",
+                      autoClose: 6000,
+                      style: { fontWeight: "bold" },
+                    },
+                  })
+                } else {
+                  setSearchInput(transcriptResult)
+                  setGlobalSearch(transcriptResult)
+                  scrollToBrowseResources()
+                }
               }
               setIsConvertingVoiceToText(false)
             } else {
@@ -191,16 +337,15 @@ export default function Filters() {
     }
   }
   const handleOnInputText = inpText => {
-    setSearch(inpText)
     setSearchInput(inpText) // Update store with current input value
 
     if (inpText.trim() === "") {
-      // setIsRecognizing(false)
       setHasStartedListening(false)
-    }
-
-    if (inpText.trim() === "" && search.trim() !== "") {
+if (inpText.trim() === "" && search.trim() !== "") {
       setGlobalSearch("")
+       setShouldScrollToTop(true)
+    }
+     
     }
   }
 
@@ -209,30 +354,20 @@ export default function Filters() {
       const id = setInterval(() => {
         setSeconds(prev => prev + 1)
       }, 1000)
-      setIntervalId(id)
+      intervalIdRef.current = id
     } else {
-      clearInterval(intervalId)
+      clearInterval(intervalIdRef.current)
       setSeconds(0)
     }
 
-    return () => clearInterval(intervalId)
+    return () => clearInterval(intervalIdRef.current)
   }, [hasStartedRecording])
-
-  useEffect(() => {
-    const params = new URLSearchParams()
-    if (search) {
-      params.set("q", search)
-    }
-    const searchParams = `?${params.toString()}`
-    window.history.replaceState({}, "", `${window.location.pathname}${searchParams}`)
-  }, [search])
 
   useEffect(() => {
     fetchMasterList()
     const searched_param = new URLSearchParams(window.location.search)?.get("q")
-    setSearch(searched_param ?? "")
+    setSearchInput(searched_param ?? "")
     setGlobalSearch(searched_param ?? "")
-    setSearchInput(searched_param ?? "") // Also set searchInput on mount
 
     return () => {
       setIsMaxLengthReached(false)
@@ -264,24 +399,24 @@ export default function Filters() {
     }
   }, [search])
 
-  const disableSendButton = search?.trim()?.length === 0 || isConvertingVoiceToText || hasStartedRecording
+  const disableSendButton = search?.trim()?.length === 0 || isConvertingVoiceToText || hasStartedRecording || loadingList
 
   const searchInput = (
     <form
-      className="relative flex flex-row items-center justify-center w-full h-full px-3 py-2 rounded-[12px] border border-gray-300"
+      className="relative flex flex-row items-center justify-center w-full h-full px-3 py-2 rounded-[12px] border border-[var(--listing-border)]"
       onSubmit={event => {
-        if (!hasStartedListening && !isConvertingVoiceToText) {
+        if (!hasStartedListening && !isConvertingVoiceToText && !loadingList) {
           handleSendMessage(event)
         }
       }}
       autoComplete="off"
     >
       <div className="flex items-center justify-center relative h-full pointer-events-none">
-        <Search className="w-4 h-4 text-gray-300" />
+        <Search className="w-4 h-4 text-[var(--listing-subdued-text)]" />
       </div>
       <div className="relative w-full flex items-center justify-center">
         <textarea
-          className={`${isConvertingVoiceToText ? "min-h-[29px] sm:min-h-0" : ""} pl-3 max-w-[331px] w-full border-0 focus:outline-none focus:bg-transparent bg-transparent rounded-[12px] text-[14px] font-manrope text-gray-700 placeholder-[#9CA3AF] resize-none !overflow-y-auto`}
+          className={`${isConvertingVoiceToText ? "min-h-[29px] sm:min-h-0" : ""} pl-3 max-w-[331px] w-full border-0 focus:outline-none focus:bg-transparent bg-transparent rounded-[12px] text-[14px] font-manrope text-[var(--listing-muted-text)] placeholder-[var(--listing-subdued-text)] resize-none !overflow-y-auto`}
           style={{
             backgroundColor: "transparent",
             height: "29px",
@@ -312,6 +447,7 @@ export default function Filters() {
             }
           }}
           onChange={e => {
+            if (loadingList) return;
             e.preventDefault()
             const inpText = e.target.value
             if (inpText?.length > 250) {
@@ -339,7 +475,7 @@ export default function Filters() {
           name="message-box"
           value={search}
           autoFocus={false}
-          disabled={hasStartedRecording || isConvertingVoiceToText}
+          disabled={hasStartedRecording || isConvertingVoiceToText || loadingList}
           ref={textAreaRef}
           onKeyDown={e => {
             if (e.key === "Enter" && e.shiftKey) {
@@ -349,19 +485,53 @@ export default function Filters() {
           }}
         />
         {hasStartedRecording && (
-          <div className="absolute top-1/2 -translate-y-1/2 right-2 flex items-center space-x-1 text-red-600 text-sm font-medium pointer-events-none">
-            <FaCircle className="text-red-500 animate-pulse text-xs" />
+          <div className="absolute top-1/2 -translate-y-1/2 right-2 flex items-center space-x-1 text-[var(--listing-danger)] text-sm font-medium pointer-events-none">
+            <FaCircle className="text-[var(--listing-danger)] animate-pulse text-xs" />
             <span>{formatTime(seconds)}</span>
           </div>
         )}
       </div>
-      <button className={`flex items-center justify-center relative ${hasStartedRecording ? "text-red-500" : "text-black"} disabled:text-[#64748b] disabled:cursor-not-allowed cursor-pointer`} onClick={hasStartedRecording ? stopRecording : startRecording}>
+      <button className={`flex items-center justify-center relative ${hasStartedRecording ? "text-[var(--listing-danger)]" : "text-black"} disabled:text-[var(--listing-disabled-text)] disabled:cursor-not-allowed cursor-pointer`} onClick={hasStartedRecording ? stopRecording : startRecording}>
         {hasStartedRecording ? <FaRegStopCircle className="w-[18px] h-[18px] md:w-[20px] md:h-[20px] lg:w-[24px] lg:h-[24px]" /> : <IoMicOutline className="w-[18px] h-[18px] md:w-[20px] md:h-[20px] lg:w-[24px] lg:h-[24px]" />}
       </button>
-      <button type="submit" disabled={hasStartedRecording || isConvertingVoiceToText} className={`flex items-center justify-center relative md:pl-[6px] pl-[12px] disabled:cursor-not-allowed disabled:text-[#64748b] cursor-pointer ${!disableSendButton ? "text-[#007BFF]" : ""}`}>
+      <button type="submit" disabled={hasStartedRecording || isConvertingVoiceToText || loadingList} className={`flex items-center justify-center relative md:pl-[6px] pl-[12px] disabled:cursor-not-allowed disabled:text-[var(--listing-disabled-text)] cursor-pointer ${!disableSendButton ? "text-[var(--listing-info)]" : ""}`}>
         <TbSend2 className="md:w-[18px] md:h-[18px] lg:w-[24px] lg:h-[24px]" />
       </button>
     </form>
+  )
+
+  // build filters inner content so we can reuse in-place and in a portal
+  const filtersInner = (
+    <>
+      <div className="min-h-[40px] flex items-center pt-2 gap-1 w-full lg:w-[75%] overflow-x-auto flex-shrink-0 lg:flex-wrap">
+        {dropdown_meta?.length
+          ? dropdown_meta?.map(({ label, options, key }, index) => (
+            <React.Fragment key={`label-${label}-${index}`}>
+              <DropdownSelect key={label} label={label} options={options} selected={filters[key] || "Select a " + label} onChange={value => handleChange(key, value)} />
+            </React.Fragment>
+          ))
+          : null}
+
+        {Object.keys(filters).some(key => filters[key]?.length) && (
+          <button className="min-w-[100px] p-2 rounded-[12px] flex items-center gap-2 text-[var(--listing-danger)] bg-[var(--listing-danger-soft)]" onClick={() => {
+            resetFilters()
+            scrollToBrowseResources()
+          }}>
+            <X className="w-4 h-4" /> Clear All
+          </button>
+        )}
+      </div>
+
+      <div className={`flex justify-end ml-auto relative z-10 w-full lg:w-[25%] overflow-hidden ${
+        isSticky
+          ? "max-h-[53px] mt-7 lg:mt-0 opacity-100 block"
+          : "max-h-0 mt-0 opacity-0 invisible pointer-events-none hidden"
+      }`} aria-hidden={!isSticky} style={{}}>
+        <div className="flex flex-col items-start w-full h-[53px]">
+          {searchInput}
+        </div>
+      </div>
+    </>
   )
 
   return (
@@ -375,7 +545,7 @@ export default function Filters() {
         }
         textarea[name="message-box"] {
           scrollbar-width: thin;
-          scrollbar-color: #9CA3AF transparent;
+          scrollbar-color: var(--listing-subdued-text) transparent;
           line-height: 19px;
           padding-top: 5px;
           padding-bottom: 5px;
@@ -387,51 +557,78 @@ export default function Filters() {
           background: transparent;
         }
         textarea[name="message-box"]::-webkit-scrollbar-thumb {
-          background-color: #9CA3AF;
+          background-color: var(--listing-subdued-text);
           border-radius: 2px;
         }
         textarea[name="message-box"]::-webkit-scrollbar-thumb:hover {
-          background-color: #6B7280;
+          background-color: var(--listing-muted-text);
         }
       `}</style>
       <HiddenRecorder />
       <Notification />
-      <div id="filters-boundary" className="md:sticky top-0 z-50 flex flex-col lg:flex-row items-stretch lg:items-center p-3 bg-white max-w-[1670px]  w-full rounded-[1rem] shadow-[0_0_4px_rgba(0,0,0,0.2)]">
-        <div className="min-h-[40px] flex items-center pt-2 gap-1 w-full lg:w-[75%] overflow-x-auto flex-shrink-0 lg:flex-wrap">
+      <div ref={stickySentinelRef} className="h-px -mb-px" aria-hidden="true" />
+      <div ref={placeholderRef} style={{height: 0, display: 'none'}} aria-hidden="true" />
 
-          {!!dropdown_meta?.length
-            ? dropdown_meta?.map(({ label, options, key }, index) => (
-                <React.Fragment key={`label-${label}-${index}`}>
-                  <DropdownSelect key={label} label={label} options={options} selected={filters[key] || "Select a " + label} onChange={value => handleChange(key, value)} />
-                </React.Fragment>
-              ))
-            : null}
-
-          {!!Object.keys(filters).some(key => !!filters[key]?.length) && (
-            <button className="min-w-[100px] p-2 rounded-[12px] flex items-center gap-2 text-red-600 bg-red-50" onClick={() => resetFilters()}>
-              <X className="w-4 h-4" /> Clear All
-            </button>
-          )}
-        </div>
-
-        <div className="flex justify-end ml-auto relative z-10 w-full lg:w-[25%] mt-7 lg:mt-0">
-          <div className="flex flex-col items-start w-full h-[53px]">{searchInput}</div>
-        </div>
+      <div
+        ref={filtersRef}
+        id="filters-boundary"
+        className="sticky top-0 z-100 isolate flex flex-col lg:flex-row items-stretch lg:items-center p-3 bg-white max-w-[1670px] w-full rounded-[1rem] shadow-[0_0_4px_rgba(0,0,0,0.2)]"
+        style={undefined}
+      >
+        {filtersInner}
       </div>
     </>
   )
 }
 
 const CheckboxOption = props => {
+  const { isSelected } = props
+
   return (
     <components.Option {...props}>
-      <div className="flex items-center">
-        <input type="checkbox" checked={props.isSelected} readOnly className="mr-2 accent-blue-500" />
-        <label>{props.label}</label>
+      <div className="flex items-center px-2 py-1">
+        <span
+          style={{
+            width: 16,
+            height: 16,
+            minWidth: 16,          // 👈 prevents shrink
+            minHeight: 16,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 8,
+            border: "1.5px solid",
+            borderColor: isSelected
+              ? "var(--listing-secondary)"
+              : "#9CA3AF",
+            backgroundColor: isSelected
+              ? "var(--listing-secondary)"
+              : "#fff",
+            borderRadius: 3,
+            flexShrink: 0,         // 👈 VERY IMPORTANT
+          }}
+        >
+          {isSelected && (
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 20 20"
+              fill="white"
+            >
+              <path d="M7.629 14.571L3.286 10.229l1.428-1.429 2.915 2.914 7.657-7.657 1.428 1.429z" />
+            </svg>
+          )}
+        </span>
+
+        <label style={{ cursor: "pointer" }}>
+          {props.label}
+        </label>
       </div>
     </components.Option>
   )
 }
+
+
 
 const MenuList = props => {
   const { options, value, onChange } = props.selectProps
@@ -448,10 +645,48 @@ const MenuList = props => {
 
   return (
     <components.MenuList {...props}>
-      <div className="flex items-center px-3 py-2 border-b border-gray-200 bg-gray-50">
-        <input type="checkbox" checked={allSelected} onChange={toggleSelectAll} className="mr-2 accent-blue-500" />
-        <label className="font-medium text-gray-700 cursor-pointer select-none">{allSelected ? "Deselect All" : "Select All"}</label>
+      <div
+        className="flex items-center px-3 py-2 border-b border-[var(--listing-border)] bg-[var(--listing-surface)] cursor-pointer"
+        onClick={toggleSelectAll}
+      >
+        <span
+          style={{
+            width: 16,
+            height: 16,
+            minWidth: 16,
+            minHeight: 16,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 8,
+            border: "1.5px solid",
+            borderColor: allSelected
+              ? "var(--listing-secondary)"
+              : "#9CA3AF",
+            backgroundColor: allSelected
+              ? "var(--listing-secondary, #5832AC)"
+              : "#fff",
+            borderRadius: 3,
+            flexShrink: 0,
+          }}
+        >
+          {allSelected && (
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 20 20"
+              fill="white"
+            >
+              <path d="M7.629 14.571L3.286 10.229l1.428-1.429 2.915 2.914 7.657-7.657 1.428 1.429z" />
+            </svg>
+          )}
+        </span>
+
+        <label className="font-medium text-[var(--listing-strong-text)] cursor-pointer select-none">
+          {allSelected ? "Deselect All" : "Select All"}
+        </label>
       </div>
+
       {props.children}
     </components.MenuList>
   )
@@ -461,62 +696,65 @@ const DropdownSelect = ({ label, options, selected, onChange }) => {
   const selectedCount = Array.isArray(selected) ? selected.length : 0
 
   return (
-  <div className="relative mr-4 flex-shrink-0">
+    <div className="relative mr-4 flex-shrink-0">
       {selectedCount > 0 && (
-        <div className="absolute -top-1 -right-2 z-10 flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-blue-500 rounded-full">
+        <div className="absolute -top-1 -right-2 z-10 flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-[var(--listing-secondary)] rounded-full">
           {selectedCount}
         </div>
       )}
-    <Select
-      options={options.map(x => ({ value: x.value, label: x.display }))}
-      value={selected}
-      onChange={onChange}
-      isMulti
-      placeholder={label}
-      closeMenuOnSelect={false}
-      hideSelectedOptions={false}
-      menuPortalTarget={document.body}
-      menuPosition="fixed"
-      controlShouldRenderValue={false}
-      components={{
-        Option: CheckboxOption,
-        MenuList: MenuList,
-      }}
-      styles={{
-        control: base => ({
-          ...base,
-          border: "none",
-          background: "rgb(82 82 91 / 1%)",
-          boxShadow: "none",
-          minHeight: "36px",
-          "&:hover": { border: "none" },
-        }),
-        placeholder: base => ({ ...base, color: "#49454F", gridArea: "1/1/2/3" }),
-        valueContainer: base => ({
-          ...base,
-          display: "grid",
-          gridTemplateColumns: "1fr auto",
-          alignItems: "center",
-          padding: "0px 8px",
-          overflow: "hidden",
-        }),
-        input: base => ({
-          ...base,
-          gridArea: "1/1/2/3",
-          margin: 0,
-          padding: 0,
-        }),
-        menu: base => ({
-          ...base,
-          zIndex: 9999,
-        }),
-        menuPortal: base => ({
-          ...base,
-          zIndex: 9999,
-        }),
-      }}
-      className="max-w-[200px] min-w-[128px] bg-gray-100 rounded-[12px] text-zinc-600 text-sm"
-    />
-  </div>
-)
+      <Select
+        options={options.map(x => ({ value: x.value, label: x.display }))}
+        value={selected}
+        onChange={onChange}
+        isMulti
+        placeholder={label}
+        closeMenuOnSelect={false}
+        hideSelectedOptions={false}
+        menuPortalTarget={document.body}
+        menuPosition="fixed"
+        controlShouldRenderValue={false}
+        components={{
+          Option: CheckboxOption,
+          MenuList: MenuList,
+        }}
+        styles={{
+          control: base => ({
+            ...base,
+            border: "none",
+            background: "var(--listing-surface-soft)",
+            boxShadow: "none",
+            minHeight: "36px",
+            "&:hover": { border: "none" },
+          }),
+
+          option: (base, state) => ({
+            ...base,
+            backgroundColor: state.isSelected
+              ? "var(--listing-secondary, #5832AC)"  // fallback color
+              : "white",
+            color: state.isSelected
+              ? "white"
+              : "var(--listing-strong-text)",
+            cursor: "pointer",
+          }),
+
+          placeholder: base => ({
+            ...base,
+            color: "var(--listing-muted-text)",
+            gridArea: "1/1/2/3"
+          }),
+
+          menu: base => ({
+            ...base,
+            zIndex: 9999,
+          }),
+
+          menuPortal: base => ({
+            ...base,
+            zIndex: 9999,
+          }),
+        }}
+      />
+    </div>
+  )
 }
