@@ -217,6 +217,7 @@ const displayedResources = compact
     compact ? "" : "min-h-screen"
   }`}
 >
+<div className="w-full lg:w-[92.5%] mx-auto">
         {/* ⬇️ EVERYTHING BELOW IS EXACT SAME (no change) */}
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
@@ -334,7 +335,7 @@ const displayedResources = compact
   )}
 </div>
 
-        <div className="relative overflow-hidden rounded-[32px] bg-[var(--listing-white)] pt-4 md:p-6">
+        <div className="relative overflow-hidden rounded-[32px] bg-[var(--listing-white)] pt-4">
           <div
             className="absolute inset-0 z-0 pointer-events-none"
             style={{
@@ -344,10 +345,10 @@ const displayedResources = compact
               backgroundSize: "160px, 160px, 200px, 200px",
             }}
           />
-          <div className="relative z-10 pr-2">
+          <div className="relative z-10">
             <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">
               <div
-                className={`flex flex-col md:grid gap-6 w-full lg:!w-[calc(90%-1.5rem)]  ${viewMode === "grid"
+                className={`flex flex-col md:grid gap-6 w-full  ${viewMode === "grid"
                     ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3 sm:grid-cols-1"
                     : "grid-cols-1"
                   }`}
@@ -368,7 +369,7 @@ const displayedResources = compact
             <MitraAiAssistantAside />
           </div>
         </div>
-
+</div>
       </section>
     </div>
   );

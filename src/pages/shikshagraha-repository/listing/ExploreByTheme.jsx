@@ -55,7 +55,7 @@ const themes = [
 
 export default function ExploreByTheme() {
   return (
-    <section className="w-full mt-8 md:mt-10">
+    <section className="w-full mt-8 md:mt-10 px-4 md:px-12">
       <h2 className="text-[20px] md:text-[22px] font-normal tracking-[1px] text-[#2F2F2F] uppercase mb-5">
         Explore By Theme
       </h2>
