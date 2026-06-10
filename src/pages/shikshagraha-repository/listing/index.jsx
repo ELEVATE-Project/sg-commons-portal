@@ -9,6 +9,7 @@ import { useRepositoryStore } from "../repository-hooks/useRepositoryStore.js";
 import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
+import ExploreByTheme from "./ExploreByTheme";
 
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
@@ -24,7 +25,15 @@ export default function RepositoryPage() {
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
   const pagination = useRepositoryStore((state) => state.pagination);
   const setPagination = useRepositoryStore((state) => state.setPagination);
+  const fetchMediaList = useRepositoryStore(
+  (state) => state.fetchMediaList
+);
   const itemsPerPage = pagination.limit;
+
+  useEffect(() => {
+  fetchMediaList();
+}, [fetchMediaList]);
+
 
   useEffect(() => {
     if (!!mediaList?.length && q && !loadingList) {
@@ -42,17 +51,19 @@ export default function RepositoryPage() {
           <div className="w-full">
             <Header />
           </div>
-          <div className="w-full mt-4 md:mt-6 z-50">
+          <ExploreByTheme />
+
+          {/* <div className="w-full mt-4 md:mt-6 z-50">
             <Filters />
-          </div>
+          </div> */}
           <main className="w-full mx-auto">
             {!!mediaList?.length && (
-              <BrowseResources
+
+ <BrowseResources
                 resources={mediaList}
-                viewMode={viewMode}
-                setViewMode={setViewMode}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
+  viewMode="grid"
+  compact={true}
+  title="Library"
               />
             )}
          
@@ -67,7 +78,7 @@ export default function RepositoryPage() {
                 </div>
               </div>
             )}
-            <div className="w-full mt-6 mx-auto">
+            {/* <div className="w-full mt-6 mx-auto">
               <Pagination
                 resourcesPerPage={itemsPerPage}
                 totalResources={mediaCount}
@@ -80,7 +91,7 @@ export default function RepositoryPage() {
                   });
                 }}
               />
-            </div>
+            </div> */}
           </main>
         </div>
       </div>

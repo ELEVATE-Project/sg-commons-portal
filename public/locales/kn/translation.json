@@ -31,6 +31,7 @@
     "repository": {
         "browseResources": "ಸಂಪನ್ಮೂಲಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ",
         "browseResourcesDescription": "ನಿಮ್ಮ ಯೋಜನೆಗೆ ಉನ್ನತ ಗುಣಮಟ್ಟದ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಅನ್ವೇಷಿಸಿ",
+        "library": "ಗ್ರಂಥಾಲಯ",
         "resultsCount_one": "{{count}} ಫಲಿತಾಂಶ",
         "resultsCount_other": "{{count}} ಫಲಿತಾಂಶಗಳು",
         "sortByLabel": "ವಿಂಗಡಿಸಿ",

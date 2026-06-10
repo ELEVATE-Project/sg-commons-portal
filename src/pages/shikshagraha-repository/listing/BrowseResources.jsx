@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { Grid, List, ChevronDown, Check } from "lucide-react";
+import { Grid, List, ChevronDown, Check, ArrowRight } from "lucide-react";
 import ResourceCard from "./ResourceCard";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
 import MitraAiAssistantAside from "./MitraAiAssistantAside.jsx";
@@ -167,7 +167,7 @@ const DefaultDropdownItem = ({ option, isSelected, onSelect }) => {
   );
 };
 
-export default function BrowseResources({ resources, viewMode, setViewMode }) {
+export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false }) {
   const pagination = useRepositoryStore((state) => state.pagination);
   const setPagination = useRepositoryStore((state) => state.setPagination);
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
@@ -188,7 +188,9 @@ export default function BrowseResources({ resources, viewMode, setViewMode }) {
   ];
 
   const itemsPerPage = pagination.limit;
-
+const displayedResources = compact
+  ? resources.slice(0, 3)
+  : resources;
   const perPageOptions = [
     { value: 6, label: "6" },
     { value: 12, label: "12" },
@@ -202,82 +204,135 @@ export default function BrowseResources({ resources, viewMode, setViewMode }) {
    
   return (
     <div
-      className="relative overflow-hidden py-12 w-full min-h-screen scroll-mt-24"
-      data-browse-resources
-    >
+  className={`relative overflow-hidden py-12 w-full scroll-mt-24 ${
+    compact ? "" : "min-h-screen"
+  }`}
+  data-browse-resources
+>
       <div
         className="absolute inset-0 z-0 pointer-events-none"
       />
-      <section className="relative z-10 min-h-screen max-w-[1500px] mx-auto">
+      <section
+  className={`relative z-10 max-w-[1500px] mx-auto ${
+    compact ? "" : "min-h-screen"
+  }`}
+>
         {/* ⬇️ EVERYTHING BELOW IS EXACT SAME (no change) */}
 
-        <div className="flex flex-col md:flex-row items-center justify-between mb-6">
-          <div className="w-full mb-3" data-browse-resources>
-            <h2 className="text-lg font-semibold text-[var(--listing-strong-text)] mb-1">
-              {t("repository.browseResources")}
-            </h2>
-            <p className="text-sm text-[var(--listing-muted-text)]">
-              {t("repository.browseResourcesDescription")}
-            </p>
-          </div>
-          <div className="flex flex-col md:flex-row  items-center gap-6 w-full">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+  <div className="w-full mb-3 md:mb-0" data-browse-resources>
+    <h2 className="text-lg font-semibold text-[var(--listing-strong-text)] mb-1">
+      {t(title) || t("repository.browseResources")}
+    </h2>
 
-            <div className="flex items-center justify-between lg:justify-end w-full lg:gap-6">
-              <div className="text-sm text-[var(--listing-muted-text)] font-bold">
-                {t("repository.resultsCount", { count: mediaCount })}
-              </div>
+    {!compact && (
+      <p className="text-sm text-[var(--listing-muted-text)]">
+        {t("repository.browseResourcesDescription")}
+      </p>
+    )}
+  </div>
 
-              <Dropdown
-                options={sortOptions}
-                selectedValue={sortBy}
-                onSelect={(value) => {
-                  setSortBy(value);
-                }}
-                renderButton={(selected) => (
-                  <span>{t("repository.sortByLabel")}: {selected?.label || t("common.select")}</span>
-                )}
-                disabled={isSearchActive}
-                tooltipText={`${t("sortDisabledTooltipText")}`}
-              />
-            </div>
+  {compact ? (
+    <div className="flex items-center gap-4 flex-nowrap">
+      <Dropdown
+        options={sortOptions}
+        selectedValue={sortBy}
+        onSelect={(value) => {
+          setSortBy(value);
+        }}
+        renderButton={(selected) => (
+          <span className="whitespace-nowrap">
+            {t("repository.sortByLabel")}:{" "}
+            {selected?.label || t("common.select")}
+          </span>
+        )}
+      />
 
-
-            <div className="flex items-center justify-between flex-row-reverse lg:flex-row lg:justify-start lg:gap-6 w-full lg:w-auto">
-              <div className="flex items-center gap-1 border border-[var(--listing-border)] rounded">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 ${viewMode === "grid"
-                      ? "bg-[var(--listing-secondary)] text-white"
-                      : "text-[var(--listing-muted-text)] hover:bg-[var(--listing-surface-soft)]"
-                    }`}
-                >
-                  <Grid className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 ${viewMode === "list"
-                      ? "bg-[var(--listing-secondary)] text-white"
-                      : "text-[var(--listing-muted-text)] hover:bg-[var(--listing-surface-soft)]"
-                    }`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
-              <Dropdown
-                options={perPageOptions}
-                selectedValue={itemsPerPage}
-                onSelect={(value) => {
-                  handleItemsPerPageChange(value);
-                }}
-                dropdownClassName="w-32"
-                renderButton={(selected) => (
-                  <span>{selected?.label || "6"} {t("repository.perPage")}</span>
-                )}
-              />
-            </div>
-
-          </div>
+      <button
+  type="button"
+  className="
+    inline-flex items-center gap-2
+    px-4 py-2
+    rounded-[10px]
+    bg-[var(--listing-secondary)]
+    text-white
+    text-sm
+    font-medium
+    hover:opacity-90
+    transition-all
+    whitespace-nowrap
+  "
+>
+  Browse All
+  <ArrowRight className="w-4 h-4" />
+</button>
+    </div>
+  ) : (
+    <div className="flex flex-col md:flex-row items-center gap-6 w-full">
+      <div className="flex items-center justify-between lg:justify-end w-full lg:gap-6">
+        <div className="text-sm text-[var(--listing-muted-text)] font-bold">
+          {t("repository.resultsCount", { count: mediaCount })}
         </div>
+
+        <Dropdown
+          options={sortOptions}
+          selectedValue={sortBy}
+          onSelect={(value) => {
+            setSortBy(value);
+          }}
+          renderButton={(selected) => (
+            <span>
+              {t("repository.sortByLabel")}:{" "}
+              {selected?.label || t("common.select")}
+            </span>
+          )}
+          disabled={isSearchActive}
+          tooltipText={`${t("sortDisabledTooltipText")}`}
+        />
+      </div>
+
+      <div className="flex items-center justify-between flex-row-reverse lg:flex-row lg:justify-start lg:gap-6 w-full lg:w-auto">
+        <div className="flex items-center gap-1 border border-[var(--listing-border)] rounded">
+          <button
+            onClick={() => setViewMode("grid")}
+            className={`p-2 ${
+              viewMode === "grid"
+                ? "bg-[var(--listing-secondary)] text-white"
+                : "text-[var(--listing-muted-text)] hover:bg-[var(--listing-surface-soft)]"
+            }`}
+          >
+            <Grid className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={() => setViewMode("list")}
+            className={`p-2 ${
+              viewMode === "list"
+                ? "bg-[var(--listing-secondary)] text-white"
+                : "text-[var(--listing-muted-text)] hover:bg-[var(--listing-surface-soft)]"
+            }`}
+          >
+            <List className="w-4 h-4" />
+          </button>
+        </div>
+
+        <Dropdown
+          options={perPageOptions}
+          selectedValue={itemsPerPage}
+          onSelect={(value) => {
+            handleItemsPerPageChange(value);
+          }}
+          dropdownClassName="w-32"
+          renderButton={(selected) => (
+            <span>
+              {selected?.label || "6"} {t("repository.perPage")}
+            </span>
+          )}
+        />
+      </div>
+    </div>
+  )}
+</div>
 
         <div className="relative overflow-hidden rounded-[32px] bg-[var(--listing-white)] pt-4 md:p-6">
           <div
@@ -297,7 +352,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode }) {
                     : "grid-cols-1"
                   }`}
               >
-                {resources.map((resource, index) => (
+               {displayedResources.map((resource, index) => (
                   <React.Fragment key={`resource-${resource.id}-${index}`}>
                     <ResourceCard
                       key={resource.id}

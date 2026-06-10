@@ -180,6 +180,7 @@
     "repository": {
         "browseResources": "Browse Resources",
         "browseResourcesDescription": "Discover high quality resources for your project",
+        "library": "Library",
         "resultsCount_one": "{{count}} result",
         "resultsCount_other": "{{count}} results",
         "sortByLabel": "Sort by",

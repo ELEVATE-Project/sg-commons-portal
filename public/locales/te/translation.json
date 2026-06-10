@@ -31,6 +31,7 @@
     "repository": {
         "browseResources": "వనరులను బ్రౌజ్ చేయండి",
         "browseResourcesDescription": "మీ ప్రాజెక్ట్ కోసం ఉన్నత నాణ్యత గల వనరులను కనుగొనండి",
+        "library": "గ్రంథాలయం",
         "resultsCount_one": "{{count}} ఫలితం",
         "resultsCount_other": "{{count}} ఫలితాలు",
         "sortByLabel": "క్రమబద్ధీకరణ",
