@@ -45,12 +45,14 @@ export default function RepositoryPage() {
   }, [mediaList, q, loadingList]);
 
   return (
-    <div className="bg-[var(--listing-white)] relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
+    // <div className="bg-[var(--listing-white)] relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
+    <div className="bg-[#F7F7F7]  relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
       <div className="container max-w-[1500px] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
           <div className="w-full">
             <Header />
           </div>
+           <div className="">
           <ExploreByTheme />
 
           {/* <div className="w-full mt-4 md:mt-6 z-50">
@@ -93,6 +95,7 @@ export default function RepositoryPage() {
               />
             </div> */}
           </main>
+          </div>
         </div>
       </div>
       {isLoading && (

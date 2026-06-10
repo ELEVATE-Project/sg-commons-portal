@@ -60,7 +60,7 @@ export default function ExploreByTheme() {
         Explore By Theme
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {themes.map((theme) => {
           const Icon = theme.icon;
 
@@ -68,28 +68,26 @@ export default function ExploreByTheme() {
             <div
               key={theme.title}
               className="
-                bg-white
-                border
-                border-[#E6E6E6]
-                rounded-[14px]
-                h-[128px]
-                flex
-                flex-col
-                items-center
-                justify-center
-                cursor-pointer
-                transition-all
-                duration-200
-                hover:border-[#D8D8D8]
-                hover:bg-[#FCFCFC]
-              "
+  bg-white
+  rounded-[12px]
+  shadow-sm
+  h-[128px]
+  flex
+  flex-col
+  items-center
+  justify-center
+  cursor-pointer
+  transition-all
+  duration-200
+  hover:shadow-md
+"
             >
               <div
                 className="
                   w-[44px]
                   h-[44px]
                   rounded-[8px]
-                  bg-[#E8D8FF]
+                  bg-[#F1F1F1]
                   flex
                   items-center
                   justify-center
@@ -97,9 +95,9 @@ export default function ExploreByTheme() {
                 "
               >
                 <Icon
-                  size={18}
+                  size={22}
                   strokeWidth={1.75}
-                  className="text-[#6D6475]"
+                  className="text-[#666666]"
                 />
               </div>
 
