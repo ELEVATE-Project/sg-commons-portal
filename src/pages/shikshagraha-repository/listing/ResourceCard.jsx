@@ -27,10 +27,10 @@ export const getMediaFileTypeStyles = type => {
       }
 
     case MEDIA_FILE_TYPE.DOCX:
-      return {
-        background: "bg-[#0086F9]",
-        Icon: FileText,
-      }
+  return {
+    background: "bg-[#2563EB]",
+    Icon: FileText,
+  }
 
     case MEDIA_FILE_TYPE.XLSX:
       return {
@@ -46,12 +46,44 @@ export const getMediaFileTypeStyles = type => {
   }
 }
 
+export const getTagStyles = type => {
+  switch (type) {
+    case MEDIA_FILE_TYPE.PDF:
+      return {
+        bg: "bg-[#F9B4B4]",
+        text: "text-[#A70707]",
+      }
+
+    case MEDIA_FILE_TYPE.DOCX:
+      return {
+        bg: "bg-[#E4E3FE]",
+        text: "text-[#2563EB]",
+      }
+
+    case MEDIA_FILE_TYPE.XLSX:
+      return {
+        bg: "bg-[#B4EBC6]",
+        text: "text-[#028A4F]",
+      }
+
+    default:
+      return {
+        bg: "bg-[#E5E7EB]",
+        text: "text-[#6B7280]",
+      }
+  }
+}
+
 export default function ResourceCard({ resource }) {
   const { t } = useTranslation()
 
   const { background, Icon: FileIcon } = getMediaFileTypeStyles(
-    resource?.media_type_display
-  )
+  resource?.media_type_display
+)
+
+const { bg: tagBg, text: tagText } = getTagStyles(
+  resource?.media_type_display
+)
 
   const handleCardClick = () => {
     trackResourceView(resource?.id)
@@ -74,181 +106,199 @@ export default function ResourceCard({ resource }) {
   }
 
   return (
-    <div
-      role="button"
-      onClick={handleCardClick}
-      className="
-  bg-white
-  border
-  border-[#E5E7EB]
-  rounded-[16px]
-  p-4
-  cursor-pointer
-  transition-all
-  hover:shadow-sm
-  w-full
-"
-    >
-      {/* Top Section */}
-      <div className="flex gap-3 items-center">
-  {/* File Type Box */}
   <div
-    className={`
-      ${background}
-      w-[82px]
-      min-w-[82px]
-      h-[72px]
-      rounded-[8px]
+    role="button"
+    onClick={handleCardClick}
+    className="
       flex
       flex-col
-      items-center
-      justify-center
-      text-white
-    `}
+      bg-white
+      border
+      border-[#EEECE6]
+      rounded-[12px]
+      py-[27px]
+      px-[19px]
+      h-[284px]
+      cursor-pointer
+      transition-all
+      hover:shadow-sm
+      w-full
+    "
   >
-    <FileIcon className="w-[18px] h-[18px]" />
+    {/* Content */}
+    <div className="flex flex-col items-center gap-[14px] flex-1">
+      {/* Top Section */}
+      <div className="flex w-full gap-[12px] h-[80px]">
+        {/* File Type Box */}
+        <div
+          className={`
+            ${background}
+            w-[93px]
+            min-w-[93px]
+            h-[80px]
+            border
+            border-[#EEECE6]
+            rounded-[8px]
+            flex
+            flex-col
+            justify-center
+            items-center
+            text-white
+            flex-flow: nowrap; 
+          `}
+        >
+          <FileIcon className="w-6 h-6" />
 
-    <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2px]">
-      {resource?.media_type_display || "FILE"}
-    </span>
-  </div>
+          <span className="mt-1 text-[11px] font-semibold uppercase">
+            {resource?.media_type_display || "FILE"}
+          </span>
+        </div>
 
-  {/* Title */}
-  <div className="flex-1 min-w-0 flex items-center h-[72px]">
-    <h3
-      className="
-        text-[14px]
-        leading-[18px]
-        font-medium
-        text-[#2D2D2D]
-        line-clamp-3
-      "
-    >
-      {resource?.title || t("repository.notAvailable")}
-    </h3>
-  </div>
-</div>
+        {/* Title */}
+        <div className="flex-1 min-w-0 flex items-center h-[74px] py-[10px]">
+          <h3
+            className="
+              text-[16px]
+              leading-[18px]
+              font-['Comfortaa'] 
+              font-semibold
+              text-[#111110]
+              line-clamp-3
+            "
+          >
+            {resource?.title || t("repository.notAvailable")}
+          </h3>
+        </div>
+      </div>
 
       {/* Description */}
-      <div className="mt-3">
-        <p
-          className="
-            text-[12px]
-            leading-[18px]
-            text-[#6B7280]
-            line-clamp-3
-          "
+      <p
+        className="
+        font-['Source_Sans_3']
+          w-full
+          text-[14px]
+          leading-[20px]
+          text-[#71717A]
+          line-clamp-3
+        "
+      >
+        {resource?.description || t("repository.notAvailable")}
+      </p>
+
+      {/* Tags + Footer Section */}
+      <div className="w-full flex flex-col gap-[5px] mt-auto">
+        {/* Tags */}
+        {resource?.tag_names?.length > 0 && (
+  <div className="pb-[12px] border-b border-[#9E9D97]">
+    <div className="flex items-center gap-[4px] overflow-hidden">
+      {resource.tag_names.slice(0, 2).map((tag, index) => (
+        <span
+          key={index}
+          className={`
+  ${tagBg}
+  ${tagText}
+  px-[10px]
+  py-[2px]
+  rounded-full
+  text-[14px]
+  leading-[20px]
+  font-['Source_Sans_3']
+  whitespace-nowrap
+  ${
+    index === 1
+      ? "min-w-0 max-w-[140px] truncate"
+      : "flex-shrink-0"
+  }
+`}
         >
-          {resource?.description || t("repository.notAvailable")}
-        </p>
-      </div>
+          {tag}
+        </span>
+      ))}
+    </div>
+  </div>
+)}
 
-      {/* Tags */}
-      {resource?.tag_names?.length > 0 && (
-        <div className="flex flex-wrap gap-[6px] mt-3">
-          {resource.tag_names.slice(0, 2).map((tag, index) => (
-            <span
-              key={index}
-              className="
-                px-[10px]
-                py-[4px]
-                rounded-full
-                bg-[#FEE2E2]
-                text-[#DC2626]
-                text-[11px]
-                font-medium
-                whitespace-nowrap
-              "
-            >
-              {tag}
-            </span>
-          ))}
+        {/* Footer */}
+        <div className="flex items-center justify-between min-h-[29px]">
+          <div className="flex items-center gap-[17px] text-[#9E9D97]">
+            <div className="flex items-center gap-[6px]">
+              <Eye size={16} strokeWidth={1.8} />
 
-          {/* {resource?.tag_names?.length > 3 && (
-            <span
-              className="
-                px-[10px]
-                py-[4px]
-                rounded-full
-                bg-[#FEE2E2]
-                text-[#DC2626]
-                text-[11px]
-                font-medium
-              "
-            >
-              +{resource.tag_names.length - 3}
-            </span>
-          )} */}
-        </div>
-      )}
-
-      {/* Divider */}
-      <div className="border-t border-[#DADADA] mt-4 mb-3" />
-
-      {/* Footer */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-5 text-[#8B8B8B]">
-          <div className="flex items-center gap-1.5">
-            <Eye size={14} strokeWidth={1.8} />
-            <span className="text-[14px] leading-none">
-              {resource?.view_count ?? 0}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <Download size={14} strokeWidth={1.8} />
-            <span className="text-[14px] leading-none">
-              {resource?.download_count ?? 0}
-            </span>
-          </div>
-        </div>
-
-        {resource?.organization && (
-          <button
-            type="button"
-            className="
-              flex
-              items-center
-              gap-2
-              min-w-0
-            "
-            onClick={e => {
-              e.preventDefault()
-              e.stopPropagation()
-
-              if (resource?.organization_url) {
-                window.open(resource.organization_url, "_blank")
-              }
-            }}
-          >
-            <span
-              className="
-                text-[14px]
-                text-[#7A7A7A]
-                font-medium
-                underline
-                truncate
-                max-w-[120px]
-              "
-            >
-              {resource.organization}
-            </span>
-
-            {resource?.org_logo && (
-              <img
-                src={resource.org_logo}
-                alt={resource.organization}
+              <span
                 className="
-                  h-[20px]
-                  w-[20px]
-                  object-contain
-                  flex-shrink-0
+                  text-[20px]
+                  leading-[24px]
+                  font-['Source_Sans_3']
                 "
-              />
-            )}
-          </button>
-        )}
+              >
+                {resource?.view_count ?? 0}k
+              </span>
+            </div>
+
+            <div className="flex items-center gap-[6px]">
+              <Download size={16} strokeWidth={1.8} />
+
+              <span
+                className="
+                  text-[20px]
+                  leading-[24px]
+                  font-['Source_Sans_3']
+                "
+              >
+                {resource?.download_count ?? 0}
+              </span>
+            </div>
+          </div>
+
+          {resource?.organization && (
+            <button
+              type="button"
+              className="
+                flex
+                items-center
+                gap-2
+                min-w-0
+                text-[20px]
+              "
+              onClick={e => {
+                e.preventDefault()
+                e.stopPropagation()
+
+                if (resource?.organization_url) {
+                  window.open(resource.organization_url, "_blank")
+                }
+              }}
+            >
+              <span
+                className="
+                  text-[18px]
+                  text-[#9E9D97]
+                  font-['Source_Sans_3']
+                  underline
+                  truncate
+                  max-w-[120px]
+                "
+              >
+                {resource.organization}
+              </span>
+
+              {resource?.org_logo && (
+                <img
+                  src={resource.org_logo}
+                  alt={resource.organization}
+                  className="
+                    h-[20px]
+                    w-[20px]
+                    object-contain
+                    flex-shrink-0
+                  "
+                />
+              )}
+            </button>
+          )}
+        </div>
       </div>
     </div>
-  )
+  </div>
+)
 }
