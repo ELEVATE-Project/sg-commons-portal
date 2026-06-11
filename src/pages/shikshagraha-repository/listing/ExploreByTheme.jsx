@@ -56,7 +56,7 @@ const themes = [
 export default function ExploreByTheme() {
   return (
     <section className="w-full mt-8 md:mt-10 px-4 md:px-12">
-      <h2 className="text-[20px] md:text-[22px] font-normal tracking-[1px] text-[#2F2F2F] uppercase mb-5">
+      <h2 className="text-[20px] md:text-[22px] font-['Comfortaa'] font-semibold tracking-[1px] text-[#27272A] uppercase mb-5">
         Explore By Theme
       </h2>
 
@@ -101,29 +101,33 @@ export default function ExploreByTheme() {
                 />
               </div>
 
-              <h3
-                className="
-                  text-[14px]
-                  font-semibold
-                  text-[#202020]
-                  text-center
-                  leading-[18px]
-                  px-2
-                "
-              >
+             <h3
+  className="
+    font-['Source_Sans_3']
+    text-[16px]
+    font-bold
+    leading-[15px]
+    text-[#111110]
+    text-center
+    w-full
+    px-3
+  "
+>
                 {theme.title}
               </h3>
-
-              <p
-                className="
-                  text-[12px]
-                  font-normal
-                  text-[#8D8D8D]
-                  mt-1
-                "
-              >
-                {theme.count} items
-              </p>
+<p
+  style={{ fontFamily: "'Source Sans 3', sans-serif" }}
+  className="
+    text-[14px]
+    font-medium
+    leading-[16px]
+    text-[#9E9D97]
+    text-center
+    mt-[6px]
+  "
+>
+  {theme.count} items
+</p>
             </div>
           );
         })}
