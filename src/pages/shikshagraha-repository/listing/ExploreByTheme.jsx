@@ -60,46 +60,50 @@ export default function ExploreByTheme() {
         Explore By Theme
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {themes.map((theme) => {
           const Icon = theme.icon;
 
           return (
-            <div
-              key={theme.title}
-              className="
-  bg-white
-  rounded-[12px]
-  shadow-sm
-  h-[128px]
-  flex
-  flex-col
-  items-center
-  justify-center
-  cursor-pointer
-  transition-all
-  duration-200
-  hover:shadow-md
-"
-            >
-              <div
-                className="
-                  w-[44px]
-                  h-[44px]
-                  rounded-[8px]
-                  bg-[#F1F1F1]
-                  flex
-                  items-center
-                  justify-center
-                  mb-3
-                "
-              >
-                <Icon
-                  size={22}
-                  strokeWidth={1.75}
-                  className="text-[#666666]"
-                />
-              </div>
+<div
+  key={theme.title}
+  className="
+    bg-white
+    border
+    border-[#EEECE6]
+    rounded-[12px]
+    h-[146px]
+    p-[14px]
+    flex
+    flex-col
+    items-center
+    justify-center
+    gap-[8px]
+    cursor-pointer
+    transition-all
+    duration-200
+    hover:border-[#E0DDD4]
+  "
+>
+<div
+  className="
+    w-[50px]
+    h-[50px]
+    rounded-[8px]
+    bg-[#E4E3FF]
+    flex
+    items-center
+    justify-center
+    mb-1
+    shrink-0
+  "
+>
+  <Icon
+    size={24}
+    strokeWidth={1.33}
+    className="text-[#6B6A65]"
+  />
+</div>
 
              <h3
   className="
@@ -123,7 +127,7 @@ export default function ExploreByTheme() {
     leading-[16px]
     text-[#9E9D97]
     text-center
-    mt-[6px]
+    mt-[-6px]
   "
 >
   {theme.count} items
