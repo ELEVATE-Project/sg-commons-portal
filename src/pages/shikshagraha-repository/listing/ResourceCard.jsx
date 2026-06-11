@@ -146,7 +146,7 @@ export default function ResourceCard({ resource }) {
       {/* Tags */}
       {resource?.tag_names?.length > 0 && (
         <div className="flex flex-wrap gap-[6px] mt-3">
-          {resource.tag_names.slice(0, 3).map((tag, index) => (
+          {resource.tag_names.slice(0, 2).map((tag, index) => (
             <span
               key={index}
               className="
@@ -164,7 +164,7 @@ export default function ResourceCard({ resource }) {
             </span>
           ))}
 
-          {resource?.tag_names?.length > 3 && (
+          {/* {resource?.tag_names?.length > 3 && (
             <span
               className="
                 px-[10px]
@@ -178,7 +178,7 @@ export default function ResourceCard({ resource }) {
             >
               +{resource.tag_names.length - 3}
             </span>
-          )}
+          )} */}
         </div>
       )}
 

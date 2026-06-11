@@ -55,7 +55,7 @@ const themes = [
 
 export default function ExploreByTheme() {
   return (
-    <section className="w-full mt-8 md:mt-10 px-4 md:px-12">
+    <section className="w-full mt-8 md:mt-10 px-4 md:px-12 mb-5">
       <h2 className="text-[20px] md:text-[22px] font-['Comfortaa'] font-semibold tracking-[1px] text-[#27272A] uppercase mb-5">
         Explore By Theme
       </h2>
@@ -74,6 +74,7 @@ export default function ExploreByTheme() {
     rounded-[12px]
     h-[146px]
     p-[14px]
+    pt-[10px]
     flex
     flex-col
     items-center

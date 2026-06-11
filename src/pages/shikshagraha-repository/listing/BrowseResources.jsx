@@ -222,7 +222,8 @@ const displayedResources = compact
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
   <div className="w-full mb-3 md:mb-0" data-browse-resources>
-    <h2 className="text-lg font-semibold text-[var(--listing-strong-text)] mb-1">
+      <h2 className="text-[20px] md:text-[22px] font-['Comfortaa'] font-semibold tracking-[1px] text-[#27272A] uppercase">
+
       {t(title) || t("repository.browseResources")}
     </h2>
 
@@ -236,36 +237,46 @@ const displayedResources = compact
   {compact ? (
     <div className="flex items-center gap-4 flex-nowrap">
       <Dropdown
-        options={sortOptions}
-        selectedValue={sortBy}
-        onSelect={(value) => {
-          setSortBy(value);
-        }}
-        renderButton={(selected) => (
-          <span className="whitespace-nowrap">
-            {t("repository.sortByLabel")}:{" "}
-            {selected?.label || t("common.select")}
-          </span>
-        )}
-      />
+  options={sortOptions}
+  selectedValue={sortBy}
+  onSelect={(value) => {
+    setSortBy(value);
+  }}
+  renderButton={(selected) => (
+    <span className="whitespace-nowrap font-['Inter'] font-bold text-[12px] leading-[18px] text-[#374151]">
+      {t("repository.sortByLabel")}:{" "}
+      {selected?.label || t("common.select")}
+    </span>
+  )}
+/>
 
       <button
   type="button"
   className="
-    inline-flex items-center gap-2
-    px-4 py-2
-    rounded-[10px]
-    bg-[var(--listing-secondary)]
-    text-white
-    text-sm
-    font-medium
+    flex items-center justify-center gap-1
+    w-[120px]
+    h-[36px]
+    px-1 py-2
+    rounded-[8px]
+    bg-[#5832AC]
     hover:opacity-90
     transition-all
-    whitespace-nowrap
   "
 >
-  Browse All
-  <ArrowRight className="w-4 h-4" />
+  <span
+    className="
+      font-medium
+      text-[13px]
+      leading-[20px]
+      text-white
+      flex
+      items-center
+    "
+  >
+    Browse all
+  </span>
+
+  <ArrowRight className="w-4 h-4 text-white" />
 </button>
     </div>
   ) : (
@@ -281,12 +292,16 @@ const displayedResources = compact
           onSelect={(value) => {
             setSortBy(value);
           }}
-          renderButton={(selected) => (
-            <span>
-              {t("repository.sortByLabel")}:{" "}
-              {selected?.label || t("common.select")}
-            </span>
-          )}
+ renderButton={(selected) => (
+  <span className="whitespace-nowrap font-['Inter'] text-[12px] leading-[18px]">
+    <span className="font-normal text-[#6B7280]">
+      {t("repository.sortByLabel")}:
+    </span>{" "}
+    <span className="font-bold text-[#374151]">
+      {selected?.label || t("common.select")}
+    </span>
+  </span>
+)}
           disabled={isSearchActive}
           tooltipText={`${t("sortDisabledTooltipText")}`}
         />
@@ -335,15 +350,9 @@ const displayedResources = compact
   )}
 </div>
 
-        <div className="relative overflow-hidden rounded-[32px] bg-[var(--listing-white)] pt-4">
+        <div className="relative overflow-hidden">
           <div
             className="absolute inset-0 z-0 pointer-events-none"
-            style={{
-              backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
-              backgroundPosition: `left 0 top 100px, right 0 top 300px, left 0 bottom 200px, right 0 bottom 50px`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "160px, 160px, 200px, 200px",
-            }}
           />
           <div className="relative z-10">
             <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">
