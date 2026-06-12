@@ -122,17 +122,20 @@ const Dropdown = ({
         >
           <div className="py-1">
             {options.map((option) => {
-              if (!option || !option.value) return null;
-              return (
-                <div key={option.value} className="w-full">
-                  {renderItem({
-                    option,
-                    isSelected: String(selectedValue) === String(option.value),
-                    onSelect: () => handleSelect(option.value),
-                  })}
-                </div>
-              );
-            })}
+  if (!option || !option.value) return null;
+
+  const RenderItem = renderItem;
+
+  return (
+    <div key={option.value} className="w-full">
+      <RenderItem
+        option={option}
+        isSelected={String(selectedValue) === String(option.value)}
+        onSelect={() => handleSelect(option.value)}
+      />
+    </div>
+  );
+})}
           </div>
         </div>
       )}
@@ -235,7 +238,7 @@ const displayedResources = compact
   </div>
 
   {compact ? (
-    <div className="flex items-center gap-4 flex-nowrap">
+    <div className="flex items-center justify-between w-full md:w-auto gap-4">
       <Dropdown
   options={sortOptions}
   selectedValue={sortBy}
@@ -243,11 +246,15 @@ const displayedResources = compact
     setSortBy(value);
   }}
   renderButton={(selected) => (
-    <span className="whitespace-nowrap font-['Inter'] font-bold text-[12px] leading-[18px] text-[#374151]">
-      {t("repository.sortByLabel")}:{" "}
+  <span className="whitespace-nowrap font-['Inter'] text-[12px] leading-[18px] flex items-center">
+    <span className="font-normal text-[#374151]">
+      {t("repository.sortByLabel")}:  
+    </span>{" "}
+    <span className="ml-2 font-bold text-[#374151]">
       {selected?.label || t("common.select")}
     </span>
-  )}
+  </span>
+)}
 />
 
       <button
@@ -261,6 +268,7 @@ const displayedResources = compact
     bg-[#5832AC]
     hover:opacity-90
     transition-all
+    flex-shrink-0
   "
 >
   <span
@@ -269,8 +277,6 @@ const displayedResources = compact
       text-[13px]
       leading-[20px]
       text-white
-      flex
-      items-center
     "
   >
     Browse all
@@ -357,11 +363,12 @@ const displayedResources = compact
           <div className="relative z-10">
             <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">
               <div
-                className={`flex flex-col md:grid gap-6 w-full  ${viewMode === "grid"
-                    ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3 sm:grid-cols-1"
-                    : "grid-cols-1"
-                  }`}
-              >
+  className={`grid gap-6 w-full ${
+    viewMode === "grid"
+      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+      : "grid-cols-1"
+  }`}
+>
                {displayedResources.map((resource, index) => (
                   <React.Fragment key={`resource-${resource.id}-${index}`}>
                     <ResourceCard

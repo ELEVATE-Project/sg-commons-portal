@@ -22,7 +22,7 @@ export const getMediaFileTypeStyles = type => {
   switch (type) {
     case MEDIA_FILE_TYPE.PDF:
       return {
-        background: "bg-[#FF1744]",
+        background: "bg-[#F70C36]",
         icon: PdfIcon,
       }
 
@@ -102,7 +102,7 @@ const { bg: tagBg, text: tagText } = getTagStyles(
       `${pathParts ? "/" + pathParts : ""}` +
       `${id}`
 
-    window.open(finalUrl, "_blank")
+    window.location.href = finalUrl
   }
 
   return (
@@ -284,6 +284,7 @@ const { bg: tagBg, text: tagText } = getTagStyles(
                   underline
                   truncate
                   max-w-[120px]
+                  mr-3
                 "
               >
                 {resource.organization}
