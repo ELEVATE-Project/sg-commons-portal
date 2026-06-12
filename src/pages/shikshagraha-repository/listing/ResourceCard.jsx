@@ -1,8 +1,4 @@
-import React from "react"
 import {
-  FileSpreadsheet,
-  FileText,
-  FileType,
   File,
   Eye,
   Download,
@@ -11,6 +7,10 @@ import ROUTES from "../../../url"
 import env from "../../../utils/env"
 import { trackResourceView } from "api/endpoints/analytics"
 import { useTranslation } from "react-i18next"
+import PdfIcon from "../../../assets/icons/pdf.svg"
+import DocxIcon from "../../../assets/icons/docx.svg"
+import XlsxIcon from "../../../assets/icons/xlsx.svg"
+import GoogleDriveIcon from "../../../assets/icons/google_drive.svg"
 
 const MEDIA_FILE_TYPE = {
   PDF: "PDF",
@@ -23,19 +23,19 @@ export const getMediaFileTypeStyles = type => {
     case MEDIA_FILE_TYPE.PDF:
       return {
         background: "bg-[#FF1744]",
-        Icon: FileType,
+        icon: PdfIcon,
       }
 
     case MEDIA_FILE_TYPE.DOCX:
-  return {
-    background: "bg-[#2563EB]",
-    Icon: FileText,
-  }
+      return {
+        background: "bg-[#2563EB]",
+        icon: DocxIcon,
+      }
 
     case MEDIA_FILE_TYPE.XLSX:
       return {
         background: "bg-[#0DB563]",
-        Icon: FileSpreadsheet,
+        icon: XlsxIcon,
       }
 
     default:
@@ -77,7 +77,7 @@ export const getTagStyles = type => {
 export default function ResourceCard({ resource }) {
   const { t } = useTranslation()
 
-  const { background, Icon: FileIcon } = getMediaFileTypeStyles(
+  const { background,icon, Icon: FileIcon } = getMediaFileTypeStyles(
   resource?.media_type_display
 )
 
@@ -131,28 +131,35 @@ const { bg: tagBg, text: tagText } = getTagStyles(
       <div className="flex w-full gap-[12px] h-[80px]">
         {/* File Type Box */}
         <div
-          className={`
-            ${background}
-            w-[93px]
-            min-w-[93px]
-            h-[80px]
-            border
-            border-[#EEECE6]
-            rounded-[8px]
-            flex
-            flex-col
-            justify-center
-            items-center
-            text-white
-            flex-flow: nowrap; 
-          `}
-        >
-          <FileIcon className="w-6 h-6" />
+  className={`
+    ${background}
+    w-[93px]
+    min-w-[93px]
+    h-[80px]
+    border
+    border-[#EEECE6]
+    rounded-[8px]
+    flex
+    flex-col
+    justify-center
+    items-center
+    text-white
+  `}
+>
+  {icon ? (
+    <img
+      src={icon}
+      alt={resource?.media_type_display}
+      className="w-7 h-7"
+    />
+  ) : (
+    <FileIcon className="w-7 h-7" />
+  )}
 
-          <span className="mt-1 text-[11px] font-semibold uppercase">
-            {resource?.media_type_display || "FILE"}
-          </span>
-        </div>
+  <span className="mt-1 text-[11px] font-semibold uppercase">
+    {resource?.media_type_display || "FILE"}
+  </span>
+</div>
 
         {/* Title */}
         <div className="flex-1 min-w-0 flex items-center h-[74px] py-[10px]">
@@ -191,30 +198,30 @@ const { bg: tagBg, text: tagText } = getTagStyles(
         {resource?.tag_names?.length > 0 && (
   <div className="pb-[12px] border-b border-[#9E9D97]">
     <div className="flex items-center gap-[4px] overflow-hidden">
-      {resource.tag_names.slice(0, 2).map((tag, index) => (
-        <span
-          key={index}
-          className={`
-  ${tagBg}
-  ${tagText}
-  px-[10px]
-  py-[2px]
-  rounded-full
-  text-[14px]
-  leading-[20px]
-  font-['Source_Sans_3']
-  whitespace-nowrap
-  ${
-    index === 1
-      ? "min-w-0 max-w-[140px] truncate"
-      : "flex-shrink-0"
-  }
-`}
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
+  {resource.tag_names.slice(0, 2).map((tag, index) => (
+    <span
+      key={index}
+      className={`
+        ${tagBg}
+        ${tagText}
+        px-[10px]
+        py-[2px]
+        rounded-full
+        text-[14px]
+        leading-[20px]
+        font-['Source_Sans_3']
+        whitespace-nowrap
+        ${
+          index === 1
+            ? "max-w-full truncate"
+            : "flex-shrink-0"
+        }
+      `}
+    >
+      {tag}
+    </span>
+  ))}
+</div>
   </div>
 )}
 
@@ -282,18 +289,16 @@ const { bg: tagBg, text: tagText } = getTagStyles(
                 {resource.organization}
               </span>
 
-              {resource?.org_logo && (
-                <img
-                  src={resource.org_logo}
-                  alt={resource.organization}
-                  className="
-                    h-[20px]
-                    w-[20px]
-                    object-contain
-                    flex-shrink-0
-                  "
-                />
-              )}
+             <img
+  src={GoogleDriveIcon}
+  alt="Google Drive"
+  className="
+    h-[20px]
+    w-[20px]
+    object-contain
+    flex-shrink-0
+  "
+/>
             </button>
           )}
         </div>
