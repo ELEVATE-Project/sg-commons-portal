@@ -1,6 +1,6 @@
 // ResourceDetailPage.jsx
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Download, Heart, Share2, Star } from "lucide-react";
+import { ArrowLeft, Download, Heart, Share2, Star, Eye, ChevronDown } from "lucide-react";
 import left1 from "../../../assets/dandelion-left-1.png";
 import left2 from "../../../assets/dandelion-left-2.png";
 import right1 from "../../../assets/dandelion-right-1.png";
@@ -66,8 +66,7 @@ export default function ResourceDetailPage() {
         ref={containerRef}
         style={{...theme.vars, backgroundImage: "none"}}
       >
-        <section className="relative z-10 min-h-screen max-w-[1500px] mx-auto px-6">
-        <ToastContainer />
+<section className="relative z-10 min-h-screen max-w-[1280px] mx-auto px-8">        <ToastContainer />
         {isLoading && (
           <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-black bg-opacity-75 text-white h-screen">
             {t("common.loadingText")}
@@ -78,8 +77,9 @@ export default function ResourceDetailPage() {
           {/* <ResourceImages images={resourceData?.images} /> */}
           <ResourceMeta resource={resourceData} />
         </div>
-        <Tabs tab={tab} setTab={setTab} />
-        <TabContent tab={tab} resource={resourceData} />
+        {/* <Tabs tab={tab} setTab={setTab} />
+        <TabContent tab={tab} resource={resourceData} /> */}
+        <AccordionOverview overview={resourceData?.key_values} />
         </section>
       </div>
       <Footer />
@@ -90,11 +90,22 @@ export default function ResourceDetailPage() {
 // --- Components below --- //
 
 function BackButton() {
-  // Optionally handle navigation
+  const navigate = useNavigate();
+
   return (
-    <button className="mb-4" onClick={() => window.close()}>
-      <ArrowLeft size={28} />
-    </button>
+    <div className="flex items-center gap-2 text-sm text-[#6B7280] mb-6">
+      <button onClick={() => navigate(-1)}>
+        <ArrowLeft size={16} />
+      </button>
+
+      <span>Back</span>
+
+      <span>/</span>
+
+      <span className="text-[#9CA3AF]">
+        Design Thinking for School Leaders
+      </span>
+    </div>
   );
 }
 
@@ -123,66 +134,95 @@ export function ResourceImages({ images }) {
 function ResourceMeta({ resource }) {
   const { t } = useTranslation();
 
+  const fileType =
+    resource?.media_type_display?.toUpperCase() || "DOCX";
+
   return (
-    <div className="flex-1 flex flex-col gap-2">
-      <h1 className="text-2xl font-bold">{resource?.title}</h1>
-      {/* <div className="flex justify-between">
-        <div className="flex items-center gap-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              fill={i < Math.floor(resource?.rating) ? "#FFD700" : "none"}
-              stroke="#FFD700"
-              size={20}
-            />
-          ))}
-          <span className="font-medium">{resource?.rating}</span>
-          <span className="text-gray-500 text-sm">
-            ({resource?.reviews} Reviews)
-          </span>
-        </div>
-        <div className="flex items-center mt-1 gap-3 text-gray-600 text-sm">
-          <Download
-            size={16}
-            className="font-bold text-gray-700 stroke-2 stroke-slate-700 "
-          />{" "}
-          {resource?.downloads} Downloads
-        </div>
-      </div> */}
-      <div className="text-gray-500 mt-2 text-[1rem]">
-        {resource?.description}
-      </div>
-      <div className="flex gap-8 mt-2 items-center text-gray-600 text-sm">
-        <div>
-          <span>{t("repository.fileType")}</span>
-          <div className="font-bold mt-1">{resource?.media_type_display}</div>
-        </div>
-        <div>
-          <span>{t("repository.fileSize")}</span>
-          <div className="font-bold mt-1">{resource?.size || t("repository.notAvailable")}</div>
-        </div>
-        <div>
-          <span>{t("repository.dateAdded")}</span>
-          <div className="font-bold mt-1">
-            {new Date(resource?.created_at).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+    <div className="w-full">
+      <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6">
+        {/* Top Row */}
+        <div className="flex flex-col lg:flex-row justify-between gap-4">
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-[36px] font-semibold text-[#1F2937] leading-tight">
+                {resource?.title}
+              </h1>
+
+              <span className="bg-[#6D28D9] text-white text-[11px] px-2 py-1 rounded font-semibold">
+                {fileType}
+              </span>
+
+              <span className="border border-[#D1D5DB] rounded-md px-3 py-1 text-sm">
+                <span className="text-[#10B981] font-medium">
+                  Published on:
+                </span>{" "}
+                {new Date(resource?.created_at).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2 text-[#111827]">
+              <Eye size={22} />
+              <span className="text-[28px] font-medium">
+                {resource?.views || "3.1k"}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 text-[#111827]">
+              <Download size={22} />
+              <span className="text-[28px] font-medium">
+                {resource?.downloads || "1200"}
+              </span>
+            </div>
           </div>
         </div>
-        <div>
-          <span>{t("repository.lastUpdated")}</span>
-          <div className="font-bold mt-1">
-            {new Date(resource?.updated_at).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+
+        {/* Description */}
+        <p className="mt-5 text-[#6B7280] text-[18px] leading-8">
+          {resource?.description}
+        </p>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mt-5">
+         {resource?.tags?.map((tag, idx) => (
+  <span
+    key={tag.id || idx}
+    className="bg-[#F3F4F6] text-[#6B7280] text-sm px-3 py-1 rounded-full"
+  >
+    {tag?.name}
+  </span>
+))}
+        </div>
+
+        {/* Buttons */}
+        <div className="mt-6 flex justify-between items-center flex-wrap gap-4">
+          <div className="flex gap-3">
+            <button
+              onClick={() => window.open(resource?.s3_url)}
+              className="bg-[#A020F0] hover:bg-[#8B14D6] text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium"
+            >
+              <Download size={18} />
+              Download
+            </button>
+
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast("Link copied");
+              }}
+              className="border border-[#D1D5DB] px-6 py-3 rounded-lg flex items-center gap-2"
+            >
+              <Share2 size={18} />
+              Share
+            </button>
           </div>
+
+          <button className="border border-[#C084FC] text-[#7C3AED] px-6 py-3 rounded-lg">
+            View all resources ↗
+          </button>
         </div>
       </div>
-      <Actions downloadUrl={resource?.s3_url} resourceId={resource?.id} />
     </div>
   );
 }
@@ -251,6 +291,68 @@ function TabContent({ tab, resource }) {
   if (tab === "Related")
     return <RelatedResources related={resource?.related} />;
   return null;
+}
+
+function AccordionOverview({ overview }) {
+  const [openIndex, setOpenIndex] = useState(0);
+
+  const renderValue = (value) => {
+    if (Array.isArray(value)) {
+      return (
+        <ul className="list-disc pl-6 space-y-2">
+          {value.map((item, idx) => (
+            <li
+              key={idx}
+              dangerouslySetInnerHTML={{ __html: item }}
+            />
+          ))}
+        </ul>
+      );
+    }
+
+    return (
+      <div
+        dangerouslySetInnerHTML={{
+          __html: value,
+        }}
+      />
+    );
+  };
+
+  return (
+    <div className="mt-8 space-y-4">
+      {overview?.map(({ key, value }, index) => (
+        <div
+          key={index}
+          className="border border-[#E5E7EB] rounded-xl overflow-hidden bg-white"
+        >
+          <button
+            onClick={() =>
+              setOpenIndex(openIndex === index ? null : index)
+            }
+            className="w-full flex items-center justify-between px-6 py-5 text-left"
+          >
+            <span className="text-[#4338CA] text-lg font-medium">
+              {index + 1}. {key}
+            </span>
+
+            <ChevronDown
+              size={20}
+              className={`transition-transform ${
+                openIndex === index ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          {openIndex === index && (
+            <div className="px-6 pb-6 text-[#4B5563] leading-8">
+              {renderValue(value)}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function OverviewContent({ overview }) {
