@@ -377,6 +377,7 @@ const displayedResources = compact
                       key={resource.id}
                       resource={resource}
                       index={index}
+                       viewMode={viewMode}
                     />
                   </React.Fragment>
                 ))}

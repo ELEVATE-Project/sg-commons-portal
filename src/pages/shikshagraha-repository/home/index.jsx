@@ -8,6 +8,7 @@ import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
 import ExploreByTheme from "../listing/ExploreByTheme";
+import HeroSection from "../listing/HeroSection"
 
 export default function RepositoryPage() {
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();

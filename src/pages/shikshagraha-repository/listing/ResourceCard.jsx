@@ -74,7 +74,7 @@ export const getTagStyles = type => {
   }
 }
 
-export default function ResourceCard({ resource }) {
+export default function ResourceCard({ resource, viewMode = "grid" }) {
   const { t } = useTranslation()
 
   const { background,icon, Icon: FileIcon } = getMediaFileTypeStyles(
@@ -104,6 +104,155 @@ const finalUrl =
 
     window.location.href = finalUrl
   }
+
+  if (viewMode === "list") {
+  return (
+    <div
+      role="button"
+      onClick={handleCardClick}
+      className="
+        w-full
+        bg-white
+        border
+        border-[#E7E5E4]
+        rounded-[16px]
+        px-3
+        py-3
+        flex
+        items-center
+        gap-4
+        cursor-pointer
+        hover:shadow-sm
+        transition-all
+      "
+    >
+      {/* File Type */}
+      <div
+        className={`
+          ${background}
+          w-[96px]
+          min-w-[96px]
+          h-[68px]
+          rounded-[8px]
+          flex
+          flex-col
+          items-center
+          justify-center
+          text-white
+        `}
+      >
+        {icon ? (
+          <img
+            src={icon}
+            alt={resource?.media_type_display}
+            className="w-6 h-6"
+          />
+        ) : (
+          <FileIcon className="w-6 h-6" />
+        )}
+
+        <span className="mt-1 text-[11px] font-semibold uppercase">
+          {resource?.media_type_display}
+        </span>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        {/* Title */}
+        <h3
+          className="
+            text-[20px]
+            font-medium
+            text-[#2F2F2F]
+            truncate
+          "
+        >
+          {resource?.title || t("repository.notAvailable")}
+        </h3>
+
+        {/* Description */}
+        <p
+          className="
+            mt-1
+            text-[14px]
+            text-[#71717A]
+            line-clamp-1
+          "
+        >
+          {resource?.description || t("repository.notAvailable")}
+        </p>
+
+        {/* Tags */}
+        {resource.tag_names.slice(0, 4).map((tag, index) => (
+  <span
+    key={index}
+    className={`
+      ${tagBg}
+      ${tagText}
+      text-[12px]
+      px-3
+      py-1
+      rounded-full
+      whitespace-nowrap
+    `}
+  >
+    {tag}
+  </span>
+))}
+
+        {/* Footer */}
+        <div className="flex items-center gap-5 mt-3 text-[#8A8A8A]">
+          <div className="flex items-center gap-1">
+            <Eye size={14} />
+            <span className="text-[14px]">
+              {resource?.view_count ?? 0}k
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Download size={14} />
+            <span className="text-[14px]">
+              {resource?.download_count ?? 0}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Organization */}
+      {resource?.organization && (
+        <button
+          type="button"
+          className="flex items-center gap-3 ml-4 flex-shrink-0"
+          onClick={e => {
+            e.preventDefault()
+            e.stopPropagation()
+
+            if (resource?.organization_url) {
+              window.open(resource.organization_url, "_blank")
+            }
+          }}
+        >
+          <span
+            className="
+              text-[14px]
+              text-[#8A8A8A]
+              underline
+              whitespace-nowrap
+            "
+          >
+            {resource.organization}
+          </span>
+
+          <img
+            src={GoogleDriveIcon}
+            alt="Organization"
+            className="w-6 h-6 object-contain"
+          />
+        </button>
+      )}
+    </div>
+  )
+}
 
   return (
   <div

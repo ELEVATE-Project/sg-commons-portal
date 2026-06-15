@@ -218,7 +218,7 @@ function ResourceMeta({ resource }) {
             </button>
           </div>
 
-          <button onClick={() => navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST)} className="border border-[#C084FC] text-[#7C3AED] px-6 py-3 rounded-lg">
+          <button onClick={() => navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?org=${resource?.organization}`)} className="border border-[#C084FC] text-[#7C3AED] px-6 py-3 rounded-lg">
             View all resources ↗
           </button>
         </div>

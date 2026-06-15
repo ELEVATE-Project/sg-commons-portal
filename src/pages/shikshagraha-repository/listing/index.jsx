@@ -9,7 +9,7 @@ import { useRepositoryStore } from "../repository-hooks/useRepositoryStore.js";
 import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
-import ExploreByTheme from "./ExploreByTheme";
+import { useSearchParams } from "react-router-dom";
 
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
@@ -29,6 +29,9 @@ export default function RepositoryPage() {
   (state) => state.fetchMediaList
 );
   const itemsPerPage = pagination.limit;
+const [searchParams] = useSearchParams();
+
+const orgId = searchParams.get("org");
 
   useEffect(() => {
   fetchMediaList();
@@ -48,6 +51,9 @@ export default function RepositoryPage() {
     <div className="bg-[var(--listing-white)]  relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
       <div className="container max-w-[1500px] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
+        <div className="w-full">
+                    <Header isHeroSection={false} />
+                  </div>
            <div className="">
 
           <div className="w-full mt-4 md:mt-6 z-50">
@@ -58,9 +64,10 @@ export default function RepositoryPage() {
 
  <BrowseResources
                 resources={mediaList}
-  viewMode="grid"
+  viewMode={viewMode}
   compact={false}
   title="Browse Resources"
+  setViewMode={setViewMode}
               />
             )}
          
