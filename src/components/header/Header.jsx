@@ -33,59 +33,24 @@ export default function Header({ isHeroSection = true, isBackButton = false, onS
 
   return (
     <>
-      <header className={`flex flex-col !p-3 md:!p-[25px] md:pb-8 w-full bg-white rounded-[16px] ${!isMobile ? "shadow-[0px_0px_4px_rgba(0,0,0,0.2)]" : ""} ${isMobile && isBackButton ? "items-start" : "items-end"}`}>
+      <header className={`flex flex-col w-full bg-white  ${isMobile && isBackButton ? "items-start" : "items-end"}`}>
         {(isHeroSection || !isMobile) && <div className="w-full">
           <>
             <div data-animation="default" data-collapse="all" data-duration={400} data-easing="ease" data-easing2="ease" data-doc-height={1} role="banner" className="navbar-2 w-nav" style={{ zIndex: 40 }}>
-              <div className="header-container !py-0">
+              <div className="header-container">
                 <a href="https://shikshagraha.org/" className="brand w-nav-brand">
                   <img src="https://shikshagraha.org/wp-content/themes/twentytwentythree-child/images/Group-22x.png" loading="lazy" alt="" className="image-12" />
                 </a>
 
-                {<div className="w-nav-button" onClick={() => setMenuOpen(prev => !prev)}>
-                  <div style={menuOpen ? { backgroundColor: "#C8C8C8", color: "white" } : {}} className="w-icon-nav-menu flex items-center justify-center w-12 h-12" />
-                </div>}
-              </div>
-            </div>
-            <div className="section_full bhj break-words mb-0 mt-3 md:mt-4">
-              <div className="frame hb">
-                <div className="div-block-16 hidden md:block" />
-                <p className="paragraph asd break-words w-full">A people’s movement towards education equity</p>
+            
               </div>
             </div>
           </>
         </div>}
-        {isBackButton && (
-          <div className={`flex justify-between w-full ${isMobile && onSidebarToggle ? "gap-2" : ""}`}>
-            <button
-              className="bg-transparent w-fit p-0 border-0 cursor-pointer inline-flex items-center justify-center"
-              onClick={() => {
-                const currentRoute = window.location.pathname
-                if (!currentRoute.includes(ROUTES.MITRA_CHAT)) {
-                  clearMitraSessionStorage()
-                  navigate(ROUTES.MITRA_CHAT)
-                } else {
-                  navigate(`/`)
-                }
-              }}
-            >
-              <FiArrowLeft className="w-8 h-8 text-[#1E1E1E]" />
-            </button>
-            {isMobile && onSidebarToggle && (
-              <button onClick={onSidebarToggle} className="bg-transparent w-fit px-1" aria-label="Toggle sidebar">
-                {isSidebarOpen ? <HiX className="w-6 h-6 text-[#555555]" /> : <HiMenu className="w-6 h-6 text-[#555555]" />}
-              </button>
-            )}
-          </div>
-        )}
-        {/* {isHeroSection && (
-          <div className="mt-[-1rem] flex justify-start w-full">
-            <HeroSection />
-          </div>
-        )}{" "} */}
+        
       </header>
       {isHeroSection && (
-        <div className="mt-4 md:mt-6 relative left-1/2 -translate-x-1/2 w-[100vw] max-w-[100vw] overflow-hidden">
+        <div className="relative left-1/2 -translate-x-1/2 w-[100vw] max-w-[100vw] overflow-hidden">
           <HeroSection />
         </div>
       )}{" "}

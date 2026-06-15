@@ -5,7 +5,6 @@ import { IoMicOutline } from "react-icons/io5";
 import { FaRegStopCircle } from "react-icons/fa";
 import { TbSend2 } from "react-icons/tb";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
-import heroImg from "../../../assets/background-image.png";
 import { useSiteDataLocalStore } from "store";
 import { useChatStorage } from "hooks/useStorage";
 import Notification, { showNotification } from "../../../components/ToastMessage/TotastMessage";
@@ -13,6 +12,10 @@ import { handleS3Upload } from "../../../services/storage_service";
 import { ai4BharatASRApi } from "api/endpoints/ai";
 // import { formatTime, isSilentAudio } from "pages/ShikshalokamVoiceChat/voiceToText";
 import { bot_routes } from "configure";
+import left1 from "../../../assets/hero-section-image-1.svg";
+import left2 from "../../../assets/hero-section-image-2.svg";
+import right1 from "../../../assets/hero-section-image-3.svg";
+import right2 from "../../../assets/hero-section-image-4.svg";
 
 export default function HeroSection() {
   const { t } = useTranslation();
@@ -176,54 +179,144 @@ export default function HeroSection() {
     mediaRecorder?.stop();
   };
 
-  return (
+return (
+  <div
+    className="relative w-full overflow-hidden min-h-[78vh] md:min-h-[70vh] flex items-center justify-center"
+    style={{
+      background:
+        "linear-gradient(180deg, #5B2D90 0%, #8665B5 55%, #D9D0E8 100%)",
+    }}
+  >
     <div
-      className="relative w-full overflow-hidden mt-4 min-h-[50vh] sm:min-h-[55vh] md:min-h-[60vh] lg:min-h-[65vh] xl:min-h-[70vh]"
+      className="absolute inset-0 z-0 pointer-events-none md:hidden"
       style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url(${heroImg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center top",
+        backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
+        backgroundPosition:
+          "left -8px top 70px, right -8px top 110px, left -8px bottom 80px, right -8px bottom 60px",
         backgroundRepeat: "no-repeat",
+        backgroundSize: "72px, 72px, 96px, 96px",
       }}
-    >
-      <div className="absolute inset-0 flex items-center justify-center text-center">
-        <div className="flex w-full max-w-4xl flex-col items-center gap-4">
-        <h1 className="text-lg md:text-3xl text-white font-semibold">
-          {t("heroTitle")}
+    />
+
+    <div
+      className="absolute inset-0 z-0 pointer-events-none hidden md:block"
+      style={{
+        backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
+        backgroundPosition:
+          "left 50px top 110px, right 20px top 200px, left 30px bottom 180px, right 30px bottom 80px",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "120px, 120px, 160px, 160px",
+      }}
+    />
+
+    <div className="absolute top-20 left-20 z-0 w-32 h-32 rounded-full bg-white/10 blur-3xl" />
+    <div className="absolute bottom-20 right-20 z-0 w-40 h-40 rounded-full bg-white/10 blur-3xl" />
+    <div className="absolute top-40 right-40 z-0 w-24 h-24 rounded-full bg-white/10 blur-2xl" />
+
+    <div className="absolute inset-0 z-10 flex items-center justify-center text-center p-4 sm:px-6">
+      <div className="flex w-full max-w-7xl flex-col items-center gap-4 md:gap-5 -mt-10">
+
+        {/* Tags */}
+        <div className="flex gap-3 flex-wrap justify-center">
+          <span className="px-4 py-1 rounded-full border border-white/30 text-white text-sm font-light bg-gray-700/40">
+            Open-access
+          </span>
+
+          <span className="px-4 py-1 rounded-full border border-white/30 text-white text-sm font-light bg-gray-700/40">
+            CC BY-SA
+          </span>
+        </div>
+
+        {/* Title */}
+        <h1
+          className="
+            text-[42px]
+            sm:text-[52px]
+            md:text-[64px]
+            lg:text-[72px]
+            font-extralight
+            leading-[1.08]
+            tracking-[-0.03em]
+            text-white
+            md:whitespace-nowrap
+          "
+        >
+          Discover. Learn. Reuse. Build.
         </h1>
 
-        <p className="text-white text-sm md:text-lg">
-          {t("heroDescription")}
+        {/* Description */}
+        <p
+          className="
+            max-w-4xl
+            text-white/90
+            text-[16px]
+            md:text-[18px]
+            leading-relaxed
+            font-normal
+          "
+        >
+          A curated knowledge repository of solutions, resources and assets for
+          education leaders working to strengthen India's public schools.
         </p>
 
+        {/* Search Form */}
         <form
           onSubmit={handleSendMessage}
-          className="flex flex-row flex-nowrap items-center gap-2 bg-[var(--listing-surface)] rounded-2xl px-3 py-2 sm:px-4 sm:py-3 w-full max-w-2xl shadow-sm"
+          className="
+            flex
+            flex-row
+            flex-nowrap
+            items-center
+            gap-2
+            bg-white
+            rounded-2xl
+            px-5
+            py-4
+            w-full
+            max-w-[760px]
+            shadow-xl
+          "
         >
           {/* Search Icon */}
-          <Search className="w-5 h-5 text-[var(--listing-subdued-text)] flex-shrink-0" />
+          <Search className="w-6 h-6 text-purple-600 flex-shrink-0" />
 
           {/* Input */}
-            <input
-              value={search}
-              onChange={e => {
-                if (loadingList) return; // 👈 ADD THIS
-                handleOnInputText(e.target.value);
-              }}
-              placeholder={hasStartedRecording ? `Recording... ${seconds.toFixed(1)}s` : isConvertingVoiceToText ? "Converting voice to text..." : "Search with AI"}
-              className="flex-1 min-w-0 bg-transparent px-3 py-2 sm:px-4 sm:py-2 outline-none text-[var(--listing-muted-text)] placeholder-[var(--listing-subdued-text)]"
-            />
+          <input
+            value={search}
+            onChange={e => {
+              if (loadingList) return;
+              handleOnInputText(e.target.value);
+            }}
+            placeholder={
+              hasStartedRecording
+                ? `Recording... ${seconds.toFixed(1)}s`
+                : isConvertingVoiceToText
+                ? "Converting voice to text..."
+                : "AI Search for content across Commons"
+            }
+            className="
+              flex-1
+              min-w-0
+              bg-transparent
+              px-3
+              py-2
+              outline-none
+              text-gray-700
+              text-[18px]
+              placeholder-gray-500
+            "
+          />
 
           {/* MIC */}
           <button
             type="button"
             onClick={hasStartedRecording ? stopRecording : startRecording}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--listing-surface)] hover:bg-[var(--listing-surface-hover)] transition flex-shrink-0"
+            className="flex h-10 w-10 items-center justify-center rounded-xl transition flex-shrink-0"
           >
             {hasStartedRecording ? (
-              <FaRegStopCircle className="w-5 h-5 text-[var(--listing-danger)]" />
+              <FaRegStopCircle className="w-5 h-5 text-red-500" />
             ) : (
-              <IoMicOutline className="w-5 h-5 text-[var(--listing-icon-mid)]" />
+              <IoMicOutline className="w-5 h-5 text-gray-500" />
             )}
           </button>
 
@@ -233,15 +326,22 @@ export default function HeroSection() {
             disabled={disableSendButton}
             className={`flex items-center justify-center h-10 w-10 rounded-xl transition flex-shrink-0 ${
               disableSendButton
-                ? "bg-[var(--listing-disabled)]"
-                : "bg-[var(--listing-secondary)] hover:bg-[var(--listing-secondary-hover)]"
+                ? "bg-gray-300"
+                : "bg-purple-600 hover:bg-purple-700"
             }`}
           >
             <TbSend2 className="w-5 h-5 text-white" />
           </button>
         </form>
+
+        {/* Scroll */}
+        <div className="mt-8 text-white/80">
+          <p>Scroll down</p>
+          <div className="animate-bounce text-2xl">⌄</div>
         </div>
+
       </div>
     </div>
-  );
+  </div>
+);
 }

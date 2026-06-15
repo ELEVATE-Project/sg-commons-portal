@@ -28,8 +28,3 @@ body {
 .listing-pages {
   font-family: var(--tertiary-font-family);
 }
-
-.container {
-  padding-right: 0.75rem;
-  padding-left: 0.75rem;
-}
