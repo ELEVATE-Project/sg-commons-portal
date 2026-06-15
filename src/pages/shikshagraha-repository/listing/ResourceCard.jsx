@@ -93,14 +93,14 @@ const { bg: tagBg, text: tagText } = getTagStyles(
       ROUTES.SHIKSHAGRAHA_REPOSITORY || ""
     ).replace(/^\/|\/$/g, "")
 
-    const id = resource?.id ? `/${resource.id}` : ""
+        const id = resource?.id ? `/resources/${resource.id}` : ""
 
     const pathParts = [root, repo].filter(Boolean).join("/")
 
-    const finalUrl =
-      `${window.location.origin}` +
-      `${pathParts ? "/" + pathParts : ""}` +
-      `${id}`
+const finalUrl =
+  `${window.location.origin}` +
+  `${pathParts ? "/" + pathParts : ""}` +
+  `${id}`
 
     window.location.href = finalUrl
   }

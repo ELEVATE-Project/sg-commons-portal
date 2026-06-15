@@ -8,7 +8,8 @@ import left1 from "../../../assets/dandelion-left-1.png";
 import left2 from "../../../assets/dandelion-left-2.png";
 import right1 from "../../../assets/dandelion-right-1.png";
 import right2 from "../../../assets/dandelion-right-2.png";
-
+import { useNavigate } from "react-router-dom";
+import ROUTES from "../../../url";
 // Custom hook for dropdown functionality
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -178,7 +179,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const setSortBy = useRepositoryStore((state) => state.setSortBy);
   const searchInput = useRepositoryStore((state) => state.searchInput);
   const isSearchActive = searchInput && searchInput.trim().length > 0;
-
+  const navigate = useNavigate();
   const {t} = useTranslation();
   
   const sortOptions = [
@@ -259,6 +260,7 @@ const displayedResources = compact
 
       <button
   type="button"
+  onClick={() => navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST)}
   className="
     flex items-center justify-center gap-1
     w-[120px]

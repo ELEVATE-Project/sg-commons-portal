@@ -72,7 +72,7 @@ export default function ResourceDetailPage() {
             {t("common.loadingText")}
           </div>
         )}
-        <BackButton />
+        <BackButton title={resourceData?.title} />
         <div className="flex gap-8 mt-2">
           {/* <ResourceImages images={resourceData?.images} /> */}
           <ResourceMeta resource={resourceData} />
@@ -89,7 +89,7 @@ export default function ResourceDetailPage() {
 
 // --- Components below --- //
 
-function BackButton() {
+function BackButton({ title }) {
   const navigate = useNavigate();
 
   return (
@@ -103,7 +103,7 @@ function BackButton() {
       <span>/</span>
 
       <span className="text-[#9CA3AF]">
-        Design Thinking for School Leaders
+        {title}
       </span>
     </div>
   );
@@ -133,7 +133,7 @@ export function ResourceImages({ images }) {
 
 function ResourceMeta({ resource }) {
   const { t } = useTranslation();
-
+  const navigate = useNavigate();
   const fileType =
     resource?.media_type_display?.toUpperCase() || "DOCX";
 
@@ -165,14 +165,14 @@ function ResourceMeta({ resource }) {
             <div className="flex items-center gap-2 text-[#111827]">
               <Eye size={22} />
               <span className="text-[28px] font-medium">
-                {resource?.views || "3.1k"}
+                {resource?.views || "0"}
               </span>
             </div>
 
             <div className="flex items-center gap-2 text-[#111827]">
               <Download size={22} />
               <span className="text-[28px] font-medium">
-                {resource?.downloads || "1200"}
+                {resource?.downloads || "0"}
               </span>
             </div>
           </div>
@@ -218,7 +218,7 @@ function ResourceMeta({ resource }) {
             </button>
           </div>
 
-          <button className="border border-[#C084FC] text-[#7C3AED] px-6 py-3 rounded-lg">
+          <button onClick={() => navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST)} className="border border-[#C084FC] text-[#7C3AED] px-6 py-3 rounded-lg">
             View all resources ↗
           </button>
         </div>

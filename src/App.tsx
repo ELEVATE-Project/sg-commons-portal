@@ -6,6 +6,7 @@ import ResourceListingPage from "pages/shikshagraha-repository/listing"
 import ResourceDetailPage from "pages/shikshagraha-repository/details"
 import NotFound from "pages/shikshagraha-repository/not-found"
 import ROUTES from "./url"
+import ResourceHomePage from "pages/shikshagraha-repository/home"
 
 const queryClient = new QueryClient()
 
@@ -13,7 +14,8 @@ function App() {
   const elements = useRoutes([
     { path: ROUTES.MITRA_CHAT, element: <MainPage /> },
     { path: ROUTES.IMPROVEMENT_PLAN, element: <ImprovementPlan /> },
-    { path: ROUTES.SHIKSHAGRAHA_REPOSITORY, element: <ResourceListingPage /> },
+    { path: ROUTES.SHIKSHAGRAHA_REPOSITORY, element: <ResourceHomePage /> },
+    { path: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, element: <ResourceListingPage /> },
     { path: ROUTES.SHIKSHAGRAHA_REPOSITORY_DETAIL, element: <ResourceDetailPage /> },
     { path: ROUTES.NOT_FOUND, element: <NotFound /> },
   ])
