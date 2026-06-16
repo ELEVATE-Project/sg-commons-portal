@@ -209,7 +209,12 @@
             "dateModifiedNewest": "Date Modified (Newest First)"
         },
         "items": "items",
-        "browseAll": "Browse all"
-
+        "browseAll": "Browse all",
+        "exploreByTheme": "Explore By Theme",
+        "file": "File",
+        "organization": "Organization",
+        "googleDrive": "Google Drive",
+        "publishedOn": "Published on",
+        "viewAllResources": "View all resources"
     }
 }

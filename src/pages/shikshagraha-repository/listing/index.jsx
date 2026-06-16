@@ -49,7 +49,7 @@ const orgId = searchParams.get("org");
   }, [mediaList, q, loadingList]);
 
   return (
-    <div className="bg-[var(--listing-white)]  relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
+    <div className="bg-white relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
       <div className="container max-w-[1500px] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
         <div className="w-full">

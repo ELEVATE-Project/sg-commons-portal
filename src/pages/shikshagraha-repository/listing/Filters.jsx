@@ -415,7 +415,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
       </div>
       <div className="relative w-full flex items-center justify-center">
         <textarea
-          className={`${isConvertingVoiceToText ? "min-h-[29px] sm:min-h-0" : ""} pl-3 max-w-[331px] w-full border-0 focus:outline-none focus:bg-transparent bg-transparent rounded-[12px] text-[14px] font-manrope text-[var(--listing-muted-text)] placeholder-[var(--listing-subdued-text)] resize-none !overflow-y-auto`}
+          className={`${isConvertingVoiceToText ? "min-h-[29px] sm:min-h-0" : ""} pl-3 max-w-[331px] w-full border-0 focus:outline-none focus:bg-transparent bg-transparent rounded-[12px] text-[14px] font-['Manrope'] text-[var(--listing-muted-text)] placeholder-[var(--listing-subdued-text)] resize-none !overflow-y-auto`}
           style={{
             backgroundColor: "transparent",
             height: "29px",

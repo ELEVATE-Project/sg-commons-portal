@@ -10,6 +10,7 @@ import {
   Heart,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const themes = [
   {
@@ -56,10 +57,12 @@ const themes = [
 
 export default function ExploreByTheme() {
   const navigate = useNavigate();
+    const { t } = useTranslation();
+  
   return (
     <section className="w-full mt-8 md:mt-10 px-4 md:px-12 mb-5">
-      <h2 className="text-[20px] md:text-[22px] font-['Comfortaa'] font-semibold tracking-[1px] text-[#27272A] uppercase mb-5">
-        Explore By Theme
+      <h2 className="text-[20px] md:text-[22px] font-['Comfortaa'] font-semibold tracking-[1px] text-repository-heading capitalize mb-5">
+        {t("repository.exploreByTheme")}
       </h2>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -75,7 +78,7 @@ export default function ExploreByTheme() {
   className="
     bg-white
     border
-    border-[#EEECE6]
+    border-repository-border
     rounded-[12px]
     h-[146px]
     p-[14px]
@@ -88,7 +91,7 @@ export default function ExploreByTheme() {
     cursor-pointer
     transition-all
     duration-200
-    hover:border-[#E0DDD4]
+    hover:border-repository-borderHover
   "
 >
 <div
@@ -96,7 +99,7 @@ export default function ExploreByTheme() {
     w-[50px]
     h-[50px]
     rounded-[8px]
-    bg-[#E4E3FF]
+    bg-repository-iconBg
     flex
     items-center
     justify-center
@@ -107,7 +110,7 @@ export default function ExploreByTheme() {
   <Icon
     size={24}
     strokeWidth={1.33}
-    className="text-[#6B6A65]"
+    className="text-repository-iconColor"
   />
 </div>
 
@@ -117,7 +120,7 @@ export default function ExploreByTheme() {
     text-[16px]
     font-bold
     leading-[15px]
-    text-[#111110]
+    text-repository-title
     text-center
     w-full
     px-3
@@ -131,7 +134,7 @@ export default function ExploreByTheme() {
     text-[14px]
     font-medium
     leading-[16px]
-    text-[#9E9D97]
+    text-repository-subtitle
     text-center
     mt-[-6px]
   "

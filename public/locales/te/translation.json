@@ -17,7 +17,10 @@
         "previous": "మునుపటి",
         "select": "ఎంచుకోండి",
         "selectAll": "అన్నీ ఎంచుకోండి",
-        "deselectAll": "అన్నీ తీసివేయండి"
+        "deselectAll": "అన్నీ తీసివేయండి",
+        "back": "వెనుక",
+        "download": "డౌన్‌లోడ్",
+        "share": "పంచుకోండి"
     },
     "search_placeholder": "AI తో శోధించండి",
     "sortDisabledTooltipText": "AI శోధన ఫలితాలను సంబంధితత ఆధారంగా స్వయంచాలకంగా క్రమబద్ధం చేస్తుంది. మాన్యువల్ సార్టింగ్ నిలిపివేయబడింది.",
@@ -60,6 +63,12 @@
             "dateModifiedNewest": "మార్చిన తేదీ (కొత్తది ముందు)"
         },
         "items": "అంశాలు",
-        "browseAll": "అన్నీ పరిశీలించండి"
+        "browseAll": "అన్నీ పరిశీలించండి",
+        "exploreByTheme": "అంశాల వారీగా అన్వేషించండి",
+        "file": "ఫైల్",
+        "organization": "సంస్థ",
+        "googleDrive": "గూగుల్ డ్రైవ్",
+        "publishedOn": "ప్రచురించబడిన తేదీ",
+        "viewAllResources": "అన్ని వనరులను వీక్షించండి"
     }
 }

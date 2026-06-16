@@ -4,10 +4,6 @@ import ResourceCard from "./ResourceCard";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
 import MitraAiAssistantAside from "./MitraAiAssistantAside.jsx";
 import { useTranslation } from "react-i18next";
-import left1 from "../../../assets/dandelion-left-1.png";
-import left2 from "../../../assets/dandelion-left-2.png";
-import right1 from "../../../assets/dandelion-right-1.png";
-import right2 from "../../../assets/dandelion-right-2.png";
 import { useNavigate } from "react-router-dom";
 import ROUTES from "../../../url";
 // Custom hook for dropdown functionality
@@ -226,7 +222,7 @@ const displayedResources = compact
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
   <div className="w-full mb-3 md:mb-0" data-browse-resources>
-      <h2 className="text-[20px] md:text-[22px] font-['Comfortaa'] font-semibold tracking-[1px] text-[#27272A] uppercase">
+      <h2 className="text-[20px] md:text-[22px] font-['Comfortaa'] font-semibold tracking-[1px] text-repository-heading capitalize">
 
       {t(title ?? "repository.browseResources")}
     </h2>
@@ -238,7 +234,7 @@ const displayedResources = compact
     font-medium
     text-[14px]
     leading-[21px]
-    text-[#4B5563]
+    text-repository-body
   "
 >
   {t("repository.browseResourcesDescription")}
@@ -256,10 +252,10 @@ const displayedResources = compact
   }}
   renderButton={(selected) => (
   <span className="whitespace-nowrap font-['Inter'] text-[12px] leading-[18px] flex items-center">
-    <span className="font-normal text-[#374151]">
+    <span className="font-normal text-repository-textPrimary">
       {t("repository.sortByLabel")}:  
     </span>{" "}
-    <span className="ml-2 font-bold text-[#374151]">
+    <span className="ml-2 font-bold text-repository-textPrimary">
       {selected?.label || t("common.select")}
     </span>
   </span>
@@ -275,7 +271,7 @@ const displayedResources = compact
     h-[36px]
     px-1 py-2
     rounded-[8px]
-    bg-[#5832AC]
+    bg-repository-primary
     hover:opacity-90
     transition-all
     flex-shrink-0
@@ -299,10 +295,10 @@ const displayedResources = compact
     <div className="flex flex-col md:flex-row items-center gap-6 w-full">
       <div className="flex items-center justify-between lg:justify-end w-full lg:gap-6">
         <div className="whitespace-nowrap font-['Inter'] text-[12px] leading-[18px]">
-  <span className="font-bold text-[#374151]">
+  <span className="font-bold text-repository-textPrimary">
     {mediaCount}
   </span>{" "}
-  <span className="font-normal text-[#6B7280]">
+  <span className="font-normal text-repository-textSecondary">
     {t("repository.resultsCount_other")}
   </span>
 </div>
@@ -315,10 +311,10 @@ const displayedResources = compact
           }}
  renderButton={(selected) => (
   <span className="whitespace-nowrap font-['Inter'] text-[12px] leading-[18px]">
-    <span className="font-normal text-[#6B7280]">
+    <span className="font-normal text-repository-textSecondary">
       {t("repository.sortByLabel")}:
     </span>{" "}
-    <span className="font-bold text-[#374151]">
+    <span className="font-bold text-repository-textPrimary">
       {selected?.label || t("common.select")}
     </span>
   </span>
@@ -341,8 +337,8 @@ const displayedResources = compact
     transition-all
     ${
       viewMode === "grid"
-        ? "bg-[#5832AC] border-[#5832AC] text-white"
-        : "bg-white border-[#D1D5DB] text-[#9CA3AF]"
+        ? "bg-repository-primary border-repository-primary text-white"
+        : "bg-white border-repository-controlBorder text-repository-controlIcon"
     }
   `}
 >
@@ -362,8 +358,8 @@ const displayedResources = compact
     transition-all
     ${
       viewMode === "list"
-        ? "bg-[#5832AC] border-[#5832AC] text-white"
-        : "bg-white border-[#D1D5DB] text-[#9CA3AF]"
+        ? "bg-repository-primary border-repository-primary text-white"
+        : "bg-white border-repository-controlBorder text-repository-controlIcon"
     }
   `}
 >
@@ -383,7 +379,7 @@ const displayedResources = compact
     [&>div>button]:w-[88px]
     [&>div>button]:h-[29.85px]
     [&>div>button]:border
-    [&>div>button]:border-[#D1D5DB]
+    [&>div>button]:border-repository-controlBorder
     [&>div>button]:rounded-[8.779px]
     [&>div>button]:bg-white
     [&>div>button]:px-3
@@ -397,7 +393,7 @@ const displayedResources = compact
     font-normal
     text-[12.2911px]
     leading-[18px]
-    text-[#374151]
+    text-repository-textPrimary
     flex
     items-center
   "
@@ -437,7 +433,7 @@ const displayedResources = compact
               </div>
             </div>
           </div>
-          <div className="hidden lg:block w-[20%] self-stretch bg-white p-4 rounded-xl z-[9999]">
+          <div className="hidden lg:block w-[20%] self-stretch p-4 rounded-xl z-[9999]">
             <MitraAiAssistantAside />
           </div>
         </div>

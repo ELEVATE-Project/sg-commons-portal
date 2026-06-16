@@ -22,25 +22,25 @@ export const getMediaFileTypeStyles = type => {
   switch (type) {
     case MEDIA_FILE_TYPE.PDF:
       return {
-        background: "bg-[#F70C36]",
+        background: "bg-repository-pdfBg",
         icon: PdfIcon,
       }
 
     case MEDIA_FILE_TYPE.DOCX:
       return {
-        background: "bg-[#2563EB]",
+        background: "bg-repository-docxBg",
         icon: DocxIcon,
       }
 
     case MEDIA_FILE_TYPE.XLSX:
       return {
-        background: "bg-[#0DB563]",
+        background: "bg-repository-xlsxBg",
         icon: XlsxIcon,
       }
 
     default:
       return {
-        background: "bg-[#6B7280]",
+        background: "bg-repository-defaultFileBg",
         Icon: File,
       }
   }
@@ -50,26 +50,26 @@ export const getTagStyles = type => {
   switch (type) {
     case MEDIA_FILE_TYPE.PDF:
       return {
-        bg: "bg-[#F9B4B4]",
-        text: "text-[#A70707]",
+        bg: "bg-repository-pdfTagBg",
+text: "text-repository-pdfTagText",
       }
 
     case MEDIA_FILE_TYPE.DOCX:
       return {
-        bg: "bg-[#E4E3FE]",
-        text: "text-[#2563EB]",
+        bg: "bg-repository-docxTagBg",
+text: "text-repository-docxTagText",
       }
 
     case MEDIA_FILE_TYPE.XLSX:
       return {
-        bg: "bg-[#B4EBC6]",
-        text: "text-[#028A4F]",
+        bg: "bg-repository-xlsxTagBg",
+text: "text-repository-xlsxTagText",
       }
 
     default:
       return {
-        bg: "bg-[#E5E7EB]",
-        text: "text-[#6B7280]",
+        bg: "bg-repository-defaultTagBg",
+        text: "text-repository-textSecondary",
       }
   }
 }
@@ -110,7 +110,7 @@ const handleCardKeyDown = (e) => {
         w-full
         bg-white
         border
-        border-[#E7E5E4]
+        border-repository-cardBorder
         rounded-[16px]
         px-3
         py-3
@@ -159,7 +159,7 @@ const handleCardKeyDown = (e) => {
           className="
             text-[20px]
             font-medium
-            text-[#2F2F2F]
+            text-repository-cardTitle
             truncate
           "
         >
@@ -171,7 +171,7 @@ const handleCardKeyDown = (e) => {
           className="
             mt-1
             text-[14px]
-            text-[#71717A]
+            text-repository-cardDescription
             line-clamp-1
           "
         >
@@ -197,7 +197,7 @@ const handleCardKeyDown = (e) => {
 ))}
 
         {/* Footer */}
-        <div className="flex items-center gap-5 mt-3 text-[#8A8A8A]">
+        <div className="flex items-center gap-5 mt-3 text-repository-cardMeta">
           <div className="flex items-center gap-1">
             <Eye size={14} />
             <span className="text-[14px]">
@@ -231,7 +231,7 @@ const handleCardKeyDown = (e) => {
           <span
             className="
               text-[14px]
-              text-[#8A8A8A]
+              text-repository-cardMeta
               underline
               whitespace-nowrap
             "
@@ -241,7 +241,7 @@ const handleCardKeyDown = (e) => {
 
           <img
             src={GoogleDriveIcon}
-            alt="Organization"
+            alt={t("repository.organization")}
             className="w-6 h-6 object-contain"
           />
         </button>
@@ -261,7 +261,7 @@ const handleCardKeyDown = (e) => {
       flex-col
       bg-white
       border
-      border-[#EEECE6]
+      border-repository-border
       rounded-[12px]
       py-[27px]
       px-[19px]
@@ -284,7 +284,7 @@ const handleCardKeyDown = (e) => {
     min-w-[93px]
     h-[80px]
     border
-    border-[#EEECE6]
+    border-repository-border
     rounded-[8px]
     flex
     flex-col
@@ -304,7 +304,7 @@ const handleCardKeyDown = (e) => {
   )}
 
   <span className="mt-1 text-[11px] font-semibold uppercase">
-    {resource?.media_type_display || "FILE"}
+    {resource?.media_type_display || t("repository.file")}
   </span>
 </div>
 
@@ -316,7 +316,7 @@ const handleCardKeyDown = (e) => {
               leading-[18px]
               font-['Comfortaa'] 
               font-semibold
-              text-[#111110]
+              text-repository-title
               line-clamp-3
             "
           >
@@ -332,7 +332,7 @@ const handleCardKeyDown = (e) => {
           w-full
           text-[14px]
           leading-[20px]
-          text-[#71717A]
+          text-repository-cardDescription
           line-clamp-3
         "
       >
@@ -343,7 +343,7 @@ const handleCardKeyDown = (e) => {
       <div className="w-full flex flex-col gap-[5px] mt-auto">
         {/* Tags */}
         {resource?.tag_names?.length > 0 && (
-  <div className="pb-[12px] border-b border-[#9E9D97]">
+  <div className="pb-[12px] border-b border-repository-subtitle">
     <div className="flex items-center gap-[4px] overflow-hidden">
   {resource.tag_names.slice(0, 2).map((tag, index) => (
     <span
@@ -374,7 +374,7 @@ const handleCardKeyDown = (e) => {
 
         {/* Footer */}
         <div className="flex items-center justify-between min-h-[29px]">
-          <div className="flex items-center gap-[17px] text-[#9E9D97]">
+          <div className="flex items-center gap-[17px] text-repository-subtitle">
             <div className="flex items-center gap-[6px]">
               <Eye size={16} strokeWidth={1.8} />
 
@@ -426,7 +426,7 @@ const handleCardKeyDown = (e) => {
               <span
                 className="
                   text-[18px]
-                  text-[#9E9D97]
+                  text-repository-subtitle
                   font-['Source_Sans_3']
                   underline
                   truncate
@@ -439,7 +439,7 @@ const handleCardKeyDown = (e) => {
 
              <img
   src={GoogleDriveIcon}
-  alt="Google Drive"
+  alt={t("repository.googleDrive")}
   className="
     h-[20px]
     w-[20px]

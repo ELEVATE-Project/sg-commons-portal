@@ -50,7 +50,7 @@ const Card = ({ className = "", label, title, description, sourceUrl, show = "",
       <div className="font-medium text-[14px] leading-none text-black break-words whitespace-normal max-w-full">
         {title}
       </div>
-      <div className="font-normal text-[12px] leading-none text-[#374151]">
+      <div className="font-normal text-[12px] leading-none text-repository-textPrimary">
         {description}
       </div>
       <div className="flex justify-end gap-2">

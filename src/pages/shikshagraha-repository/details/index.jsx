@@ -93,18 +93,19 @@ export default function ResourceDetailPage() {
 
 function BackButton({ title }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
-    <div className="flex items-center gap-2 text-sm text-[#6B7280] mb-6">
+    <div className="flex items-center gap-2 text-sm text-repository-textSecondary mb-6">
       <button onClick={() => navigate(-1)}>
         <ArrowLeft size={16} />
       </button>
 
-      <span>Back</span>
+      <span>{t("common.back")}</span>
 
       <span>/</span>
 
-      <span className="text-[#9CA3AF]">
+      <span className="text-repository-controlIcon">
         {title}
       </span>
     </div>
@@ -154,9 +155,9 @@ function ResourceMeta({ resource }) {
                 {fileType}
               </span>
 
-              <span className="border border-[#D1D5DB] rounded-md px-3 py-1 text-sm">
+              <span className="border border-repository-controlBorder rounded-md px-3 py-1 text-sm">
                 <span className="text-[#10B981] font-medium">
-                  Published on:
+                  {t("repository.publishedOn")}
                 </span>{" "}
                 {new Date(resource?.created_at).toLocaleDateString()}
               </span>
@@ -181,7 +182,7 @@ function ResourceMeta({ resource }) {
         </div>
 
         {/* Description */}
-        <p className="mt-5 text-[#6B7280] text-[18px] leading-8">
+        <p className="mt-5 text-repository-textSecondary text-[18px] leading-8">
           {resource?.description}
         </p>
 
@@ -190,7 +191,7 @@ function ResourceMeta({ resource }) {
          {resource?.tags?.map((tag, idx) => (
   <span
     key={tag.id || idx}
-    className="bg-[#F3F4F6] text-[#6B7280] text-sm px-3 py-1 rounded-full"
+    className="bg-[#F3F4F6] text-repository-textSecondary text-sm px-3 py-1 rounded-full"
   >
     {tag?.name}
   </span>
@@ -211,7 +212,7 @@ function ResourceMeta({ resource }) {
   className="bg-[#A020F0] hover:bg-[#8B14D6] text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium"
 >
               <Download size={18} />
-              Download
+              {t("common.download")}
             </button>
 
             <button
@@ -219,15 +220,15 @@ function ResourceMeta({ resource }) {
                 navigator.clipboard.writeText(window.location.href);
                 toast("Link copied");
               }}
-              className="border border-[#D1D5DB] px-6 py-3 rounded-lg flex items-center gap-2"
+              className="border border-repository-controlBorder px-6 py-3 rounded-lg flex items-center gap-2"
             >
               <Share2 size={18} />
-              Share
+              {t("common.share")}
             </button>
           </div>
 
           <button onClick={() => navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?org=${resource?.organization}`)} className="border border-[#C084FC] text-[#7C3AED] px-6 py-3 rounded-lg">
-            View all resources ↗
+            {t("repository.viewAllResources")} ↗
           </button>
         </div>
       </div>
@@ -360,7 +361,7 @@ function AccordionOverview({ overview }) {
           </button>
 
           {openIndex === index && (
-            <div className="px-6 pb-6 text-[#4B5563] leading-8">
+            <div className="px-6 pb-6 text-repository-body leading-8">
               {renderValue(value)}
             </div>
           )}
