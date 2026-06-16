@@ -367,9 +367,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
     fetchMasterList()
     const searched_param = new URLSearchParams(window.location.search)?.get("q")
     setSearchInput(searched_param ?? "")
-    if (searched_param) {
     setGlobalSearch(searched_param ?? "")
-    }
     return () => {
       setIsMaxLengthReached(false)
     }

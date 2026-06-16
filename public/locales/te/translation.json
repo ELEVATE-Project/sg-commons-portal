@@ -59,6 +59,7 @@
             "dateModifiedOldest": "మార్చిన తేదీ (పాతది ముందు)",
             "dateModifiedNewest": "మార్చిన తేదీ (కొత్తది ముందు)"
         },
-        "items": "అంశాలు"
+        "items": "అంశాలు",
+        "browseAll": "అన్నీ పరిశీలించండి"
     }
 }

@@ -14,6 +14,8 @@ import ROUTES from "../../../url";
 import { trackResourceDownload } from "api/endpoints/analytics";
 import { theme } from "../../../theme";
 import { useTranslation } from "react-i18next";
+import { openSafeUrl } from "../../../utils/urlUtils";
+import { sanitizeHtml } from "../../../utils/htmlUtils";
 
 export default function ResourceDetailPage() {
   const { t } = useTranslation();
@@ -199,9 +201,15 @@ function ResourceMeta({ resource }) {
         <div className="mt-6 flex justify-between items-center flex-wrap gap-4">
           <div className="flex gap-3">
             <button
-              onClick={() => window.open(resource?.s3_url)}
-              className="bg-[#A020F0] hover:bg-[#8B14D6] text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium"
-            >
+  onClick={() => {
+    const success = openSafeUrl(resource?.s3_url);
+
+    if (!success) {
+      toast.error("Invalid download URL");
+    }
+  }}
+  className="bg-[#A020F0] hover:bg-[#8B14D6] text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium"
+>
               <Download size={18} />
               Download
             </button>
@@ -231,9 +239,14 @@ function Actions({ downloadUrl, resourceId }) {
   const { t } = useTranslation();
 
   const handleDownload = () => {
-    trackResourceDownload(resourceId)
-    window.open(downloadUrl, "_blank")
+  trackResourceDownload(resourceId);
+
+  const success = openSafeUrl(downloadUrl);
+
+  if (!success) {
+    toast.error("Invalid download URL");
   }
+};
 
   return (
     <div className="flex gap-2 mt-4">
@@ -303,7 +316,9 @@ function AccordionOverview({ overview }) {
           {value.map((item, idx) => (
             <li
               key={idx}
-              dangerouslySetInnerHTML={{ __html: item }}
+             dangerouslySetInnerHTML={{
+    __html: sanitizeHtml(item),
+  }}
             />
           ))}
         </ul>
@@ -313,8 +328,8 @@ function AccordionOverview({ overview }) {
     return (
       <div
         dangerouslySetInnerHTML={{
-          __html: value,
-        }}
+    __html: sanitizeHtml(value),
+  }}
       />
     );
   };
@@ -364,7 +379,9 @@ function OverviewContent({ overview }) {
             <li
               className="text-gray-600  leading-relaxed mt-2 mb-2 font-sans"
               key={index}
-              dangerouslySetInnerHTML={{ __html: item }}
+             dangerouslySetInnerHTML={{
+    __html: sanitizeHtml(item),
+  }}
             />
           ))}
         </ul>
@@ -378,7 +395,9 @@ function OverviewContent({ overview }) {
             <div
               className="d-block"
               key={index}
-              dangerouslySetInnerHTML={{ __html: item }}
+             dangerouslySetInnerHTML={{
+    __html: sanitizeHtml(item),
+  }}
             />
           ))}
         </div>

@@ -3,14 +3,14 @@ import {
   Eye,
   Download,
 } from "lucide-react"
-import ROUTES from "../../../url"
-import env from "../../../utils/env"
 import { trackResourceView } from "api/endpoints/analytics"
 import { useTranslation } from "react-i18next"
 import PdfIcon from "../../../assets/icons/pdf.svg"
 import DocxIcon from "../../../assets/icons/docx.svg"
 import XlsxIcon from "../../../assets/icons/xlsx.svg"
 import GoogleDriveIcon from "../../../assets/icons/google_drive.svg"
+import { useNavigate } from "react-router-dom"
+import { openSafeUrl } from "../../../utils/urlUtils"
 
 const MEDIA_FILE_TYPE = {
   PDF: "PDF",
@@ -76,6 +76,7 @@ export const getTagStyles = type => {
 
 export default function ResourceCard({ resource, viewMode = "grid" }) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
 
   const { background,icon, Icon: FileIcon } = getMediaFileTypeStyles(
   resource?.media_type_display
@@ -85,31 +86,26 @@ const { bg: tagBg, text: tagText } = getTagStyles(
   resource?.media_type_display
 )
 
-  const handleCardClick = () => {
-    trackResourceView(resource?.id)
+const handleCardClick = () => {
+  trackResourceView(resource?.id);
 
-    const root = (env.ROOT_PATH() || "").replace(/^\/|\/$/g, "")
-    const repo = (
-      ROUTES.SHIKSHAGRAHA_REPOSITORY || ""
-    ).replace(/^\/|\/$/g, "")
+  navigate(`/resources/${resource?.id}`);
+};
 
-        const id = resource?.id ? `/resources/${resource.id}` : ""
-
-    const pathParts = [root, repo].filter(Boolean).join("/")
-
-const finalUrl =
-  `${window.location.origin}` +
-  `${pathParts ? "/" + pathParts : ""}` +
-  `${id}`
-
-    window.location.href = finalUrl
+const handleCardKeyDown = (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    handleCardClick();
   }
+};
 
   if (viewMode === "list") {
   return (
     <div
       role="button"
-      onClick={handleCardClick}
+      tabIndex={0}
+  onClick={handleCardClick}
+  onKeyDown={handleCardKeyDown}
       className="
         w-full
         bg-white
@@ -228,7 +224,7 @@ const finalUrl =
             e.stopPropagation()
 
             if (resource?.organization_url) {
-              window.open(resource.organization_url, "_blank")
+              openSafeUrl(resource.organization_url)
             }
           }}
         >
@@ -257,7 +253,9 @@ const finalUrl =
   return (
   <div
     role="button"
+    tabIndex={0}
     onClick={handleCardClick}
+  onKeyDown={handleCardKeyDown}
     className="
       flex
       flex-col
@@ -421,7 +419,7 @@ const finalUrl =
                 e.stopPropagation()
 
                 if (resource?.organization_url) {
-                  window.open(resource.organization_url, "_blank")
+                  openSafeUrl(resource.organization_url)
                 }
               }}
             >

@@ -90,7 +90,7 @@ const Dropdown = ({
       <div>
         <button
           type="button"
-          className={`min-w-[90px] inline-flex items-center gap-1 text-sm focus:outline-none ${
+          className={`min-w-[100px] inline-flex items-center gap-1 text-sm focus:outline-none ${
             disabled
               ? "text-[var(--listing-disabled-text)] cursor-not-allowed"
               : "text-[var(--listing-strong-text)] hover:text-[var(--listing-muted-text)]"
@@ -123,7 +123,7 @@ const Dropdown = ({
         >
           <div className="py-1">
             {options.map((option) => {
-  if (!option || !option.value) return null;
+  if (!option || option.value == null) return null;
 
   const RenderItem = renderItem;
 
@@ -228,7 +228,7 @@ const displayedResources = compact
   <div className="w-full mb-3 md:mb-0" data-browse-resources>
       <h2 className="text-[20px] md:text-[22px] font-['Comfortaa'] font-semibold tracking-[1px] text-[#27272A] uppercase">
 
-      {t(title) || t("repository.browseResources")}
+      {t(title ?? "repository.browseResources")}
     </h2>
 
     {!compact && (
@@ -289,7 +289,7 @@ const displayedResources = compact
       text-white
     "
   >
-    Browse all
+    {t("repository.browseAll")}
   </span>
 
   <ArrowRight className="w-4 h-4 text-white" />

@@ -67,7 +67,7 @@ const orgId = searchParams.get("org");
                 resources={mediaList}
   viewMode={viewMode}
   compact={false}
-  title="Browse Resources"
+  title="repository.browseResources"
   setViewMode={setViewMode}
               />
             )}

@@ -208,7 +208,8 @@
             "dateModifiedOldest": "Date Modified (Oldest First)",
             "dateModifiedNewest": "Date Modified (Newest First)"
         },
-        "items": "items"
+        "items": "items",
+        "browseAll": "Browse all"
 
     }
 }

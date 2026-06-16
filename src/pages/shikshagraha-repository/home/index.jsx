@@ -56,7 +56,7 @@ export default function RepositoryPage() {
                 resources={mediaList}
   viewMode="grid"
   compact={true}
-  title="Library"
+  title="repository.library"
               />
             )}
          
