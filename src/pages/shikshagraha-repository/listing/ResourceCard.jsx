@@ -179,22 +179,26 @@ const handleCardKeyDown = (e) => {
         </p>
 
         {/* Tags */}
-        {resource.tag_names.slice(0, 4).map((tag, index) => (
-  <span
-    key={index}
-    className={`
-      ${tagBg}
-      ${tagText}
-      text-[12px]
-      px-3
-      py-1
-      rounded-full
-      whitespace-nowrap
-    `}
-  >
-    {tag}
-  </span>
-))}
+{resource?.tag_names?.length > 0 && (
+  <div className="flex flex-wrap gap-2 mt-2">
+    {resource.tag_names.slice(0, 4).map((tag, index) => (
+      <span
+        key={index}
+        className={`
+          ${tagBg}
+          ${tagText}
+          text-[12px]
+          px-3
+          py-1
+          rounded-full
+          whitespace-nowrap
+        `}
+      >
+        {tag}
+      </span>
+    ))}
+  </div>
+)}
 
         {/* Footer */}
         <div className="flex items-center gap-5 mt-3 text-repository-cardMeta">

@@ -6,7 +6,13 @@ export const openSafeUrl = (url) => {
       throw new Error("Invalid protocol");
     }
 
-    window.open(parsedUrl.href, "_blank", "noopener,noreferrer");
+    const newWindow = window.open(parsedUrl.href, "_blank", "noopener,noreferrer");
+
+    // window.open returns null if blocked
+    if (!newWindow) {
+      console.warn("Popup blocked or failed to open URL:", parsedUrl.href);
+      return false;
+    }
 
     return true;
   } catch (error) {

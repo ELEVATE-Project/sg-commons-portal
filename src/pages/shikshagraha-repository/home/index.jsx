@@ -8,7 +8,6 @@ import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
 import ExploreByTheme from "../listing/ExploreByTheme";
-import HeroSection from "../listing/HeroSection"
 
 export default function RepositoryPage() {
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
@@ -18,12 +17,9 @@ export default function RepositoryPage() {
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
   const q = useRepositoryStore((state) => state.q);
-
-  const pagination = useRepositoryStore((state) => state.pagination);
   const fetchMediaList = useRepositoryStore(
   (state) => state.fetchMediaList
 );
-  const itemsPerPage = pagination.limit;
 
   useEffect(() => {
   fetchMediaList();

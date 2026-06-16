@@ -21,17 +21,19 @@ const PageHeader = ({
     <div className="w-full border-b border-[#EFEFEF] px-6 py-5">
       <div className="flex items-center gap-4">
         {showHome && (
-          <>
-            <button
-              onClick={handleHomeClick}
-              className="text-[#8A0FAF] hover:opacity-80 transition"
-            >
-              <Home size={20} />
-            </button>
+  <>
+    <button
+      onClick={handleHomeClick}
+      aria-label="Go to home page"
+      title="Home"
+      className="text-[#8A0FAF] hover:opacity-80 transition"
+    >
+      <Home size={20} aria-hidden="true" />
+    </button>
 
-            <div className="h-5 w-0.5 bg-[#000000]" />
-          </>
-        )}
+    <div className="h-5 w-0.5 bg-[#000000]" />
+  </>
+)}
 
         <h1 className="text-[20px] font-semibold text-[#2E2E2E]">
           {title}
