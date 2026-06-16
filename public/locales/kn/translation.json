@@ -33,7 +33,7 @@
         "browseResourcesDescription": "ನಿಮ್ಮ ಯೋಜನೆಗೆ ಉನ್ನತ ಗುಣಮಟ್ಟದ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಅನ್ವೇಷಿಸಿ",
         "library": "ಗ್ರಂಥಾಲಯ",
         "resultsCount_one": "{{count}} ಫಲಿತಾಂಶ",
-        "resultsCount_other": "{{count}} ಫಲಿತಾಂಶಗಳು",
+        "resultsCount_other": "ಫಲಿತಾಂಶಗಳು",
         "sortByLabel": "ವಿಂಗಡಿಸಿ",
         "perPage": "ಪ್ರತಿ ಪುಟಕ್ಕೆ",
         "selectPrefix": "ಆಯ್ಕೆಮಾಡಿ",
@@ -58,6 +58,7 @@
             "dateAddedNewest": "ಸೇರಿಸಿದ ದಿನಾಂಕ (ಹೊಸದನ್ನು ಮೊದಲು)",
             "dateModifiedOldest": "ತಿದ್ದುಪಡಿ ದಿನಾಂಕ (ಹಳೆಯದು ಮೊದಲು)",
             "dateModifiedNewest": "ತಿದ್ದುಪಡಿ ದಿನಾಂಕ (ಹೊಸದನ್ನು ಮೊದಲು)"
-        }
+        },
+        "items": "ವಸ್ತುಗಳು"
     }
 }

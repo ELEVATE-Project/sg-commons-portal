@@ -90,7 +90,7 @@ const Dropdown = ({
       <div>
         <button
           type="button"
-          className={`min-w-[120px] inline-flex items-center gap-1 text-sm focus:outline-none ${
+          className={`min-w-[90px] inline-flex items-center gap-1 text-sm focus:outline-none ${
             disabled
               ? "text-[var(--listing-disabled-text)] cursor-not-allowed"
               : "text-[var(--listing-strong-text)] hover:text-[var(--listing-muted-text)]"
@@ -232,9 +232,17 @@ const displayedResources = compact
     </h2>
 
     {!compact && (
-      <p className="text-sm text-[var(--listing-muted-text)]">
-        {t("repository.browseResourcesDescription")}
-      </p>
+      <p
+  className="
+    font-['Source_Sans_3']
+    font-medium
+    text-[14px]
+    leading-[21px]
+    text-[#4B5563]
+  "
+>
+  {t("repository.browseResourcesDescription")}
+</p>
     )}
   </div>
 
@@ -290,9 +298,14 @@ const displayedResources = compact
   ) : (
     <div className="flex flex-col md:flex-row items-center gap-6 w-full">
       <div className="flex items-center justify-between lg:justify-end w-full lg:gap-6">
-        <div className="text-sm text-[var(--listing-muted-text)] font-bold">
-          {t("repository.resultsCount", { count: mediaCount })}
-        </div>
+        <div className="whitespace-nowrap font-['Inter'] text-[12px] leading-[18px]">
+  <span className="font-bold text-[#374151]">
+    {mediaCount}
+  </span>{" "}
+  <span className="font-normal text-[#6B7280]">
+    {t("repository.resultsCount_other")}
+  </span>
+</div>
 
         <Dropdown
           options={sortOptions}
@@ -316,43 +329,83 @@ const displayedResources = compact
       </div>
 
       <div className="flex items-center justify-between flex-row-reverse lg:flex-row lg:justify-start lg:gap-6 w-full lg:w-auto">
-        <div className="flex items-center gap-1 border border-[var(--listing-border)] rounded">
+        <div className="flex items-center gap-1">
           <button
-            onClick={() => setViewMode("grid")}
-            className={`p-2 ${
-              viewMode === "grid"
-                ? "bg-[var(--listing-secondary)] text-white"
-                : "text-[var(--listing-muted-text)] hover:bg-[var(--listing-surface-soft)]"
-            }`}
-          >
-            <Grid className="w-4 h-4" />
-          </button>
+  onClick={() => setViewMode("grid")}
+  className={`
+    flex items-center justify-center
+    w-[28.09px]
+    h-[29.85px]
+    rounded-[7.023px]
+    border
+    transition-all
+    ${
+      viewMode === "grid"
+        ? "bg-[#5832AC] border-[#5832AC] text-white"
+        : "bg-white border-[#D1D5DB] text-[#9CA3AF]"
+    }
+  `}
+>
+  <Grid
+  className={`w-[14.05px] h-[14.05px]`}
+/>
+</button>
 
           <button
-            onClick={() => setViewMode("list")}
-            className={`p-2 ${
-              viewMode === "list"
-                ? "bg-[var(--listing-secondary)] text-white"
-                : "text-[var(--listing-muted-text)] hover:bg-[var(--listing-surface-soft)]"
-            }`}
-          >
-            <List className="w-4 h-4" />
-          </button>
+  onClick={() => setViewMode("list")}
+  className={`
+    flex items-center justify-center
+    w-[28.09px]
+    h-[29.85px]
+    rounded-[7.023px]
+    border
+    transition-all
+    ${
+      viewMode === "list"
+        ? "bg-[#5832AC] border-[#5832AC] text-white"
+        : "bg-white border-[#D1D5DB] text-[#9CA3AF]"
+    }
+  `}
+>
+  <List
+  className={`w-[14.05px] h-[14.05px]`}
+/>
+</button>
         </div>
 
-        <Dropdown
-          options={perPageOptions}
-          selectedValue={itemsPerPage}
-          onSelect={(value) => {
-            handleItemsPerPageChange(value);
-          }}
-          dropdownClassName="w-32"
-          renderButton={(selected) => (
-            <span>
-              {selected?.label || "6"} {t("repository.perPage")}
-            </span>
-          )}
-        />
+       <Dropdown
+  options={perPageOptions}
+  selectedValue={itemsPerPage}
+  onSelect={(value) => {
+    handleItemsPerPageChange(value);
+  }}
+  className="
+    [&>div>button]:w-[88px]
+    [&>div>button]:h-[29.85px]
+    [&>div>button]:border
+    [&>div>button]:border-[#D1D5DB]
+    [&>div>button]:rounded-[8.779px]
+    [&>div>button]:bg-white
+    [&>div>button]:px-3
+    [&>div>button]:justify-between
+  "
+  dropdownClassName="w-[88px]"
+  renderButton={(selected) => (
+    <span
+  className="
+    font-['Inter']
+    font-normal
+    text-[12.2911px]
+    leading-[18px]
+    text-[#374151]
+    flex
+    items-center
+  "
+>
+  {selected?.label || "6"} {t("repository.items")}
+</span>
+  )}
+/>
       </div>
     </div>
   )}

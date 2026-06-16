@@ -33,7 +33,7 @@
         "browseResourcesDescription": "अपने प्रोजेक्ट के लिए उच्च गुणवत्ता वाले संसाधन खोजें",
         "library": "लाइब्रेरी",
         "resultsCount_one": "{{count}} परिणाम",
-        "resultsCount_other": "{{count}} परिणाम",
+        "resultsCount_other": "परिणाम",
         "sortByLabel": "क्रमबद्ध करें",
         "perPage": "प्रति पृष्ठ",
         "selectPrefix": "चुनें",
@@ -58,6 +58,7 @@
             "dateAddedNewest": "जोड़े जाने की तिथि (नया पहले)",
             "dateModifiedOldest": "संशोधित तिथि (पुराना पहले)",
             "dateModifiedNewest": "संशोधित तिथि (नया पहले)"
-        }
+        },
+        "items": "सामान"
     }
 }

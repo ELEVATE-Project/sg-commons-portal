@@ -182,7 +182,7 @@
         "browseResourcesDescription": "Discover high quality resources for your project",
         "library": "Library",
         "resultsCount_one": "{{count}} result",
-        "resultsCount_other": "{{count}} results",
+        "resultsCount_other": "results",
         "sortByLabel": "Sort by",
         "perPage": "Per Page",
         "selectPrefix": "Select",
@@ -207,6 +207,8 @@
             "dateAddedNewest": "Date Added (Newest First)",
             "dateModifiedOldest": "Date Modified (Oldest First)",
             "dateModifiedNewest": "Date Modified (Newest First)"
-        }
+        },
+        "items": "items"
+
     }
 }

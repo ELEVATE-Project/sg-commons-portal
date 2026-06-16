@@ -33,7 +33,7 @@
         "browseResourcesDescription": "మీ ప్రాజెక్ట్ కోసం ఉన్నత నాణ్యత గల వనరులను కనుగొనండి",
         "library": "గ్రంథాలయం",
         "resultsCount_one": "{{count}} ఫలితం",
-        "resultsCount_other": "{{count}} ఫలితాలు",
+        "resultsCount_other": "ఫలితాలు",
         "sortByLabel": "క్రమబద్ధీకరణ",
         "perPage": "ప్రతి పేజీకి",
         "selectPrefix": "ఎంచుకోండి",
@@ -58,6 +58,7 @@
             "dateAddedNewest": "చేర్చిన తేదీ (కొత్తది ముందు)",
             "dateModifiedOldest": "మార్చిన తేదీ (పాతది ముందు)",
             "dateModifiedNewest": "మార్చిన తేదీ (కొత్తది ముందు)"
-        }
+        },
+        "items": "అంశాలు"
     }
 }

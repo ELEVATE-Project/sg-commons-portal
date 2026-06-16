@@ -10,6 +10,7 @@ import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
 import { useSearchParams } from "react-router-dom";
+import PageHeader from "../../../components/PageHeader";
 
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
@@ -52,13 +53,13 @@ const orgId = searchParams.get("org");
       <div className="container max-w-[1500px] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
         <div className="w-full">
-                    <Header isHeroSection={false} />
+                    <PageHeader />
                   </div>
            <div className="">
 
-          <div className="w-full mt-4 md:mt-6 z-50">
+          {/* <div className="w-full mt-4 md:mt-6 z-50">
             <Filters />
-          </div>
+          </div> */}
           <main className="w-full mx-auto">
             {!!mediaList?.length && (
 
