@@ -142,21 +142,21 @@ function ResourceMeta({ resource }) {
 
   return (
     <div className="w-full">
-      <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6">
+      <div className="bg-white border border-repository-divider rounded-2xl p-6">
         {/* Top Row */}
         <div className="flex flex-col lg:flex-row justify-between gap-4">
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-[2.2500rem] font-semibold text-[#1F2937] leading-tight">
+              <h1 className="text-[2.2500rem] font-semibold text-repository-detailTitle leading-tight">
                 {resource?.title}
               </h1>
 
-              <span className="bg-[#6D28D9] text-white text-[0.6875rem] px-2 py-1 rounded font-semibold">
+              <span className="bg-repository-fileTypeBadge text-white text-[0.6875rem] px-2 py-1 rounded font-semibold">
                 {fileType}
               </span>
 
               <span className="border border-repository-controlBorder rounded-md px-3 py-1 text-sm">
-                <span className="text-[#10B981] font-medium">
+                <span className="text-repository-success font-medium">
                   {t("repository.publishedOn")}
                 </span>{" "}
                 {new Date(resource?.created_at).toLocaleDateString()}
@@ -165,14 +165,14 @@ function ResourceMeta({ resource }) {
           </div>
 
           <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2 text-[#111827]">
+            <div className="flex items-center gap-2 text-repository-strongText">
               <Eye size={22} />
               <span className="text-[1.7500rem] font-medium">
                 {resource?.views || "0"}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 text-[#111827]">
+            <div className="flex items-center gap-2 text-repository-strongText">
               <Download size={22} />
               <span className="text-[1.7500rem] font-medium">
                 {resource?.downloads || "0"}
@@ -191,7 +191,7 @@ function ResourceMeta({ resource }) {
          {resource?.tags?.map((tag, idx) => (
   <span
     key={tag.id || idx}
-    className="bg-[#F3F4F6] text-repository-textSecondary text-sm px-3 py-1 rounded-full"
+    className="bg-repository-surfaceSoft text-repository-textSecondary text-sm px-3 py-1 rounded-full"
   >
     {tag?.name}
   </span>
@@ -209,7 +209,7 @@ function ResourceMeta({ resource }) {
       toast.error(t("repository.invalidDownloadURL"));
     }
   }}
-  className="bg-[#A020F0] hover:bg-[#8B14D6] text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium"
+  className="bg-repository-downloadBtn hover:bg-repository-downloadBtnHover text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium"
 >
               <Download size={18} />
               {t("common.download")}
@@ -227,7 +227,7 @@ function ResourceMeta({ resource }) {
             </button>
           </div>
 
-          <button onClick={() => navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?org=${resource?.organization}`)} className="border border-[#C084FC] text-[#7C3AED] px-6 py-3 rounded-lg">
+          <button onClick={() => navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?org=${resource?.organization}`)} className="border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg">
             {t("repository.viewAllResources")} ↗
           </button>
         </div>
@@ -340,7 +340,7 @@ function AccordionOverview({ overview }) {
       {overview?.map(({ key, value }, index) => (
         <div
           key={index}
-          className="border border-[#E5E7EB] rounded-xl overflow-hidden bg-white"
+          className="border border-repository-divider rounded-xl overflow-hidden bg-white"
         >
           <button
             onClick={() =>
@@ -348,7 +348,7 @@ function AccordionOverview({ overview }) {
             }
             className="w-full flex items-center justify-between px-6 py-5 text-left"
           >
-            <span className="text-[#4338CA] text-lg font-medium">
+            <span className="text-repository-accordionTitle text-lg font-medium">
               {index + 1}. {key}
             </span>
 
@@ -441,8 +441,8 @@ function ReviewsSection({ reviews }) {
                 {Array.from({ length: 5 }).map((_, j) => (
                   <Star
                     key={j}
-                    fill={j < review.rating ? "#FFD700" : "none"}
-                    stroke="#FFD700"
+                    fill={j < review.rating ? "var(--tw-rating)" : "none"}
+                    stroke="var(--tw-rating)"
                     size={22}
                   />
                 ))}

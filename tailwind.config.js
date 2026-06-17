@@ -10,6 +10,9 @@ module.exports = {
 					border: "#EEECE6",
 					borderHover: "#E0DDD4",
 					divider: "#E5E7EB",
+					success: "#10B981",
+					detailTitle: "#1F2937",
+					fileTypeBadge: "#6D28D9",
 
 					// Typography
 					title: "#111110",
@@ -23,7 +26,7 @@ module.exports = {
 					primary: "#5832AC",
 					secondary: "#6B7280",
 
-  					// Icons / UI elements
+					// Icons / UI elements
 					iconBg: "#E4E3FF",
 					iconColor: "#6B6A65",
 					controlBorder: "#D1D5DB",
@@ -58,9 +61,24 @@ module.exports = {
 					defaultTagBg: "#E5E7EB",
 
 					// Page Header Colors
-  					headerBorder: "#EFEFEF",
-  					dark: "#000000",
-  					pageTitle: "#2E2E2E",
+					headerBorder: "#EFEFEF",
+					dark: "#000000",
+					pageTitle: "#2E2E2E",
+
+					// CTA Button
+					downloadBtn: "#A020F0",
+					downloadBtnHover: "#8B14D6",
+
+					// Organization button
+					orgBorder: "#C084FC",
+					orgText: "#7C3AED",
+
+					// Accordion
+					accordionTitle: "#4338CA",
+
+					// Ratings
+					rating: "#FFD700",
+
 				},
 			},
 			fontFamily: {
