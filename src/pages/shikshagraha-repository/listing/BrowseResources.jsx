@@ -343,7 +343,7 @@ const displayedResources = compact
   `}
 >
   <Grid
-  className={`w-[14.05px] h-[14.05px]`}
+  className={`w-[14px] h-[14px]`}
 />
 </button>
 
@@ -364,7 +364,7 @@ const displayedResources = compact
   `}
 >
   <List
-  className={`w-[14.05px] h-[14.05px]`}
+  className={`w-[14px] h-[14px]`}
 />
 </button>
         </div>
