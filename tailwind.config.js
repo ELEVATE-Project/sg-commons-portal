@@ -5,23 +5,33 @@ module.exports = {
 		extend: {
 			colors: {
 				repository: {
+					// Layout / structure
 					heading: "#27272A",
 					border: "#EEECE6",
 					borderHover: "#E0DDD4",
-					iconBg: "#E4E3FF",
-					iconColor: "#6B6A65",
+					divider: "#E5E7EB",
+
+					// Typography
 					title: "#111110",
 					subtitle: "#9E9D97",
 					body: "#4B5563",
 					textPrimary: "#374151",
-					primary: "#5832AC",
 					textSecondary: "#6B7280",
+					strongText: "#111827",
+
+					// Brand / action
+					primary: "#5832AC",
+					secondary: "#6B7280",
+
+  					// Icons / UI elements
+					iconBg: "#E4E3FF",
+					iconColor: "#6B6A65",
 					controlBorder: "#D1D5DB",
 					controlIcon: "#9CA3AF",
+
+					// Surfaces
 					surface: "#F9FAFB",
 					surfaceSoft: "#F3F4F6",
-					secondary: "#6B7280",
-					strongText: "#111827",
 
 					// Resource Card
 					cardBorder: "#E7E5E4",
@@ -46,6 +56,11 @@ module.exports = {
 					xlsxTagText: "#028A4F",
 
 					defaultTagBg: "#E5E7EB",
+
+					// Page Header Colors
+  					headerBorder: "#EFEFEF",
+  					dark: "#000000",
+  					pageTitle: "#2E2E2E",
 				},
 			},
 			fontFamily: {

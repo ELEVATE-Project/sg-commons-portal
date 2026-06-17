@@ -26,7 +26,8 @@ const getEnv = (key: string, defaultValue: string = "") => {
 const normalizePathSegment = (value: string = "") => value.replace(/^\/+|\/+$/g, "")
 const isLocalDevHost = () => {
   if (typeof window === "undefined") return false
-  return ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname)
+  return ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname)&&
+    window.location.port === getEnv("REACT_APP_DEV_PORT", "3000")
 }
 
 // Export all environment variables with their getters

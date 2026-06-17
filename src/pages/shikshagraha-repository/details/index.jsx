@@ -206,7 +206,7 @@ function ResourceMeta({ resource }) {
     const success = openSafeUrl(resource?.s3_url);
 
     if (!success) {
-      toast.error("Invalid download URL");
+      toast.error(t("repository.invalidDownloadURL"));
     }
   }}
   className="bg-[#A020F0] hover:bg-[#8B14D6] text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium"
@@ -245,7 +245,7 @@ function Actions({ downloadUrl, resourceId }) {
   const success = openSafeUrl(downloadUrl);
 
   if (!success) {
-    toast.error("Invalid download URL");
+    toast.error(t("repository.invalidDownloadURL"));
   }
 };
 

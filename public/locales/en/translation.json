@@ -215,6 +215,7 @@
         "organization": "Organization",
         "googleDrive": "Google Drive",
         "publishedOn": "Published on",
-        "viewAllResources": "View all resources"
+        "viewAllResources": "View all resources",
+        "invalidDownloadURL": "Invalid download URL"
     }
 }

@@ -18,7 +18,7 @@ const PageHeader = ({
   };
 
   return (
-    <div className="w-full border-b border-[#EFEFEF] px-6 py-5">
+    <div className="w-full border-b border-repository-headerBorder px-6 py-5">
       <div className="flex items-center gap-4">
         {showHome && (
   <>
@@ -26,16 +26,16 @@ const PageHeader = ({
       onClick={handleHomeClick}
       aria-label="Go to home page"
       title="Home"
-      className="text-[#8A0FAF] hover:opacity-80 transition"
+      className="text-repository-primary hover:opacity-80 transition"
     >
       <Home size={20} aria-hidden="true" />
     </button>
 
-    <div className="h-5 w-0.5 bg-[#000000]" />
+    <div className="h-5 w-0.5 bg-repository-dark" />
   </>
 )}
 
-        <h1 className="text-[20px] font-semibold text-[#2E2E2E]">
+        <h1 className="text-[20px] font-semibold text-repository-pageTitle">
           {title}
         </h1>
       </div>

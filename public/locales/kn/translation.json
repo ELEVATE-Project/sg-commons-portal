@@ -69,6 +69,7 @@
         "organization": "ಸಂಘಟನೆ",
         "googleDrive": "ಗೂಗಲ್ ಡ್ರೈವ್",
         "publishedOn": "ರಂದು ಪ್ರಕಟಿಸಲಾಗಿದೆ",
-        "viewAllResources": "ಎಲ್ಲಾ ಸಂಪನ್ಮೂಲಗಳನ್ನು ವೀಕ್ಷಿಸಿ"
+        "viewAllResources": "ಎಲ್ಲಾ ಸಂಪನ್ಮೂಲಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
+        "invalidDownloadURL": "ಅಮಾನ್ಯವಾದ ಡೌನ್‌ಲೋಡ್ URL"
     }
 }

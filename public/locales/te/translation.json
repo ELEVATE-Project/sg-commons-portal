@@ -69,6 +69,7 @@
         "organization": "సంస్థ",
         "googleDrive": "గూగుల్ డ్రైవ్",
         "publishedOn": "ప్రచురించబడిన తేదీ",
-        "viewAllResources": "అన్ని వనరులను వీక్షించండి"
+        "viewAllResources": "అన్ని వనరులను వీక్షించండి",
+        "invalidDownloadURL": "చెల్లని డౌన్‌లోడ్ URL"
     }
 }

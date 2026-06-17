@@ -69,6 +69,7 @@
         "organization": "संगठन",
         "googleDrive": "गूगल हाँकना",
         "publishedOn": "प्रकाशित",
-        "viewAllResources": "सभी संसाधन देखें"
+        "viewAllResources": "सभी संसाधन देखें",
+        "invalidDownloadURL": "अमान्य डाउनलोड URL"
     }
 }

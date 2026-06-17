@@ -1,8 +1,8 @@
 import React from "react";
-import dandelion from "../../assets/dandelion-footer.svg";
-import dandelion1 from "../../assets/dandelion-footer-1.svg";
-import dandelion2 from "../../assets/dandelion-footer-2.svg";
-import dandelion3 from "../../assets/dandelion-footer-3.svg";
+import dandelion from "assets/dandelion-footer.svg";
+import dandelion1 from "assets/dandelion-footer-1.svg";
+import dandelion2 from "assets/dandelion-footer-2.svg";
+import dandelion3 from "assets/dandelion-footer-3.svg";
 
 import env from "../../utils/env"
 import "./Footer.css"
