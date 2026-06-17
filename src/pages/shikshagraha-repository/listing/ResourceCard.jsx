@@ -111,7 +111,7 @@ const handleCardKeyDown = (e) => {
         bg-white
         border
         border-repository-cardBorder
-        rounded-[16px]
+        rounded-[1.0000rem]
         px-3
         py-3
         flex
@@ -126,10 +126,10 @@ const handleCardKeyDown = (e) => {
       <div
         className={`
           ${background}
-          w-[96px]
-          min-w-[96px]
-          h-[68px]
-          rounded-[8px]
+          w-[6.0000rem]
+          min-w-[6.0000rem]
+          h-[4.2500rem]
+          rounded-[0.5000rem]
           flex
           flex-col
           items-center
@@ -147,7 +147,7 @@ const handleCardKeyDown = (e) => {
           <FileIcon className="w-6 h-6" />
         )}
 
-        <span className="mt-1 text-[11px] font-semibold uppercase">
+        <span className="mt-1 text-[0.6875rem] font-semibold uppercase">
           {resource?.media_type_display}
         </span>
       </div>
@@ -157,7 +157,7 @@ const handleCardKeyDown = (e) => {
         {/* Title */}
         <h3
           className="
-            text-[20px]
+            text-[1.2500rem]
             font-medium
             text-repository-cardTitle
             truncate
@@ -170,7 +170,7 @@ const handleCardKeyDown = (e) => {
         <p
           className="
             mt-1
-            text-[14px]
+            text-[0.8750rem]
             text-repository-cardDescription
             line-clamp-1
           "
@@ -187,7 +187,7 @@ const handleCardKeyDown = (e) => {
         className={`
           ${tagBg}
           ${tagText}
-          text-[12px]
+          text-[0.7500rem]
           px-3
           py-1
           rounded-full
@@ -204,14 +204,14 @@ const handleCardKeyDown = (e) => {
         <div className="flex items-center gap-5 mt-3 text-repository-cardMeta">
           <div className="flex items-center gap-1">
             <Eye size={14} />
-            <span className="text-[14px]">
+            <span className="text-[0.8750rem]">
               {resource?.view_count ?? 0}k
             </span>
           </div>
 
           <div className="flex items-center gap-1">
             <Download size={14} />
-            <span className="text-[14px]">
+            <span className="text-[0.8750rem]">
               {resource?.download_count ?? 0}
             </span>
           </div>
@@ -234,7 +234,7 @@ const handleCardKeyDown = (e) => {
         >
           <span
             className="
-              text-[14px]
+              text-[0.8750rem]
               text-repository-cardMeta
               underline
               whitespace-nowrap
@@ -266,10 +266,10 @@ const handleCardKeyDown = (e) => {
       bg-white
       border
       border-repository-border
-      rounded-[12px]
-      py-[27px]
-      px-[19px]
-      h-[284px]
+      rounded-[0.7500rem]
+      py-[1.6875rem]
+      px-[1.1875rem]
+      h-[17.7500rem]
       cursor-pointer
       transition-all
       hover:shadow-sm
@@ -277,19 +277,19 @@ const handleCardKeyDown = (e) => {
     "
   >
     {/* Content */}
-    <div className="flex flex-col items-center gap-[14px] flex-1">
+    <div className="flex flex-col items-center gap-[0.8750rem] flex-1">
       {/* Top Section */}
-      <div className="flex w-full gap-[12px] h-[80px]">
+      <div className="flex w-full gap-[0.7500rem] h-[5.0000rem]">
         {/* File Type Box */}
         <div
   className={`
     ${background}
-    w-[93px]
-    min-w-[93px]
-    h-[80px]
+    w-[5.8125rem]
+    min-w-[5.8125rem]
+    h-[5.0000rem]
     border
     border-repository-border
-    rounded-[8px]
+    rounded-[0.5000rem]
     flex
     flex-col
     justify-center
@@ -307,17 +307,17 @@ const handleCardKeyDown = (e) => {
     <FileIcon className="w-7 h-7" />
   )}
 
-  <span className="mt-1 text-[11px] font-semibold uppercase">
+  <span className="mt-1 text-[0.6875rem] font-semibold uppercase">
     {resource?.media_type_display || t("repository.file")}
   </span>
 </div>
 
         {/* Title */}
-        <div className="flex-1 min-w-0 flex items-center h-[74px] py-[10px]">
+        <div className="flex-1 min-w-0 flex items-center h-[4.6250rem] py-[0.6250rem]">
           <h3
             className="
-              text-[16px]
-              leading-[18px]
+              text-[1.0000rem]
+              leading-[1.1250rem]
               font-['Comfortaa'] 
               font-semibold
               text-repository-title
@@ -334,8 +334,8 @@ const handleCardKeyDown = (e) => {
         className="
         font-['Source_Sans_3']
           w-full
-          text-[14px]
-          leading-[20px]
+          text-[0.8750rem]
+          leading-[1.2500rem]
           text-repository-cardDescription
           line-clamp-3
         "
@@ -344,22 +344,22 @@ const handleCardKeyDown = (e) => {
       </p>
 
       {/* Tags + Footer Section */}
-      <div className="w-full flex flex-col gap-[5px] mt-auto">
+      <div className="w-full flex flex-col gap-[0.3125rem] mt-auto">
         {/* Tags */}
         {resource?.tag_names?.length > 0 && (
-  <div className="pb-[12px] border-b border-repository-subtitle">
-    <div className="flex items-center gap-[4px] overflow-hidden">
+  <div className="pb-[0.7500rem] border-b border-repository-subtitle">
+    <div className="flex items-center gap-[0.2500rem] overflow-hidden">
   {resource.tag_names.slice(0, 2).map((tag, index) => (
     <span
       key={index}
       className={`
         ${tagBg}
         ${tagText}
-        px-[10px]
-        py-[2px]
+        px-[0.6250rem]
+        py-[0.1250rem]
         rounded-full
-        text-[14px]
-        leading-[20px]
+        text-[0.8750rem]
+        leading-[1.2500rem]
         font-['Source_Sans_3']
         whitespace-nowrap
         ${
@@ -377,15 +377,15 @@ const handleCardKeyDown = (e) => {
 )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between min-h-[29px]">
-          <div className="flex items-center gap-[17px] text-repository-subtitle">
-            <div className="flex items-center gap-[6px]">
+        <div className="flex items-center justify-between min-h-[1.8125rem]">
+          <div className="flex items-center gap-[1.0625rem] text-repository-subtitle">
+            <div className="flex items-center gap-[0.3750rem]">
               <Eye size={16} strokeWidth={1.8} />
 
               <span
                 className="
-                  text-[20px]
-                  leading-[24px]
+                  text-[1.2500rem]
+                  leading-[1.5000rem]
                   font-['Source_Sans_3']
                 "
               >
@@ -393,13 +393,13 @@ const handleCardKeyDown = (e) => {
               </span>
             </div>
 
-            <div className="flex items-center gap-[6px]">
+            <div className="flex items-center gap-[0.3750rem]">
               <Download size={16} strokeWidth={1.8} />
 
               <span
                 className="
-                  text-[20px]
-                  leading-[24px]
+                  text-[1.2500rem]
+                  leading-[1.5000rem]
                   font-['Source_Sans_3']
                 "
               >
@@ -416,7 +416,7 @@ const handleCardKeyDown = (e) => {
                 items-center
                 gap-2
                 min-w-0
-                text-[20px]
+                text-[1.2500rem]
               "
               onClick={e => {
                 e.preventDefault()
@@ -429,12 +429,12 @@ const handleCardKeyDown = (e) => {
             >
               <span
                 className="
-                  text-[18px]
+                  text-[1.1250rem]
                   text-repository-subtitle
                   font-['Source_Sans_3']
                   underline
                   truncate
-                  max-w-[120px]
+                  max-w-[7.5000rem]
                   mr-3
                 "
               >
@@ -445,8 +445,8 @@ const handleCardKeyDown = (e) => {
   src={GoogleDriveIcon}
   alt={t("repository.googleDrive")}
   className="
-    h-[20px]
-    w-[20px]
+    h-[1.2500rem]
+    w-[1.2500rem]
     object-contain
     flex-shrink-0
   "

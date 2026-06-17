@@ -88,7 +88,7 @@ export default function Filters() {
       },
       {
         threshold: 0,
-        rootMargin: "-1px 0px 0px 0px",
+        rootMargin: "-0.0625rem 0.0000rem 0.0000rem 0.0000rem",
       }
     )
 
@@ -146,13 +146,13 @@ export default function Filters() {
       placeholder.style.display = 'block'
 
       el.style.position = 'fixed'
-      el.style.top = '0px'
+      el.style.top = '0.0000rem'
       el.style.left = `${rect.left}px`
       el.style.width = `${rect.width}px`
       el.style.zIndex = '1000'
-      el.style.boxShadow = '0 0 4px rgba(0,0,0,0.2)'
+      el.style.boxShadow = '0 0 0.2500rem rgba(0,0,0,0.2)'
     } else {
-      placeholder.style.height = '0px'
+      placeholder.style.height = '0.0000rem'
       placeholder.style.display = 'none'
 
       el.style.position = ''
@@ -173,7 +173,7 @@ export default function Filters() {
         el.style.boxShadow = ''
       }
       if (placeholder) {
-        placeholder.style.height = '0px'
+        placeholder.style.height = '0.0000rem'
         placeholder.style.display = 'none'
       }
     }
@@ -402,7 +402,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
 
   const searchInput = (
     <form
-      className="relative flex flex-row items-center justify-center w-full h-full px-3 py-2 rounded-[12px] border border-[var(--listing-border)]"
+      className="relative flex flex-row items-center justify-center w-full h-full px-3 py-2 rounded-[0.7500rem] border border-[var(--listing-border)]"
       onSubmit={event => {
         if (!hasStartedListening && !isConvertingVoiceToText && !loadingList) {
           handleSendMessage(event)
@@ -415,12 +415,12 @@ if (inpText.trim() === "" && search.trim() !== "") {
       </div>
       <div className="relative w-full flex items-center justify-center">
         <textarea
-          className={`${isConvertingVoiceToText ? "min-h-[29px] sm:min-h-0" : ""} pl-3 max-w-[331px] w-full border-0 focus:outline-none focus:bg-transparent bg-transparent rounded-[12px] text-[14px] font-['Manrope'] text-[var(--listing-muted-text)] placeholder-[var(--listing-subdued-text)] resize-none !overflow-y-auto`}
+          className={`${isConvertingVoiceToText ? "min-h-[1.8125rem] sm:min-h-0" : ""} pl-3 max-w-[20.6875rem] w-full border-0 focus:outline-none focus:bg-transparent bg-transparent rounded-[0.7500rem] text-[0.8750rem] font-['Manrope'] text-[var(--listing-muted-text)] placeholder-[var(--listing-subdued-text)] resize-none !overflow-y-auto`}
           style={{
             backgroundColor: "transparent",
-            height: "29px",
-            minHeight: "29px",
-            maxHeight: "50px",
+            height: "1.8125rem",
+            minHeight: "1.8125rem",
+            maxHeight: "3.1250rem",
             resize: "none",
           }}
           onInput={e => {
@@ -491,10 +491,10 @@ if (inpText.trim() === "" && search.trim() !== "") {
         )}
       </div>
       <button className={`flex items-center justify-center relative ${hasStartedRecording ? "text-[var(--listing-danger)]" : "text-black"} disabled:text-[var(--listing-disabled-text)] disabled:cursor-not-allowed cursor-pointer`} onClick={hasStartedRecording ? stopRecording : startRecording}>
-        {hasStartedRecording ? <FaRegStopCircle className="w-[18px] h-[18px] md:w-[20px] md:h-[20px] lg:w-[24px] lg:h-[24px]" /> : <IoMicOutline className="w-[18px] h-[18px] md:w-[20px] md:h-[20px] lg:w-[24px] lg:h-[24px]" />}
+        {hasStartedRecording ? <FaRegStopCircle className="w-[1.1250rem] h-[1.1250rem] md:w-[1.2500rem] md:h-[1.2500rem] lg:w-[1.5000rem] lg:h-[1.5000rem]" /> : <IoMicOutline className="w-[1.1250rem] h-[1.1250rem] md:w-[1.2500rem] md:h-[1.2500rem] lg:w-[1.5000rem] lg:h-[1.5000rem]" />}
       </button>
-      <button type="submit" disabled={hasStartedRecording || isConvertingVoiceToText || loadingList} className={`flex items-center justify-center relative md:pl-[6px] pl-[12px] disabled:cursor-not-allowed disabled:text-[var(--listing-disabled-text)] cursor-pointer ${!disableSendButton ? "text-[var(--listing-info)]" : ""}`}>
-        <TbSend2 className="md:w-[18px] md:h-[18px] lg:w-[24px] lg:h-[24px]" />
+      <button type="submit" disabled={hasStartedRecording || isConvertingVoiceToText || loadingList} className={`flex items-center justify-center relative md:pl-[0.3750rem] pl-[0.7500rem] disabled:cursor-not-allowed disabled:text-[var(--listing-disabled-text)] cursor-pointer ${!disableSendButton ? "text-[var(--listing-info)]" : ""}`}>
+        <TbSend2 className="md:w-[1.1250rem] md:h-[1.1250rem] lg:w-[1.5000rem] lg:h-[1.5000rem]" />
       </button>
     </form>
   )
@@ -502,7 +502,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
   // build filters inner content so we can reuse in-place and in a portal
   const filtersInner = (
     <>
-      <div className="min-h-[40px] flex items-center pt-2 gap-1 w-full lg:w-[75%] overflow-x-auto flex-shrink-0 lg:flex-wrap">
+      <div className="min-h-[2.5000rem] flex items-center pt-2 gap-1 w-full lg:w-[75%] overflow-x-auto flex-shrink-0 lg:flex-wrap">
         {dropdown_meta?.length
           ? dropdown_meta?.map(({ label, options, key }, index) => (
             <React.Fragment key={`label-${label}-${index}`}>
@@ -512,7 +512,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
           : null}
 
         {Object.keys(filters).some(key => filters[key]?.length) && (
-          <button className="min-w-[100px] p-2 rounded-[12px] flex items-center gap-2 text-[var(--listing-danger)] bg-[var(--listing-danger-soft)]" onClick={() => {
+          <button className="min-w-[6.2500rem] p-2 rounded-[0.7500rem] flex items-center gap-2 text-[var(--listing-danger)] bg-[var(--listing-danger-soft)]" onClick={() => {
             resetFilters()
             scrollToBrowseResources()
           }}>
@@ -523,10 +523,10 @@ if (inpText.trim() === "" && search.trim() !== "") {
 
       <div className={`flex justify-end ml-auto relative z-10 w-full lg:w-[25%] overflow-hidden ${
         isSticky
-          ? "max-h-[53px] mt-7 lg:mt-0 opacity-100 block"
+          ? "max-h-[3.3125rem] mt-7 lg:mt-0 opacity-100 block"
           : "max-h-0 mt-0 opacity-0 invisible pointer-events-none hidden"
       }`} aria-hidden={!isSticky} style={{}}>
-        <div className="flex flex-col items-start w-full h-[53px]">
+        <div className="flex flex-col items-start w-full h-[3.3125rem]">
           {searchInput}
         </div>
       </div>
@@ -545,19 +545,19 @@ if (inpText.trim() === "" && search.trim() !== "") {
         textarea[name="message-box"] {
           scrollbar-width: thin;
           scrollbar-color: var(--listing-subdued-text) transparent;
-          line-height: 19px;
-          padding-top: 5px;
-          padding-bottom: 5px;
+          line-height: 1.1875rem;
+          padding-top: 0.3125rem;
+          padding-bottom: 0.3125rem;
         }
         textarea[name="message-box"]::-webkit-scrollbar {
-          width: 4px;
+          width: 0.2500rem;
         }
         textarea[name="message-box"]::-webkit-scrollbar-track {
           background: transparent;
         }
         textarea[name="message-box"]::-webkit-scrollbar-thumb {
           background-color: var(--listing-subdued-text);
-          border-radius: 2px;
+          border-radius: 0.1250rem;
         }
         textarea[name="message-box"]::-webkit-scrollbar-thumb:hover {
           background-color: var(--listing-muted-text);
@@ -571,7 +571,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
       <div
         ref={filtersRef}
         id="filters-boundary"
-        className="sticky top-0 z-100 isolate flex flex-col lg:flex-row items-stretch lg:items-center p-3 bg-white max-w-[1670px] w-full rounded-[1rem] shadow-[0_0_4px_rgba(0,0,0,0.2)]"
+        className="sticky top-0 z-100 isolate flex flex-col lg:flex-row items-stretch lg:items-center p-3 bg-white max-w-[104.3750rem] w-full rounded-[1rem] shadow-[0_0_0.2500rem_rgba(0,0,0,0.2)]"
         style={undefined}
       >
         {filtersInner}
@@ -596,7 +596,7 @@ const CheckboxOption = props => {
             alignItems: "center",
             justifyContent: "center",
             marginRight: 8,
-            border: "1.5px solid",
+            border: "0.0938rem solid",
             borderColor: isSelected
               ? "var(--listing-secondary)"
               : "#9CA3AF",
@@ -658,7 +658,7 @@ const MenuList = props => {
             alignItems: "center",
             justifyContent: "center",
             marginRight: 8,
-            border: "1.5px solid",
+            border: "0.0938rem solid",
             borderColor: allSelected
               ? "var(--listing-secondary)"
               : "#9CA3AF",
@@ -722,7 +722,7 @@ const DropdownSelect = ({ label, options, selected, onChange }) => {
             border: "none",
             background: "var(--listing-surface-soft)",
             boxShadow: "none",
-            minHeight: "36px",
+            minHeight: "2.2500rem",
             "&:hover": { border: "none" },
           }),
 

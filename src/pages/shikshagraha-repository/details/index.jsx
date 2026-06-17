@@ -58,9 +58,9 @@ export default function ResourceDetailPage() {
         className="fixed top-0 left-0 right-0 w-screen h-screen pointer-events-none z-0"
         style={{
           backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
-          backgroundPosition: "left 0px top 400px, right 0px top 500px, left 0px bottom 0px, right 0px bottom 0px",
+          backgroundPosition: "left 0.0000rem top 25.0000rem, right 0.0000rem top 31.2500rem, left 0.0000rem bottom 0.0000rem, right 0.0000rem bottom 0.0000rem",
           backgroundRepeat: "no-repeat",
-          backgroundSize: "160px, 160px, 200px, 200px",
+          backgroundSize: "10.0000rem, 10.0000rem, 12.5000rem, 12.5000rem",
         }}
       />
       <div
@@ -68,7 +68,7 @@ export default function ResourceDetailPage() {
         ref={containerRef}
         style={{...theme.vars, backgroundImage: "none"}}
       >
-<section className="relative z-10 min-h-screen max-w-[1280px] mx-auto px-8">        <ToastContainer />
+<section className="relative z-10 min-h-screen max-w-[80.0000rem] mx-auto px-8">        <ToastContainer />
         {isLoading && (
           <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-black bg-opacity-75 text-white h-screen">
             {t("common.loadingText")}
@@ -114,7 +114,7 @@ function BackButton({ title }) {
 
 export function ResourceImages({ images }) {
   return (
-    <div className="flex flex-col items-center min-w-[260px] max-w-[320px]">
+    <div className="flex flex-col items-center min-w-[16.2500rem] max-w-[20.0000rem]">
       <img
         src={images?.[0]}
         alt="Primary"
@@ -147,11 +147,11 @@ function ResourceMeta({ resource }) {
         <div className="flex flex-col lg:flex-row justify-between gap-4">
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-[36px] font-semibold text-[#1F2937] leading-tight">
+              <h1 className="text-[2.2500rem] font-semibold text-[#1F2937] leading-tight">
                 {resource?.title}
               </h1>
 
-              <span className="bg-[#6D28D9] text-white text-[11px] px-2 py-1 rounded font-semibold">
+              <span className="bg-[#6D28D9] text-white text-[0.6875rem] px-2 py-1 rounded font-semibold">
                 {fileType}
               </span>
 
@@ -167,14 +167,14 @@ function ResourceMeta({ resource }) {
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2 text-[#111827]">
               <Eye size={22} />
-              <span className="text-[28px] font-medium">
+              <span className="text-[1.7500rem] font-medium">
                 {resource?.views || "0"}
               </span>
             </div>
 
             <div className="flex items-center gap-2 text-[#111827]">
               <Download size={22} />
-              <span className="text-[28px] font-medium">
+              <span className="text-[1.7500rem] font-medium">
                 {resource?.downloads || "0"}
               </span>
             </div>
@@ -182,7 +182,7 @@ function ResourceMeta({ resource }) {
         </div>
 
         {/* Description */}
-        <p className="mt-5 text-repository-textSecondary text-[18px] leading-8">
+        <p className="mt-5 text-repository-textSecondary text-[1.1250rem] leading-8">
           {resource?.description}
         </p>
 

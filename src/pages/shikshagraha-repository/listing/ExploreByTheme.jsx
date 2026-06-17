@@ -61,7 +61,7 @@ export default function ExploreByTheme() {
   
   return (
     <section className="w-full mt-8 md:mt-10 px-4 md:px-12 mb-5">
-      <h2 className="text-[20px] md:text-[22px] font-['Comfortaa'] font-semibold tracking-[1px] text-repository-heading capitalize mb-5">
+      <h2 className="text-[1.2500rem] md:text-[1.3750rem] font-['Comfortaa'] font-semibold tracking-[0.0625rem] text-repository-heading capitalize mb-5">
         {t("repository.exploreByTheme")}
       </h2>
 
@@ -79,15 +79,15 @@ export default function ExploreByTheme() {
     bg-white
     border
     border-repository-border
-    rounded-[12px]
-    h-[146px]
-    p-[14px]
-    pt-[10px]
+    rounded-[0.7500rem]
+    h-[9.1250rem]
+    p-[0.8750rem]
+    pt-[0.6250rem]
     flex
     flex-col
     items-center
     justify-center
-    gap-[8px]
+    gap-[0.5000rem]
     cursor-pointer
     transition-all
     duration-200
@@ -96,9 +96,9 @@ export default function ExploreByTheme() {
 >
 <div
   className="
-    w-[50px]
-    h-[50px]
-    rounded-[8px]
+    w-[3.1250rem]
+    h-[3.1250rem]
+    rounded-[0.5000rem]
     bg-repository-iconBg
     flex
     items-center
@@ -117,9 +117,9 @@ export default function ExploreByTheme() {
              <h3
   className="
     font-['Source_Sans_3']
-    text-[16px]
+    text-[1.0000rem]
     font-bold
-    leading-[15px]
+    leading-[0.9375rem]
     text-repository-title
     text-center
     w-full
@@ -131,12 +131,12 @@ export default function ExploreByTheme() {
 <p
   style={{ fontFamily: "'Source Sans 3', sans-serif" }}
   className="
-    text-[14px]
+    text-[0.8750rem]
     font-medium
-    leading-[16px]
+    leading-[1.0000rem]
     text-repository-subtitle
     text-center
-    mt-[-6px]
+    mt-[-0.3750rem]
   "
 >
   {theme.count} items
