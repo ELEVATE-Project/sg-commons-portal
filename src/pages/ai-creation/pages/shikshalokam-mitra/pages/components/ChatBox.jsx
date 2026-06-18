@@ -277,7 +277,7 @@ function ChatBox({
 
   const resetTextareaHeight = () => {
     if (textInputRef?.current) {
-      textInputRef.current.style.height = "24px"
+      textInputRef.current.style.height = "1.5rem"
       textInputRef.current.style.overflowY = "hidden"
     }
   }
@@ -306,14 +306,14 @@ function ChatBox({
     <>
       <style>{`
         #chat-box-textarea::-webkit-scrollbar {
-          width: 4px;
+          width: 0.25rem;
         }
         #chat-box-textarea::-webkit-scrollbar-track {
           background: transparent;
         }
         #chat-box-textarea::-webkit-scrollbar-thumb {
           background: #AAAAAA;
-          border-radius: 2px;
+          border-radius: 0.125rem;
         }
         #chat-box-textarea::-webkit-scrollbar-thumb:hover {
           background: #888888;
@@ -327,7 +327,7 @@ function ChatBox({
       <form onSubmit={(e) => {
         resetTextareaHeight();
         handleSendMessage(e);
-      }} autoComplete="off" className={`cursor-pointer flex items-center gap-[10px] h-full overflow-y-auto border border-[#DDDDDD] py-2 md:py-3 px-4 mx-auto w-full md:w-[80%] lg:w-[70%] ${shouldShowWhiteBg ? "bg-white" : "bg-[#F0F2F5]"} ${textMessage?.includes("\n") ? "rounded-3xl" : "rounded-[50px]"} ${formStyles}`}>
+      }} autoComplete="off" className={`cursor-pointer flex items-center gap-[0.625rem] h-full overflow-y-auto border border-repository-softGray py-2 md:py-3 px-4 mx-auto w-full md:w-[80%] lg:w-[70%] ${shouldShowWhiteBg ? "bg-white" : "bg-repository-pageBackground"} ${textMessage?.includes("\n") ? "rounded-3xl" : "rounded-[3.125rem]"} ${formStyles}`}>
         <textarea
           ref={textInputRef}
           id="chat-box-textarea"
@@ -383,8 +383,8 @@ function ChatBox({
           }}
           className="
     w-[90%]
-    h-[24px]
-    max-h-[150px]
+    h-[1.5rem]
+    max-h-[9.375rem]
     resize-none
     overflow-y-auto
     overflow-x-hidden
@@ -396,11 +396,11 @@ function ChatBox({
     md:text-base
     font-normal
     leading-normal
-    text-[#101010]
+    text-repository-extremeBlack
     placeholder:text-xs
     md:placeholder:text-base
     placeholder:font-normal
-    placeholder:text-[#AAAAAA]
+    placeholder:text-repository-lightGray
     disabled:bg-slate-200
     disabled:text-slate-500
     scrollbar-thin
@@ -411,7 +411,7 @@ function ChatBox({
 
         {hasStartedRecording && (
           <div className="flex items-center space-x-1 text-red-600 text-sm font-medium pointer-events-none">
-            <FaCircle className="text-red-500 animate-pulse w-[10px] h-[10px] text-xs" />
+            <FaCircle className="text-red-500 animate-pulse w-[0.625rem] h-[0.625rem] text-xs" />
             <span>{formatTime(seconds)}</span>
           </div>
         )}
@@ -419,7 +419,7 @@ function ChatBox({
           <button
             type="button"
             disabled={disableVoiceButton}
-            className={`${hasStartedRecording ? "text-red-500" : "text-black"} disabled:text-[#64748b] disabled:cursor-not-allowed cursor-pointer ${voiceButtonStyles}`}
+            className={`${hasStartedRecording ? "text-red-500" : "text-black"} disabled:text-repository-slateGray] disabled:cursor-not-allowed cursor-pointer ${voiceButtonStyles}`}
             onClick={e => {
               e.preventDefault()
               e.stopPropagation()
@@ -430,11 +430,11 @@ function ChatBox({
               }
             }}
           >
-            {hasStartedRecording ? <FaRegStopCircle className="w-[16px] h-[16px] md:w-[20px] md:h-[20px] lg:w-[24px] lg:h-[24px]" /> : <IoMicOutline className="w-[20px] h-[20px] md:w-[24px] md:h-[24px] lg:w-[28px] lg:h-[28px]" />}
+            {hasStartedRecording ? <FaRegStopCircle className="w-[1rem] h-[1rem] md:w-[1.25rem] md:h-[1.25rem] lg:w-[1.5rem] lg:h-[1.5rem]" /> : <IoMicOutline className="w-[1.25rem] h-[1.25rem] md:w-[1.5rem] md:h-[1.5rem] lg:w-[1.75rem] lg:h-[1.75rem]" />}
           </button>
         )}
-        <button disabled={disableSendButton} type="submit" className={`disabled:cursor-not-allowed disabled:text-[#64748b] cursor-pointer ${!disableSendButton ? "text-[#007BFF]" : ""} ${sendButtonStyles}`}>
-          <TbSend2 className="w-[22px] h-[22px] lg:w-[26px] lg:h-[26px]" />
+        <button disabled={disableSendButton} type="submit" className={`disabled:cursor-not-allowed disabled:text-repository-slateGray] cursor-pointer ${!disableSendButton ? "text-repository-electricBlue" : ""} ${sendButtonStyles}`}>
+          <TbSend2 className="w-[1.375rem] h-[1.375rem] lg:w-[1.625rem] lg:h-[1.625rem]" />
         </button>
       </form>
     </>

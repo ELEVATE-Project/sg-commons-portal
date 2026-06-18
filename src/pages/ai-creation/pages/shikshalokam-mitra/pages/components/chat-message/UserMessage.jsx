@@ -18,14 +18,14 @@ const UserMessage = ({
     return (
       <div className="flex flex-col items-end relative py-4 pr-1 w-full">
         <div className="flex items-center gap-2 mb-2">
-          <span className="font-semibold text-sm text-[#101010]">{t("common.you")}</span>
-          <div className="w-8 h-8 rounded-full bg-[#4A3B94] flex items-center justify-center">
+          <span className="font-semibold text-sm text-repository-extremeBlack">{t("common.you")}</span>
+          <div className="w-8 h-8 rounded-full bg-repository-bluishPurple flex items-center justify-center">
             <FaUser className="text-white text-sm" />
           </div>
         </div>
         
         <div 
-          className="bg-[#4A3B94] rounded-2xl rounded-tr-none px-4 py-3 max-w-[85%] mr-10" 
+          className="bg-repository-bluishPurple rounded-2xl rounded-tr-none px-4 py-3 max-w-[85%] mr-10" 
           id={chatId}
         >
           {isShowImages && <UserImage userDetail={userDetail} />}

@@ -71,7 +71,7 @@ export default function MitraAiAssistantAside({ defaultBottom = 70 }) {
       {/* Floating Button */}
       <button
         onClick={() => setOpen(!open)}
-        className={`mitra-floating fixed ${isMobile ? "right-4" : "right-10"} z-[9999] bg-[var(--listing-primary)] text-white border border-white ${isMobile ? "w-14 h-14" : "w-16 h-16"} rounded-full shadow-[0_18px_40px_rgba(0,0,0,0.45)] flex items-center justify-center hover:scale-105`}
+        className={`fixed ${isMobile ? "right-4" : "right-10"} z-[9999] bg-[var(--listing-primary)] text-white border border-white ${isMobile ? "w-14 h-14" : "w-16 h-16"} rounded-full shadow-[0_1.125rem_2.5rem_rgba(0,0,0,0.45)] flex items-center justify-center hover:scale-105`}
         style={{
           bottom: `${buttonBottom}px`,
           transition: "bottom 220ms ease-out, transform 220ms ease-out",
@@ -92,23 +92,23 @@ export default function MitraAiAssistantAside({ defaultBottom = 70 }) {
           style={{
             ...theme.vars,
             bottom: `${cardBottom}px`,
-            maxHeight: "calc(100vh - 140px)",
+            maxHeight: "calc(100vh - 8.75rem)",
             overflowY: "auto",
             transition: "bottom 220ms ease-out, opacity 220ms ease-out, transform 220ms ease-out",
             willChange: "bottom, transform, opacity",
           }}
         >
           <div className="flex items-center justify-between">
-            <h3 className="text-base md:text-lg font-bold leading-[28px]">
+            <h3 className="text-base md:text-lg font-bold leading-[1.75rem]">
               {t("mitraAiAssistant")}
             </h3>
             {/* <MdMoreVert className="w-5 h-5 text-[var(--listing-subdued-text)]" /> */}
           </div>
 
-          <div className="h-[1px] border-t border-[var(--listing-border)] my-2 md:my-4"></div>
+          <div className="h-[0.0625rem] border-t border-[var(--listing-border)] my-2 md:my-4"></div>
 
           <div className="rounded-lg p-2 md:p-3 bg-[var(--listing-surface)]">
-            <p className="font-normal text-xs leading-[16px] text-[var(--listing-muted-text)]">
+            <p className="font-normal text-xs leading-[1rem] text-[var(--listing-muted-text)]">
               {t("generateMicroImprovementProjectsDescription")}
             </p>
           </div>

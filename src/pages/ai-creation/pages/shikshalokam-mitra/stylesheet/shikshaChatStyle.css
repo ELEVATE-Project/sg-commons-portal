@@ -6,9 +6,9 @@
     --secondary-font-family: "Urbanist", sans-serif;
 }
 
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 62rem) {
     #shikshaScrollableDiv::-webkit-scrollbar {
-      width: 5px;
+      width: 0.3125rem;
       position: absolute;
       left: 0;
     }
@@ -30,9 +30,9 @@
     }
   }
   
-  @media screen and (min-width: 769px) and (max-width: 991px) {
+  @media screen and (min-width: 48.0625rem) and (max-width: 61.9375rem) {
     #shikshaScrollableDiv::-webkit-scrollbar {
-      width: 5px;
+      width: 0.3125rem;
       position: absolute;
       left: 0;
     }
@@ -54,9 +54,9 @@
     }
   }
   
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 48rem) {
     #shikshaScrollableDiv::-webkit-scrollbar {
-      width: 5px;
+      width: 0.3125rem;
       position: absolute;
       left: 0;
     }
@@ -79,30 +79,30 @@
 }
 
 .div1 {
-    height: 376px;
+    height: 23.5rem;
     padding: 0;
     overflow-y: scroll;
-    margin-top: 13px;
+    margin-top: 0.8125rem;
 }
 
 .div2 {
-    height: 500px;
+    height: 31.25rem;
     padding: 0;
     overflow-y: scroll;
-    margin-top: 66px;
+    margin-top: 4.125rem;
 }
 
 .div3 {
     display: flex;
     justify-content: center;
-    padding: 20px;
+    padding: 1.25rem;
     align-items: center;
 }
 
 .div4 {
     display: flex;
     justify-content: center;
-    padding: 10px;
+    padding: 0.625rem;
     align-items: center;
 }
 
@@ -110,11 +110,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 16px;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 0.625rem 1rem;
+    border-bottom: 0.0625rem solid #e0e0e0;
     /* background-color: #f9f9f9; */
-    border-radius: 8px;
-    margin-bottom: 8px;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
     width: 100%;
 }
 
@@ -140,10 +140,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-top: 4px;
-    padding: 2px 8px;
-    border-radius: 12px;
-    margin-left: 10px;
+    margin-top: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.75rem;
+    margin-left: 0.625rem;
 }
 
 .span3 {
@@ -162,7 +162,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    margin-left: 10px;
+    margin-left: 0.625rem;
     width: 10%;
 }
 
@@ -177,22 +177,22 @@
 }
 
 .div8 {
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px;
-    border-radius: 46px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0rem 0.25rem 0.375rem;
+    border-radius: 2.875rem;
     font-size: 1.5rem;
-    border: 1px solid;
-    width: 44px;
-    height: 35px;
+    border: 0.0625rem solid;
+    width: 2.75rem;
+    height: 2.1875rem;
 }
 
 .div8:hover {
-    box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 6px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0rem 0.25rem 0.375rem;
 }
 
 .div9 {
     /* min-height: 100vh; */
     /* height: auto; */
-    height: 447px;
+    height: 27.9375rem;
     overflow-y: auto;
 }
 .div9-a {
@@ -206,16 +206,16 @@
 .div10 {
     background-color: #f3f9f9;
     text-align: center;
-    padding: 20px;
-    border-radius: 10px;
+    padding: 1.25rem;
+    border-radius: 0.625rem;
     width: 85%;
-    margin: 20px auto;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    margin: 1.25rem auto;
+    box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+    max-width: 37.5rem;
 }
 
 .div26 {
-    padding-top: 14px;
+    padding-top: 0.875rem;
     margin: 0;
     text-align: left;
 }
@@ -223,12 +223,12 @@
 .div11 {
     list-style-type: decimal;
     text-align: left;
-    padding-left: 40px;
+    padding-left: 2.5rem;
     margin: 0 auto;
     color: #4192A6;
     font-size: 1rem;
     width: 85%;
-    max-width: 600px;
+    max-width: 37.5rem;
 }
 
 .div12 {
@@ -243,33 +243,33 @@
     font-size: 0.9rem;
     text-align: left;
     color: red;
-    margin-left: 18px;
+    margin-left: 1.125rem;
 }
 
 .div13 {
-    margin: 15px 0;
+    margin: 0.9375rem 0;
 }
 
 .div14 {
     background-color: #F1F5F9;
-    padding: 10px;
-    border-radius: 10px;
+    padding: 0.625rem;
+    border-radius: 0.625rem;
     display: inline-block;
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.5);
     cursor: pointer;
     position: relative;
-    margin: 10px 0 0 44px;
-    height: 86px;
-    width: 170px;
+    margin: 0.625rem 0 0 2.75rem;
+    height: 5.375rem;
+    width: 10.625rem;
 }
 
 .div15 {
-    font-size: 24px;
-    margin-bottom: 5px;
+    font-size: 1.5rem;
+    margin-bottom: 0.3125rem;
     display: block;
     color: #555;
-    margin-left: 25px;
+    margin-left: 1.5625rem;
 }
 
 .div16 {
@@ -298,74 +298,74 @@
 }
 
 .div18 {
-    margin: 20px 0 0 44px;
-    padding-right: 35px;
+    margin: 1.25rem 0 0 2.75rem;
+    padding-right: 2.1875rem;
 }
 
 .h4-1 {
-    margin-bottom: 5px;
+    margin-bottom: 0.3125rem;
     font-size: 1rem;
 }
 
 .li-1 {
-    margin-bottom: 5px;
+    margin-bottom: 0.3125rem;
     font-size: 0.9rem;
     color: #f44336;
 }
 
 .li-2 {
-    margin-bottom: 5px;
+    margin-bottom: 0.3125rem;
     font-size: 0.8rem;
 }
 
 .button-1 {
-    margin-left: 10px;
+    margin-left: 0.625rem;
     color: #f44336;
     border: none;
-    padding: 4px 8px;
+    padding: 0.25rem 0.5rem;
     cursor: pointer;
     font-size: 1rem;
 }
 
 .li-3 {
-    margin-bottom: 5px;
+    margin-bottom: 0.3125rem;
     font-size: 0.9rem;
     color: #f44336;
 }
 
 .div19 {
-    margin: 15px 0;
+    margin: 0.9375rem 0;
 }
 
 .div20 {
     background-color: #F1F5F9;
-    border-radius: 10px;
+    border-radius: 0.625rem;
     display: inline-block;
     text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.5);
     cursor: pointer;
     position: relative;
-    margin: 10px 0 0 44px;
-    height: 86px;
-    width: 170px;
+    margin: 0.625rem 0 0 2.75rem;
+    height: 5.375rem;
+    width: 10.625rem;
 }
 
 .progress-div-download{
-    margin: 14px 0 0 30px;
-    border: 1px solid;
-    border-radius: 7px;
+    margin: 0.875rem 0 0 1.875rem;
+    border: 0.0625rem solid;
+    border-radius: 0.4375rem;
 }
 
 .download-story-div{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-left: 22px;
+    margin-left: 1.375rem;
 }
 
 .icon-1 {
-    font-size: 24px;
-    margin-bottom: 5px;
+    font-size: 1.5rem;
+    margin-bottom: 0.3125rem;
     display: block;
     color: #3b3939;
 }
@@ -380,7 +380,7 @@
 }
 
 .form-1 {
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0.9375rem rgba(0, 0, 0, 0.1);
     position: fixed;
     bottom: 0;
     left: 0;
@@ -388,7 +388,7 @@
 }
 
 .input-1 {
-    border: 1px solid;
+    border: 0.0625rem solid;
 }
 
 .div21 {
@@ -412,9 +412,9 @@
 }
 
 .div23 {
-    border-bottom: 3px solid #EEEEEE;
-    padding: 0 0 24px 0;
-    border-top: 5px solid #EEEEEE;
+    border-bottom: 0.1875rem solid #EEEEEE;
+    padding: 0 0 1.5rem 0;
+    border-top: 0.3125rem solid #EEEEEE;
 }
 
 .div24 {
@@ -423,15 +423,15 @@
 }
 
 .button-4 {
-    border: 1px solid;
-    border-radius: 21px;
-    padding: 8px;
+    border: 0.0625rem solid;
+    border-radius: 1.3125rem;
+    padding: 0.5rem;
     font-size: 1rem;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0rem 0.25rem 0.375rem;
 }
 
 .button-4:hover {
-    box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 6px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0rem 0.25rem 0.375rem;
 }
 
 .icon-2 {
@@ -439,10 +439,10 @@
 }
 
 .button-5 {
-    border-top: 5px solid rgb(238, 238, 238);
+    border-top: 0.3125rem solid rgb(238, 238, 238);
     width: 100%;
     font-size: 1.3rem;
-    padding: 8px;
+    padding: 0.5rem;
     color: #000;
 }
 
@@ -450,7 +450,7 @@
 .div25 {
     color: #f44336;
     font-size: 1rem;
-    margin: 7px auto;
+    margin: 0.4375rem auto;
     width: 66%;
     font-weight: 500;
 }
@@ -470,7 +470,7 @@
     left: 0;
     background-color: #0d0d0d;
     overflow: hidden;
-    filter: blur(10px);
+    filter: blur(0.625rem);
     z-index: 2000;
 }  
 
@@ -510,7 +510,7 @@
     z-index: 50;
     width: 100%;
     background-color: #ffffff;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.05);
 }
 
 .div70 {
@@ -538,19 +538,19 @@
 }
 
 .div30_a{
-    padding: 11px 0 !important;
+    padding: 0.6875rem 0 !important;
 }
 
 .div31 {
     background-color: #ffffff;
     color: #475569;
-    border-radius: 59px;
+    border-radius: 3.6875rem;
     font-size: 0.8rem;
     padding: 0.75rem;
     margin-top: 0.75rem;
-    margin-right: 17px;
-    outline: 1px solid #d1d5db;
-    outline-offset: 2px;
+    margin-right: 1.0625rem;
+    outline: 0.0625rem solid #d1d5db;
+    outline-offset: 0.125rem;
     width: 100%;
     max-width: 71%;
 }
@@ -582,7 +582,7 @@
 
 .div34 {
     margin: 0;
-    /* height: 288px; */
+    /* height: 18rem; */
     /* overflow-y: auto; */
 }
 
@@ -626,18 +626,18 @@
     margin-right: 0.5rem;
     outline-color: #0d9488;
     font-size: 0.875rem;
-    border-radius: 9999px;
+    border-radius: 624.9375rem;
     width: 99%;
-    height: 46px;
+    height: 2.875rem;
     color: #475569;
     resize: none;
     overflow-x: hidden;
     overflow-y: auto;
-    min-height: 40px;
+    min-height: 2.5rem;
     box-sizing: border-box;
     scrollbar-width: none;
     align-content: center;
-    padding: 0 14px;
+    padding: 0 0.875rem;
 }
 
 .input-2:disabled{
@@ -652,7 +652,7 @@
 }
 
 .button-6 {
-    border-radius: 9999px;
+    border-radius: 624.9375rem;
     background-color: #f3f8f9 !important;
     padding: 0.75rem;
     margin-left: 0.5rem;
@@ -668,10 +668,10 @@
 
 .div40 {
     position: absolute;
-    right: 80px;
-    top: 8px;
-    width: 100px;
-    border-radius: 9999px;
+    right: 5rem;
+    top: 0.5rem;
+    width: 6.25rem;
+    border-radius: 624.9375rem;
     background-color: rgba(254, 242, 242, 1) !important;
     font-size: 0.875rem;
     color: #b91c1c;
@@ -679,7 +679,7 @@
 }
 
 .button-7 {
-    border-radius: 9999px;
+    border-radius: 624.9375rem;
     padding: 0.9rem;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
@@ -690,8 +690,8 @@
     animation: animate;
     z-index: 10;
     position: absolute;
-    right: -30px;
-    top: -20px;
+    right: -1.875rem;
+    top: -1.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -747,14 +747,14 @@
 
 .button-10 {
     background-color: #fff;
-    border-radius: 9999px;
+    border-radius: 624.9375rem;
     color: #64748b;
     font-size: 1.1rem;
 }
 
 .button-11 {
     background-color: #fff;
-    border-radius: 9999px;
+    border-radius: 624.9375rem;
     color: #64748b;
     font-size: 1.1rem;
 }
@@ -795,7 +795,7 @@
 
 .div73 {
     text-align: end;
-    padding: 0 0 0 23px;
+    padding: 0 0 0 1.4375rem;
 }
 
 .div52 {
@@ -890,8 +890,8 @@
 }
 
 .header-2 {
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 0.1875rem;
+    padding-bottom: 0.1875rem;
 }
 
 .header-3 {
@@ -909,15 +909,15 @@
 }
 
 .img-1 {
-    height: 36px;
+    height: 2.25rem;
 }
 
 .div61 {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: -10px;
-    margin-right: 10px;
+    margin-top: -0.625rem;
+    margin-right: 0.625rem;
 }
 
 .div62 {
@@ -958,7 +958,7 @@
 }
 
 .aside-3 {
-    min-width: 300px;
+    min-width: 18.75rem;
     color: #ffffff;
     transition-timing-function: ease-in;
     min-height: 100%;
@@ -1010,7 +1010,7 @@
 
 .div69 {
     display: block;
-    padding: 10px 44px;
+    padding: 0.625rem 2.75rem;
 }
 
 .text-class{
@@ -1036,45 +1036,45 @@
 
 .voice-chat-editor-content{
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 800px;
+    max-width: 50rem;
     position: relative;
 }
   
 .editor-content-button{
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 0.625rem;
+    right: 0.625rem;
     background-color: transparent;
     border: none;
-    font-size: 20px;
+    font-size: 1.25rem;
     cursor: pointer;
 }
 
 .container-editor-div{
     background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    height: 500px;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    height: 31.25rem;
     overflow-y: auto;
 }
 
 .editor-main-div{ 
-    padding: 0 20px
+    padding: 0 1.25rem
 }
 
 .editor-button-div{
     display: flex;
     justify-content: center;
-    padding: 20px;
+    padding: 1.25rem;
 }
 
 .icon-7{
     font-size: 1.7rem;
-    margin-right: 5px;
-    margin-bottom: 5px;
+    margin-right: 0.3125rem;
+    margin-bottom: 0.3125rem;
     display: block;
     color: #3b3939;
 }
@@ -1083,7 +1083,7 @@
 .button-13{
     width: 100%;
     text-align: right;
-    padding: 20px 24px;
+    padding: 1.25rem 1.5rem;
     color: #167fd7;
     font-size: 1.05rem;
 }

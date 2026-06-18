@@ -22,14 +22,14 @@ function FileActionDropdown({ label, icon: Icon, options, onSelect }) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="h-[35px] flex items-center justify-center gap-[8px] rounded-md border border-[#572E91] px-3 bg-[#572E91] font-['Manrope'] font-medium text-sm leading-none text-white"
+        className="h-[2.1875rem] flex items-center justify-center gap-[0.5rem] rounded-md border border-repository-cardAccent px-3 bg-repository-cardAccent font-['Manrope'] font-medium text-sm leading-none text-white"
       >
         <Icon />
         {label}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[140px] rounded-md border border-gray-200 bg-white shadow-lg z-10">
+        <div className="absolute right-0 mt-2 w-[8.75rem] rounded-md border border-gray-200 bg-white shadow-lg z-10">
           {options.map((media) => {
             const ext =
               media.file_name?.split(".").pop()?.toUpperCase() || "FILE";

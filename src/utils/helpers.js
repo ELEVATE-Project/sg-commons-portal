@@ -43,7 +43,7 @@ export const initializeLanguageStorage = usecaseType => {
  * @returns {string} CSS class for logo width
  */
 export const getLogoWidthClass = language => {
-  return language === "en" ? "w-[140px]" : "w-[100px]"
+  return language === "en" ? "w-[8.75rem]" : "w-[6.25rem]"
 }
 
 /**

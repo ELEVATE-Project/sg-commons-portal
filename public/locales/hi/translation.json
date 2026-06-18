@@ -17,7 +17,10 @@
         "previous": "पिछला",
         "select": "चुनें",
         "selectAll": "सभी चुनें",
-        "deselectAll": "सभी हटाएँ"
+        "deselectAll": "सभी हटाएँ",
+        "back": "पीछे",
+        "download": "डाउनलोड करना",
+        "share": "शेयर करना"
     },
     "search_placeholder": "AI के साथ खोजें",
     "sortDisabledTooltipText": "AI खोज परिणामों को अपने आप प्रासंगिकता के आधार पर क्रमित करती है। मैन्युअल सॉर्टिंग बंद है।",
@@ -31,8 +34,9 @@
     "repository": {
         "browseResources": "संसाधन देखें",
         "browseResourcesDescription": "अपने प्रोजेक्ट के लिए उच्च गुणवत्ता वाले संसाधन खोजें",
+        "library": "लाइब्रेरी",
         "resultsCount_one": "{{count}} परिणाम",
-        "resultsCount_other": "{{count}} परिणाम",
+        "resultsCount_other": "परिणाम",
         "sortByLabel": "क्रमबद्ध करें",
         "perPage": "प्रति पृष्ठ",
         "selectPrefix": "चुनें",
@@ -57,6 +61,15 @@
             "dateAddedNewest": "जोड़े जाने की तिथि (नया पहले)",
             "dateModifiedOldest": "संशोधित तिथि (पुराना पहले)",
             "dateModifiedNewest": "संशोधित तिथि (नया पहले)"
-        }
+        },
+        "items": "सामान",
+        "browseAll": "सभी ब्राउज़ करें",
+        "exploreByTheme": "थीम के अनुसार देखें",
+        "file": "फ़ाइल",
+        "organization": "संगठन",
+        "googleDrive": "गूगल हाँकना",
+        "publishedOn": "प्रकाशित",
+        "viewAllResources": "सभी संसाधन देखें",
+        "invalidDownloadURL": "अमान्य डाउनलोड URL"
     }
 }

@@ -248,7 +248,7 @@ function TitleGeneration({
       <div>
         <BotMessage showChatStyle primaryMessage={t("titleGeneration.hereIsTheTitle")} secondaryMessage={t("titleGeneration.youCanEditIt")} />
         {(!fetchError || fetchError === "") && (
-          <div className="secondpage-textbox-container w-[75%] ml-[46px]">
+          <div className="secondpage-textbox-container w-[75%] ml-[2.875rem]">
             <TextareaWithVoice
               value={inputText}
               onChange={(val, isRec) => {

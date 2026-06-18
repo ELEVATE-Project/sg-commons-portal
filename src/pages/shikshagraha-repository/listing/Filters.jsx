@@ -92,7 +92,7 @@ export default function Filters() {
       },
       {
         threshold: 0,
-        rootMargin: "-1px 0px 0px 0px",
+        rootMargin: "-0.0625rem 0rem 0rem 0rem",
       }
     )
 
@@ -154,7 +154,7 @@ export default function Filters() {
       el.style.left = `${rect.left / 16}rem`
       el.style.width = `${rect.width / 16}rem`
       el.style.zIndex = '1000'
-      el.style.boxShadow = '0 0 4px rgba(0,0,0,0.2)'
+      el.style.boxShadow = '0 0 0.25rem rgba(0,0,0,0.2)'
     } else {
       placeholder.style.height = '0rem'
       placeholder.style.display = 'none'
@@ -472,7 +472,6 @@ if (inpText.trim() === "" && search.trim() !== "") {
     const searched_param = new URLSearchParams(window.location.search)?.get("q")
     setSearchInput(searched_param ?? "")
     setGlobalSearch(searched_param ?? "")
-
     return () => {
       setIsMaxLengthReached(false)
     }

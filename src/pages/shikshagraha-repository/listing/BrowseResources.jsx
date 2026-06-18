@@ -1,14 +1,11 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { Grid, List, ChevronDown, Check } from "lucide-react";
+import { Grid, List, ChevronDown, Check, ArrowRight } from "lucide-react";
 import ResourceCard from "./ResourceCard";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
 import MitraAiAssistantAside from "./MitraAiAssistantAside.jsx";
 import { useTranslation } from "react-i18next";
-import left1 from "../../../assets/dandelion-left-1.png";
-import left2 from "../../../assets/dandelion-left-2.png";
-import right1 from "../../../assets/dandelion-right-1.png";
-import right2 from "../../../assets/dandelion-right-2.png";
-
+import { useNavigate } from "react-router-dom";
+import ROUTES from "../../../url";
 // Custom hook for dropdown functionality
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -89,7 +86,7 @@ const Dropdown = ({
       <div>
         <button
           type="button"
-          className={`min-w-[120px] inline-flex items-center gap-1 text-sm focus:outline-none ${
+          className={`min-w-[6.25rem] inline-flex items-center gap-1 text-sm focus:outline-none ${
             disabled
               ? "text-[var(--listing-disabled-text)] cursor-not-allowed"
               : "text-[var(--listing-strong-text)] hover:text-[var(--listing-muted-text)]"
@@ -122,17 +119,20 @@ const Dropdown = ({
         >
           <div className="py-1">
             {options.map((option) => {
-              if (!option || !option.value) return null;
-              return (
-                <div key={option.value} className="w-full">
-                  {renderItem({
-                    option,
-                    isSelected: String(selectedValue) === String(option.value),
-                    onSelect: () => handleSelect(option.value),
-                  })}
-                </div>
-              );
-            })}
+  if (!option || option.value == null) return null;
+
+  const RenderItem = renderItem;
+
+  return (
+    <div key={option.value} className="w-full">
+      <RenderItem
+        option={option}
+        isSelected={String(selectedValue) === String(option.value)}
+        onSelect={() => handleSelect(option.value)}
+      />
+    </div>
+  );
+})}
           </div>
         </div>
       )}
@@ -167,7 +167,7 @@ const DefaultDropdownItem = ({ option, isSelected, onSelect }) => {
   );
 };
 
-export default function BrowseResources({ resources, viewMode, setViewMode }) {
+export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false }) {
   const pagination = useRepositoryStore((state) => state.pagination);
   const setPagination = useRepositoryStore((state) => state.setPagination);
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
@@ -175,7 +175,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode }) {
   const setSortBy = useRepositoryStore((state) => state.setSortBy);
   const searchInput = useRepositoryStore((state) => state.searchInput);
   const isSearchActive = searchInput && searchInput.trim().length > 0;
-
+  const navigate = useNavigate();
   const {t} = useTranslation();
   
   const sortOptions = [
@@ -188,7 +188,9 @@ export default function BrowseResources({ resources, viewMode, setViewMode }) {
   ];
 
   const itemsPerPage = pagination.limit;
-
+const displayedResources = compact
+  ? resources.slice(0, 3)
+  : resources;
   const perPageOptions = [
     { value: 6, label: "6" },
     { value: 12, label: "12" },
@@ -202,118 +204,240 @@ export default function BrowseResources({ resources, viewMode, setViewMode }) {
    
   return (
     <div
-      className="relative overflow-hidden py-12 w-full min-h-screen scroll-mt-24"
-      data-browse-resources
-    >
+  className={`relative overflow-hidden py-12 w-full scroll-mt-24 ${
+    compact ? "" : "min-h-screen"
+  }`}
+  data-browse-resources
+>
       <div
         className="absolute inset-0 z-0 pointer-events-none"
       />
-      <section className="relative z-10 min-h-screen max-w-[1500px] mx-auto">
+      <section
+  className={`relative z-10 max-w-[93.75rem] mx-auto ${
+    compact ? "" : "min-h-screen"
+  }`}
+>
+<div className="w-full lg:w-[92.5%] mx-auto">
         {/* ⬇️ EVERYTHING BELOW IS EXACT SAME (no change) */}
 
-        <div className="flex flex-col md:flex-row items-center justify-between mb-6">
-          <div className="w-full mb-3" data-browse-resources>
-            <h2 className="text-lg font-semibold text-[var(--listing-strong-text)] mb-1">
-              {t("repository.browseResources")}
-            </h2>
-            <p className="text-sm text-[var(--listing-muted-text)]">
-              {t("repository.browseResourcesDescription")}
-            </p>
-          </div>
-          <div className="flex flex-col md:flex-row  items-center gap-6 w-full">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+  <div className="w-full mb-3 md:mb-0" data-browse-resources>
+      <h2 className="text-[1.25rem] md:text-[1.375rem] font-['Comfortaa'] font-semibold tracking-[0.0625rem] text-repository-heading capitalize">
 
-            <div className="flex items-center justify-between lg:justify-end w-full lg:gap-6">
-              <div className="text-sm text-[var(--listing-muted-text)] font-bold">
-                {t("repository.resultsCount", { count: mediaCount })}
-              </div>
+      {t(title ?? "repository.browseResources")}
+    </h2>
 
-              <Dropdown
-                options={sortOptions}
-                selectedValue={sortBy}
-                onSelect={(value) => {
-                  setSortBy(value);
-                }}
-                renderButton={(selected) => (
-                  <span>{t("repository.sortByLabel")}: {selected?.label || t("common.select")}</span>
-                )}
-                disabled={isSearchActive}
-                tooltipText={`${t("sortDisabledTooltipText")}`}
-              />
-            </div>
+    {!compact && (
+      <p
+  className="
+    font-['Source_Sans_3']
+    font-medium
+    text-[0.875rem]
+    leading-[1.3125rem]
+    text-repository-body
+  "
+>
+  {t("repository.browseResourcesDescription")}
+</p>
+    )}
+  </div>
 
+  {compact ? (
+    <div className="flex items-center justify-between w-full md:w-auto gap-4">
+      <Dropdown
+  options={sortOptions}
+  selectedValue={sortBy}
+  onSelect={(value) => {
+    setSortBy(value);
+  }}
+  renderButton={(selected) => (
+  <span className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem] flex items-center">
+    <span className="font-normal text-repository-textPrimary">
+      {t("repository.sortByLabel")}:  
+    </span>{" "}
+    <span className="ml-2 font-bold text-repository-textPrimary">
+      {selected?.label || t("common.select")}
+    </span>
+  </span>
+)}
+/>
 
-            <div className="flex items-center justify-between flex-row-reverse lg:flex-row lg:justify-start lg:gap-6 w-full lg:w-auto">
-              <div className="flex items-center gap-1 border border-[var(--listing-border)] rounded">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 ${viewMode === "grid"
-                      ? "bg-[var(--listing-secondary)] text-white"
-                      : "text-[var(--listing-muted-text)] hover:bg-[var(--listing-surface-soft)]"
-                    }`}
-                >
-                  <Grid className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 ${viewMode === "list"
-                      ? "bg-[var(--listing-secondary)] text-white"
-                      : "text-[var(--listing-muted-text)] hover:bg-[var(--listing-surface-soft)]"
-                    }`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
-              <Dropdown
-                options={perPageOptions}
-                selectedValue={itemsPerPage}
-                onSelect={(value) => {
-                  handleItemsPerPageChange(value);
-                }}
-                dropdownClassName="w-32"
-                renderButton={(selected) => (
-                  <span>{selected?.label || "6"} {t("repository.perPage")}</span>
-                )}
-              />
-            </div>
+      <button
+  type="button"
+  onClick={() => navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST)}
+  className="
+    flex items-center justify-center gap-1
+    w-[7.5rem]
+    h-[2.25rem]
+    px-1 py-2
+    rounded-[0.5rem]
+    bg-repository-primary
+    hover:opacity-90
+    transition-all
+    flex-shrink-0
+  "
+>
+  <span
+    className="
+      font-medium
+      text-[0.8125rem]
+      leading-[1.25rem]
+      text-white
+    "
+  >
+    {t("repository.browseAll")}
+  </span>
 
-          </div>
+  <ArrowRight className="w-4 h-4 text-white" />
+</button>
+    </div>
+  ) : (
+    <div className="flex flex-col md:flex-row items-center gap-6 w-full">
+      <div className="flex items-center justify-between lg:justify-end w-full lg:gap-6">
+        <div className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem]">
+  <span className="font-bold text-repository-textPrimary">
+    {mediaCount}
+  </span>{" "}
+  <span className="font-normal text-repository-textSecondary">
+    {t("repository.resultsCount_other")}
+  </span>
+</div>
+
+        <Dropdown
+          options={sortOptions}
+          selectedValue={sortBy}
+          onSelect={(value) => {
+            setSortBy(value);
+          }}
+ renderButton={(selected) => (
+  <span className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem]">
+    <span className="font-normal text-repository-textSecondary">
+      {t("repository.sortByLabel")}:
+    </span>{" "}
+    <span className="font-bold text-repository-textPrimary">
+      {selected?.label || t("common.select")}
+    </span>
+  </span>
+)}
+          disabled={isSearchActive}
+          tooltipText={`${t("sortDisabledTooltipText")}`}
+        />
+      </div>
+
+      <div className="flex items-center justify-between flex-row-reverse lg:flex-row lg:justify-start lg:gap-6 w-full lg:w-auto">
+        <div className="flex items-center gap-1">
+          <button
+  onClick={() => setViewMode("grid")}
+  className={`
+    flex items-center justify-center
+    w-[1.7556rem]
+    h-[1.8656rem]
+    rounded-[0.4389rem]
+    border
+    transition-all
+    ${
+      viewMode === "grid"
+        ? "bg-repository-primary border-repository-primary text-white"
+        : "bg-white border-repository-controlBorder text-repository-controlIcon"
+    }
+  `}
+>
+  <Grid
+  className={`w-[0.875rem] h-[0.875rem]`}
+/>
+</button>
+
+          <button
+  onClick={() => setViewMode("list")}
+  className={`
+    flex items-center justify-center
+    w-[1.7556rem]
+    h-[1.8656rem]
+    rounded-[0.4389rem]
+    border
+    transition-all
+    ${
+      viewMode === "list"
+        ? "bg-repository-primary border-repository-primary text-white"
+        : "bg-white border-repository-controlBorder text-repository-controlIcon"
+    }
+  `}
+>
+  <List
+  className={`w-[0.875rem] h-[0.875rem]`}
+/>
+</button>
         </div>
 
-        <div className="relative overflow-hidden rounded-[32px] bg-[var(--listing-white)] pt-4 md:p-6">
+       <Dropdown
+  options={perPageOptions}
+  selectedValue={itemsPerPage}
+  onSelect={(value) => {
+    handleItemsPerPageChange(value);
+  }}
+  className="
+    [&>div>button]:w-[5.5rem]
+    [&>div>button]:h-[1.8656rem]
+    [&>div>button]:border
+    [&>div>button]:border-repository-controlBorder
+    [&>div>button]:rounded-[0.5487rem]
+    [&>div>button]:bg-white
+    [&>div>button]:px-3
+    [&>div>button]:justify-between
+  "
+  dropdownClassName="w-[5.5rem]"
+  renderButton={(selected) => (
+    <span
+  className="
+    font-['Inter']
+    font-normal
+    text-[0.7682rem]
+    leading-[1.125rem]
+    text-repository-textPrimary
+    flex
+    items-center
+  "
+>
+  {selected?.label || "6"} {t("repository.items")}
+</span>
+  )}
+/>
+      </div>
+    </div>
+  )}
+</div>
+
+        <div className="relative overflow-hidden">
           <div
             className="absolute inset-0 z-0 pointer-events-none"
-            style={{
-              backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
-              backgroundPosition: `left 0 top 100px, right 0 top 300px, left 0 bottom 200px, right 0 bottom 50px`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "160px, 160px, 200px, 200px",
-            }}
           />
-          <div className="relative z-10 pr-2">
+          <div className="relative z-10">
             <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">
               <div
-                className={`flex flex-col md:grid gap-6 w-full lg:!w-[calc(90%-1.5rem)]  ${viewMode === "grid"
-                    ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3 sm:grid-cols-1"
-                    : "grid-cols-1"
-                  }`}
-              >
-                {resources.map((resource, index) => (
+  className={`grid gap-6 w-full ${
+    viewMode === "grid"
+      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+      : "grid-cols-1"
+  }`}
+>
+               {displayedResources.map((resource, index) => (
                   <React.Fragment key={`resource-${resource.id}-${index}`}>
                     <ResourceCard
                       key={resource.id}
                       resource={resource}
                       index={index}
+                       viewMode={viewMode}
                     />
                   </React.Fragment>
                 ))}
               </div>
             </div>
           </div>
-          <div className="hidden lg:block w-[20%] self-stretch bg-white p-4 rounded-xl z-[9999]">
+          <div className="hidden lg:block w-[20%] self-stretch p-4 rounded-xl z-[9999]">
             <MitraAiAssistantAside />
           </div>
         </div>
-
+</div>
       </section>
     </div>
   );

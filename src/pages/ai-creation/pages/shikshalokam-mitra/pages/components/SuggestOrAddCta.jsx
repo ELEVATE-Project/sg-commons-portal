@@ -19,7 +19,7 @@ const SuggestOrAddCta = ({
 }) => {
   const showOrText = showSuggestMoreButton && showAddOwnButton;
   const buttonStyle =
-    "flex items-center font-sans font-normal text-base leading-[1.4] text-right text-[#1177FF]";
+    "flex items-center font-sans font-normal text-base leading-[1.4] text-right text-repository-hadfieldBlue";
 
   const {t} =  useTranslation()
 
@@ -41,7 +41,7 @@ const SuggestOrAddCta = ({
       {showAddOwnButton && (
         <div className="flex justify-center">
           <button className={buttonStyle} onClick={handleAddOwnClick}>
-            <FiPlusCircle className="mr-[5px]" />
+            <FiPlusCircle className="mr-[0.3125rem]" />
             {getAddOwnButtonTranslation(language)}
           </button>
         </div>

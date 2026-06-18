@@ -56,7 +56,7 @@ export default function Header({ isHeroSection = true, isBackButton = false, onS
       )}{" "}
       {menuOpen && (
         <div className="w-screen h-[100dvh]  absolute z-[999] top-0" onClick={() => setMenuOpen(false)}>
-          <div className="w-nav-overlay active w-full h-[calc(100vh-9rem)] top-[9rem]" data-wf-ignore="" id="w-nav-overlay-0" style={menuOpen ? { display: "block" } : { height: "0px", display: "none" }}>
+          <div className="w-nav-overlay active w-full h-[calc(100vh-9rem)] top-[9rem]" data-wf-ignore="" id="w-nav-overlay-0" style={menuOpen ? { display: "block" } : { height: "0rem", display: "none" }}>
             <nav role="navigation" className={" " + (menuOpen ? "nav-menu w-nav-menu" : "nav-menu w-nav-menu")} onClick={e => e.stopPropagation()}>
               <div className="grid">
                 <a href="https://shikshagraha.org/" className="nav-link w-nav-link">
