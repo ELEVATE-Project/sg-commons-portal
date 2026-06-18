@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Header from "../../../components/header/Header.jsx";
-import Filters from "./Filters.jsx";
-import BrowseResources from "./BrowseResources.jsx";
-import Pagination from "./Pagination.jsx";
+import BrowseResources from "../listing/BrowseResources.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
-import MitraAiAssistantAside from "./MitraAiAssistantAside.jsx";
+import MitraAiAssistantAside from "../listing/MitraAiAssistantAside.jsx";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore.js";
 import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
-import { useSearchParams } from "react-router-dom";
-import PageHeader from "../../../components/PageHeader";
+import ExploreByTheme from "../listing/ExploreByTheme";
 
 export default function RepositoryPage() {
-  const [viewMode, setViewMode] = useState("grid");
-  const [sortBy, setSortBy] = useState("recent");
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
   const { t } = useTranslation()
@@ -22,17 +17,9 @@ export default function RepositoryPage() {
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
   const q = useRepositoryStore((state) => state.q);
-
-  const mediaCount = useRepositoryStore((state) => state.mediaCount);
-  const pagination = useRepositoryStore((state) => state.pagination);
-  const setPagination = useRepositoryStore((state) => state.setPagination);
   const fetchMediaList = useRepositoryStore(
   (state) => state.fetchMediaList
 );
-  const itemsPerPage = pagination.limit;
-const [searchParams] = useSearchParams();
-
-const orgId = searchParams.get("org");
 
   useEffect(() => {
   fetchMediaList();
@@ -49,26 +36,23 @@ const orgId = searchParams.get("org");
   }, [mediaList, q, loadingList]);
 
   return (
-    <div className="bg-white relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
+    <div className="bg-[var(--listing-white)]  relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
       <div className="container max-w-[93.75rem] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
-        <div className="w-full">
-                    <PageHeader />
-                  </div>
+          <div className="w-full">
+            <Header />
+          </div>
            <div className="">
+          <ExploreByTheme />
 
-          {/* <div className="w-full mt-4 md:mt-6 z-50">
-            <Filters />
-          </div> */}
           <main className="w-full mx-auto">
             {!!mediaList?.length && (
 
  <BrowseResources
                 resources={mediaList}
-  viewMode={viewMode}
-  compact={false}
-  title="repository.browseResources"
-  setViewMode={setViewMode}
+  viewMode="grid"
+  compact={true}
+  title="repository.library"
               />
             )}
          
@@ -83,20 +67,6 @@ const orgId = searchParams.get("org");
                 </div>
               </div>
             )}
-            <div className="w-full mt-6 mx-auto">
-              <Pagination
-                resourcesPerPage={itemsPerPage}
-                totalResources={mediaCount}
-                selectedPage={Math.floor(pagination.offset / itemsPerPage)}
-                paginate={(page) => {
-                  setPagination({
-                    ...pagination,
-                    offset: (itemsPerPage + (page - 1) * itemsPerPage) || 0,
-                    limit: itemsPerPage,
-                  });
-                }}
-              />
-            </div>
           </main>
           </div>
         </div>

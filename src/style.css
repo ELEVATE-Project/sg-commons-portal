@@ -74,7 +74,7 @@ body .landing {
   width: 75%;
   -o-object-fit: cover;
   object-fit: cover;
-  padding-top: 15px;
+  padding-top: 0.9375rem;
   -webkit-transform: scale(1) translateX(30%) translateY(-5%);
   transform: scale(1) translateX(30%) translateY(-5%);
   -webkit-animation: zoom 10s ease-in 0s normal;
@@ -109,7 +109,7 @@ body .landing {
 }
 
 .content {
-  padding: 80px;
+  padding: 5rem;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -125,14 +125,14 @@ body .landing {
   z-index: 20;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .content {
-    padding: 40px 20px 100px 20px;
+    padding: 2.5rem 1.25rem 6.25rem 1.25rem;
   }
 }
 
 .logo-img {
-  height: 90px;
+  height: 5.625rem;
   -webkit-animation: logo 7.5s ease-in 0s normal;
   animation: logo 7.5s ease-in 0s normal;
 }
@@ -149,8 +149,8 @@ body .landing {
 
 .main-text h2 {
   color: white;
-  height: 56px;
-  font-size: 48px;
+  height: 3.5rem;
+  font-size: 3rem;
   font-weight: 900;
   overflow: hidden;
   white-space: nowrap;
@@ -165,19 +165,19 @@ body .landing {
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.625rem;
 }
 
 .sub-text {
   font-size: large;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.0938rem;
   color: white;
   opacity: 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .sub-text {
-    left: 20px;
+    left: 1.25rem;
   }
 }
 
@@ -413,18 +413,18 @@ NEW CSS COLORS FROM FIGMA
 
 /* custom measures */
 
-.rounded-36px {
-  border-radius: 36px !important;
+.rounded-2.25rem {
+  border-radius: 2.25rem !important;
 }
 
 .system-button {
   display: inline-flex;
-  padding: 14px 36px;
+  padding: 0.875rem 2.25rem;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  border-radius: 8px;
-  border: 1px solid #4192a6;
+  gap: 0.625rem;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid #4192a6;
 }
 
 .system-button-text {
@@ -449,18 +449,18 @@ NEW CSS COLORS FROM FIGMA
 .format-my-markdown tbody, td, tfoot, th, thead, tr {
   border-color: inherit !important;
   border-style: solid !important;
-  border-width: 2px !important;
+  border-width: 0.125rem !important;
 
 }
 .format-my-markdown td, th{
-  padding: 10px !important;
+  padding: 0.625rem !important;
 }
 
 .format-my-markdown  ol, .format-my-markdown  li, .format-my-markdown  p {
-  margin: 10px !important;
+  margin: 0.625rem !important;
 }
 .format-my-markdown li,.format-my-markdown ol,.format-my-markdown ul   {
-  margin-left: 20px !important;
+  margin-left: 1.25rem !important;
 }
 .format-my-markdown ol,.format-my-markdown ul {
   list-style-type: decimal !important;
@@ -472,37 +472,37 @@ NEW CSS COLORS FROM FIGMA
 
  .dot-typing {
   position: relative;
-  left: -9999px;
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
+  left: -624.9375rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 0.3125rem;
   background-color: #c3234a50;
   color: #c3234a50;
-  box-shadow: 9984px 0 0 0 #c3234a50, 9999px 0 0 0 #c3234a50, 10014px 0 0 0 #c3234a50;
+  box-shadow: 624rem 0 0 0 #c3234a50, 624.9375rem 0 0 0 #c3234a50, 625.875rem 0 0 0 #c3234a50;
   animation: dot-typing 1.5s infinite linear;
 }
 
 @keyframes dot-typing {
   0% {
-    box-shadow: 9984px 0 0 0 #c3234a50, 9999px 0 0 0 #c3234a50, 10014px 0 0 0 #c3234a50;
+    box-shadow: 624rem 0 0 0 #c3234a50, 624.9375rem 0 0 0 #c3234a50, 625.875rem 0 0 0 #c3234a50;
   }
   16.667% {
-    box-shadow: 9984px -10px 0 0 #c3234a50, 9999px 0 0 0 #c3234a50, 10014px 0 0 0 #c3234a50;
+    box-shadow: 624rem -0.625rem 0 0 #c3234a50, 624.9375rem 0 0 0 #c3234a50, 625.875rem 0 0 0 #c3234a50;
   }
   33.333% {
-    box-shadow: 9984px 0 0 0 #c3234a50, 9999px 0 0 0 #c3234a50, 10014px 0 0 0 #c3234a50;
+    box-shadow: 624rem 0 0 0 #c3234a50, 624.9375rem 0 0 0 #c3234a50, 625.875rem 0 0 0 #c3234a50;
   }
   50% {
-    box-shadow: 9984px 0 0 0 #c3234a50, 9999px -10px 0 0 #c3234a50, 10014px 0 0 0 #c3234a50;
+    box-shadow: 624rem 0 0 0 #c3234a50, 624.9375rem -0.625rem 0 0 #c3234a50, 625.875rem 0 0 0 #c3234a50;
   }
   66.667% {
-    box-shadow: 9984px 0 0 0 #c3234a50, 9999px 0 0 0 #c3234a50, 10014px 0 0 0 #c3234a50;
+    box-shadow: 624rem 0 0 0 #c3234a50, 624.9375rem 0 0 0 #c3234a50, 625.875rem 0 0 0 #c3234a50;
   }
   83.333% {
-    box-shadow: 9984px 0 0 0 #c3234a50, 9999px 0 0 0 #c3234a50, 10014px -10px 0 0 #c3234a50;
+    box-shadow: 624rem 0 0 0 #c3234a50, 624.9375rem 0 0 0 #c3234a50, 625.875rem -0.625rem 0 0 #c3234a50;
   }
   100% {
-    box-shadow: 9984px 0 0 0 #c3234a50, 9999px 0 0 0 #c3234a50, 10014px 0 0 0 #c3234a50;
+    box-shadow: 624rem 0 0 0 #c3234a50, 624.9375rem 0 0 0 #c3234a50, 625.875rem 0 0 0 #c3234a50;
   }
 }
 
@@ -582,22 +582,22 @@ NEW CSS COLORS FROM FIGMA
   }
   .icon-position{
     position: fixed;
-    bottom: 150px;
-    right: 25px;
+    bottom: 9.375rem;
+    right: 1.5625rem;
     z-index: 20;
   }
   .btm-icon-position{
     position: fixed;
-    top: 60px;
-    right: 25px;
+    top: 3.75rem;
+    right: 1.5625rem;
     z-index: 20;
   }
   .icon-style{
     background-color: #551B54;
-    border: 2px solid #fff;
+    border: 0.125rem solid #fff;
     border-radius: 50%;
-    height: 50px;
-    width: 50px;
+    height: 3.125rem;
+    width: 3.125rem;
     color: #fff;
     cursor: pointer;
     animation: movebtn 3s ease-in-out infinite;
@@ -607,24 +607,24 @@ NEW CSS COLORS FROM FIGMA
     animation: none;
     background: #fff;
     color: #551B54;
-    border: 2px solid #551B54;
+    border: 0.125rem solid #551B54;
   }
   
   @keyframes movebtn {
     0%{
-      transform: translateY(0px);
+      transform: translateY(0rem);
     }
     25%{
-      transform: translateY(20px);
+      transform: translateY(1.25rem);
     }
     50%{
-      transform: translateY(0px);
+      transform: translateY(0rem);
     }
     75%{
-      transform: translateY(-20px);
+      transform: translateY(-1.25rem);
     }
     100%{
-      transform: translateY(0px);
+      transform: translateY(0rem);
     }
   }
 
@@ -653,9 +653,9 @@ NEW CSS COLORS FROM FIGMA
     }
   }
 
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 62rem) {
   #scrollableDiv::-webkit-scrollbar {
-    width: 5px;
+    width: 0.3125rem;
     position: absolute;
     left: 0;
   }
@@ -677,9 +677,9 @@ NEW CSS COLORS FROM FIGMA
   }
 }
 
-@media screen and (min-width: 769px) and (max-width: 991px) {
+@media screen and (min-width: 48.0625rem) and (max-width: 61.9375rem) {
   #scrollableDiv::-webkit-scrollbar {
-    width: 5px;
+    width: 0.3125rem;
     position: absolute;
     left: 0;
   }
@@ -701,9 +701,9 @@ NEW CSS COLORS FROM FIGMA
   }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 48rem) {
   #scrollableDiv::-webkit-scrollbar {
-    width: 10px;
+    width: 0.625rem;
     position: absolute;
     left: 0;
   }

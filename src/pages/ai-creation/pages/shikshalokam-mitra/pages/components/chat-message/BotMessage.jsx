@@ -47,15 +47,15 @@ const BotMessage = ({
     return (
       <div className={`flex flex-col items-start relative py-4 ${wrapperStyles}`}>
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-8 h-8 rounded-full bg-[#4A3B94] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-repository-bluishPurple flex items-center justify-center">
             <FaUser className="text-white text-lg" />
           </div>
-          <span className="font-semibold text-sm text-[#101010]">{botMessageName ?? t("common.defaultBotName")}</span>
+          <span className="font-semibold text-sm text-repository-extremeBlack">{botMessageName ?? t("common.defaultBotName")}</span>
         </div>
         
         <div 
           id={chatId} 
-          className="bg-[#F6F2FE] rounded-2xl rounded-tl-none px-4 py-3 max-w-[85%] ml-10"
+          className="bg-repository-magnolia rounded-2xl rounded-tl-none px-4 py-3 max-w-[85%] ml-10"
         >
           {!!(isShowImages || isShowBotSpeaker) && (
             <div className="div42 mb-2">
@@ -77,7 +77,7 @@ const BotMessage = ({
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw]} 
               components={markdownComponents}
-              className="text-[#101010] font-medium text-base leading-6"
+              className="text-repository-extremeBlack font-medium text-base leading-6"
             >
               {primaryMessage}
             </ReactMarkdown>
@@ -88,7 +88,7 @@ const BotMessage = ({
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw]} 
               components={markdownComponents}
-              className="text-[#101010] font-normal text-sm leading-6"
+              className="text-repository-extremeBlack font-normal text-sm leading-6"
             >
               {secondaryMessage}
             </ReactMarkdown>

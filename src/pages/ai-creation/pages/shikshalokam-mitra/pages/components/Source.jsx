@@ -24,7 +24,7 @@ const Source = ({ source = {}, customClassNames = {} }) => {
       return <div>No sources available</div>;
     }
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:gap-4 mt-[10px] lg:mt-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:gap-4 mt-[0.625rem] lg:mt-0">
         {sourceData.map((item, index) => {
 
 

@@ -1,10 +1,16 @@
-import React from "react"
-import { Star, Download, FileSpreadsheet, FileText, FileType, File, Eye } from "lucide-react"
-import ROUTES from "../../../url"
-import env from "../../../utils/env"
+import {
+  File,
+  Eye,
+  Download,
+} from "lucide-react"
 import { trackResourceView } from "api/endpoints/analytics"
-import { theme } from "../../../theme"
 import { useTranslation } from "react-i18next"
+import PdfIcon from "assets/icons/pdf.svg"
+import DocxIcon from "assets/icons/docx.svg"
+import XlsxIcon from "assets/icons/xlsx.svg"
+import GoogleDriveIcon from "assets/icons/google_drive.svg"
+import { useNavigate } from "react-router-dom"
+import { openSafeUrl } from "../../../utils/urlUtils"
 
 const MEDIA_FILE_TYPE = {
   PDF: "PDF",
@@ -12,184 +18,444 @@ const MEDIA_FILE_TYPE = {
   XLSX: "XLSX",
 }
 
-// Get file type badge styles and icon
-export const getMediaFileTypeStyles = (label_value, cardBackground) => {
-  switch (label_value) {
+export const getMediaFileTypeStyles = type => {
+  switch (type) {
     case MEDIA_FILE_TYPE.PDF:
       return {
-        background: "bg-[#DA1618]",
-        textColor: "text-white",
-        Icon: FileType,
+        background: "bg-repository-pdfBg",
+        icon: PdfIcon,
       }
+
     case MEDIA_FILE_TYPE.DOCX:
       return {
-        background: "bg-[#0086F9]",
-        textColor: "text-white",
-        Icon: FileText,
+        background: "bg-repository-docxBg",
+        icon: DocxIcon,
       }
+
     case MEDIA_FILE_TYPE.XLSX:
       return {
-        background: "bg-[#0DB563]",
-        textColor: "text-white",
-        Icon: FileSpreadsheet,
+        background: "bg-repository-xlsxBg",
+        icon: XlsxIcon,
       }
+
     default:
       return {
-        background: cardBackground || "bg-gray-500",
-        textColor: "text-white",
+        background: "bg-repository-defaultFileBg",
         Icon: File,
       }
   }
 }
 
+export const getTagStyles = type => {
+  switch (type) {
+    case MEDIA_FILE_TYPE.PDF:
+      return {
+        bg: "bg-repository-pdfTagBg",
+text: "text-repository-pdfTagText",
+      }
 
+    case MEDIA_FILE_TYPE.DOCX:
+      return {
+        bg: "bg-repository-docxTagBg",
+text: "text-repository-docxTagText",
+      }
 
+    case MEDIA_FILE_TYPE.XLSX:
+      return {
+        bg: "bg-repository-xlsxTagBg",
+text: "text-repository-xlsxTagText",
+      }
 
-export default function ResourceCard({ resource, index }) {
+    default:
+      return {
+        bg: "bg-repository-defaultTagBg",
+        text: "text-repository-textSecondary",
+      }
+  }
+}
+
+export default function ResourceCard({ resource, viewMode = "grid" }) {
   const { t } = useTranslation()
-  const cardTheme = theme.cardPalette[index % theme.cardPalette.length] || theme.cardPalette[0]
-  const card_background = cardTheme.text === "#000000" ? "text-black" : "text-white"
-  const { background: fileTypeBg, textColor, Icon: FileIcon } = getMediaFileTypeStyles(resource?.media_type_display, card_background)
-  
+  const navigate = useNavigate()
+
+  const { background,icon, Icon: FileIcon } = getMediaFileTypeStyles(
+  resource?.media_type_display
+)
+
+const { bg: tagBg, text: tagText } = getTagStyles(
+  resource?.media_type_display
+)
+
+const handleCardClick = () => {
+  trackResourceView(resource?.id);
+
+  navigate(`/resources/${resource?.id}`);
+};
+
+const handleCardKeyDown = (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    handleCardClick();
+  }
+};
+
+  if (viewMode === "list") {
   return (
     <div
-      className="bg-white rounded-[20px] border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow
-                 flex flex-col justify-between w-full min-w-[340px] h-full box-border "
       role="button"
-      onClick={() => {
-        // Fire analytics event without blocking navigation
-        trackResourceView(resource?.id)
-
-        const root = (env.ROOT_PATH() || "").replace(/^\/|\/$/g, "")
-        const repo = (ROUTES.SHIKSHAGRAHA_REPOSITORY || "").replace(/^\/|\/$/g, "")
-        const id = resource?.id ? `/${resource.id}` : ""
-
-        const pathParts = [root, repo].filter(Boolean).join("/")
-        const finalUrl = `${window.location.origin}${pathParts ? "/" + pathParts : ""}${id}`
-
-        window.open(finalUrl, "_blank")
-      }}
+      tabIndex={0}
+  onClick={handleCardClick}
+  onKeyDown={handleCardKeyDown}
+      className="
+        w-full
+        bg-white
+        border
+        border-repository-cardBorder
+        rounded-[1rem]
+        px-3
+        py-3
+        flex
+        items-center
+        gap-4
+        cursor-pointer
+        hover:shadow-sm
+        transition-all
+      "
     >
-      <div className="flex flex-col gap-3.5 p-3.5">
-        {/* Image container */}
-        <div className="relative flex flex-col gap-2.5 isolate w-full h-[154px] rounded-[10px]">
-          {/* PDF Preview or Colored Background */}
-          {resource?.thumbnail_url ? (
-            <div className="border border-[#D6D6D6] rounded-[20px] overflow-none">
-              <img className="object-cover rounded-[20px] w-full max-h-[154px]" src={resource.thumbnail_url} />
-            </div>
-          ) : (
-            <div
-              className={card_background + " w-full h-full rounded-[10px]"}
-              aria-label={t("repository.imagePlaceholder")}
-              style={{ backgroundColor: cardTheme.background }}
-            >
-                        {/* Title over image */}
-          <h3 className={"absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-manrope font-bold text-[16px] leading-[22px] max-w-[300px] h-[22px] flex items-center justify-center z-30 text-center " + card_background}>{resource?.title}</h3>
-
-            </div>
-          )}
-
-          {/* Like (Heart) button: FUTURE @TODO */}
-          {/* <button
-          className="absolute right-[9px] top-[10px] w-[30px] h-[30px] bg-gray-100 rounded-[17.6471px]
-                     shadow-[0_0_100px_#CFD7DC] flex justify-center items-center z-20"
-          aria-label="Like"
-          type="button"
-        >
-          <Heart className="w-[21px] h-[21px]" />
-        </button> */}
-        </div>
-        {/* Details container */}
-        <div className="flex flex-col gap-2 max-w-[320px] w-full">
-          {/* Description */}
-          <div className="flex flex-col justify-center gap-1.5 py-2 w-full overflow-hidden" aria-label="Resource description">
-            <h4 className="font-semibold text-[1rem] text-md leading-[22px] text-black">{resource?.title || t("repository.notAvailable")}</h4>
-            <p className="font-normal leading-[20px] text-zinc-500 overflow-hidden line-clamp-2">{resource?.description || t("repository.notAvailable")}</p>
-          </div>
-
-          <div className="flex items-center justify-between gap-2 border border-[#D6D6D6] py-2 !border-l-0 !border-r-0">
-            <div className="flex items-center gap-2">
-              <p className="text-[#27272A] text-xs">{t("repository.fileType")}</p>
-              <div className={`rounded-md uppercase px-2 py-1 text-xs flex items-center gap-1 ${fileTypeBg} ${textColor}`}>
-                <FileIcon className="w-3 h-3" />
-                {resource?.media_type_display}
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-[#333843]">
-              <div className="flex items-center gap-1">
-                <Eye className="w-4 h-4" />
-                <span>{resource?.view_count ?? 0}</span>
-              </div>
-              <span className="text-[#D6D6D6]">|</span>
-              <div className="flex items-center gap-1">
-                <Download className="w-4 h-4" />
-                <span>{resource?.download_count ?? 0}</span>
-              </div>
-            </div>
-          </div>
-          {/* Tags row */}
-          <div className="flex flex-row flex-wrap gap-2.5 w-full  overflow-hidden" aria-label="Resource tags">
-            {[resource?.tag_names?.[0], resource?.tag_names?.[1]]?.map((tag, i) =>
-              tag ? (
-                <span key={i} className="bg-[#E5E7EB] rounded-full py-[2px] px-[10px] font-inter font-medium text-[12px] leading-[16px] text-[#374151]">
-                  {tag}
-                </span>
-              ) : null
-            )}
-            {resource?.tag_names?.length > 2 && <span className="bg-[#E5E7EB] rounded-full py-[2px] px-[10px] font-inter font-medium text-[12px] leading-[16px] text-[#374151]">+{resource?.tag_names?.length - 2} {t("repository.more")}</span>}
-          </div>
-        </div>
-      </div>
-
-      <div className="h-full flex items-start justify-end flex-col p-3.5 pt-0">
-        {/* Rating and download count */}
-        <div className="flex flex-row justify-between items-center w-full min-h-[36px] d-none">
-          {/* Rating */}
-          {!!resource?.rating ? (
-            <div className="flex flex-row justify-between items-center gap-2 w-[216px] min-h-[36px]">
-              <div className="flex flex-row gap-2 w-[128px] text-xs items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`w-[1.25rem] h-[1.25rem] ${i < 4 ? "text-yellow-400 fill-current" : "text-gray-300"}`} />
-                ))}
-              </div>
-              <div className="flex items-center gap-1 text-xs font-urbanist font-medium leading-[20px] text-zinc-500">
-                <span>{resource?.rating}</span>
-                <span>({resource?.reviews})</span>
-              </div>
-            </div>
-          ) : (
-            <div className="min-h-[36px]" />
-          )}
-
-          {/* Downloads */}
-          {!!resource?.downloads ? (
-            <div className="flex flex-row items-center justify-end gap-1 w-full min-w-[104px] h-[20px] relative">
-              <Download className="w-[1.125rem] h-[1.125rem]" />
-              <div className="flex flex-row gap-1">
-                <span className="font-urbanist font-medium text-xs leading-[20px] text-zinc-500">{resource?.downloads}</span>
-                <span className="font-urbanist font-medium text-xs leading-[20px] text-zinc-500">{t("repository.downloads")}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="min-h-[20px]" />
-          )}
-        </div>
-        {/* Organization block */}
-        {resource?.organization && (
-          <button
-            className="cursor-pointer flex flex-row items-center gap-1.5 w-full h-[30.25px] max-w-[320px] hover:text-blue-500 transition-colors"
-            title={resource?.organization}
-            onClick={event => {
-              event.preventDefault()
-              event.stopPropagation()
-              window.open(resource?.organization_url, "_blank")
-            }}
-          >
-            <img src={resource?.org_logo} alt={t("repository.organizationLogoAlt")} className="h-6" />
-          </button>
+      {/* File Type */}
+      <div
+        className={`
+          ${background}
+          w-[6rem]
+          min-w-[6rem]
+          h-[4.25rem]
+          rounded-[0.5rem]
+          flex
+          flex-col
+          items-center
+          justify-center
+          text-white
+        `}
+      >
+        {icon ? (
+          <img
+            src={icon}
+            alt={resource?.media_type_display}
+            className="w-6 h-6"
+          />
+        ) : (
+          <FileIcon className="w-6 h-6" />
         )}
+
+        <span className="mt-1 text-[0.6875rem] font-semibold uppercase">
+          {resource?.media_type_display}
+        </span>
       </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        {/* Title */}
+        <h3
+          className="
+            text-[1.25rem]
+            font-medium
+            text-repository-cardTitle
+            truncate
+          "
+        >
+          {resource?.title || t("repository.notAvailable")}
+        </h3>
+
+        {/* Description */}
+        <p
+          className="
+            mt-1
+            text-[0.875rem]
+            text-repository-cardDescription
+            line-clamp-1
+          "
+        >
+          {resource?.description || t("repository.notAvailable")}
+        </p>
+
+        {/* Tags */}
+{resource?.tag_names?.length > 0 && (
+  <div className="flex flex-wrap gap-2 mt-2">
+    {resource.tag_names.slice(0, 4).map((tag, index) => (
+      <span
+        key={index}
+        className={`
+          ${tagBg}
+          ${tagText}
+          text-[0.75rem]
+          px-3
+          py-1
+          rounded-full
+          whitespace-nowrap
+        `}
+      >
+        {tag}
+      </span>
+    ))}
+  </div>
+)}
+
+        {/* Footer */}
+        <div className="flex items-center gap-5 mt-3 text-repository-cardMeta">
+          <div className="flex items-center gap-1">
+            <Eye size={14} />
+            <span className="text-[0.875rem]">
+              {resource?.view_count ?? 0}k
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <Download size={14} />
+            <span className="text-[0.875rem]">
+              {resource?.download_count ?? 0}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Organization */}
+      {resource?.organization && (
+        <button
+          type="button"
+          className="flex items-center gap-3 ml-4 flex-shrink-0"
+          onClick={e => {
+            e.preventDefault()
+            e.stopPropagation()
+
+            if (resource?.organization_url) {
+              openSafeUrl(resource.organization_url)
+            }
+          }}
+        >
+          <span
+            className="
+              text-[0.875rem]
+              text-repository-cardMeta
+              underline
+              whitespace-nowrap
+            "
+          >
+            {resource.organization}
+          </span>
+
+          <img
+            src={GoogleDriveIcon}
+            alt={t("repository.organization")}
+            className="w-6 h-6 object-contain"
+          />
+        </button>
+      )}
     </div>
   )
+}
+
+  return (
+  <div
+    role="button"
+    tabIndex={0}
+    onClick={handleCardClick}
+  onKeyDown={handleCardKeyDown}
+    className="
+      flex
+      flex-col
+      bg-white
+      border
+      border-repository-border
+      rounded-[0.75rem]
+      py-[1.6875rem]
+      px-[1.1875rem]
+      h-[17.75rem]
+      cursor-pointer
+      transition-all
+      hover:shadow-sm
+      w-full
+    "
+  >
+    {/* Content */}
+    <div className="flex flex-col items-center gap-[0.875rem] flex-1">
+      {/* Top Section */}
+      <div className="flex w-full gap-[0.75rem] h-[5rem]">
+        {/* File Type Box */}
+        <div
+  className={`
+    ${background}
+    w-[5.8125rem]
+    min-w-[5.8125rem]
+    h-[5rem]
+    border
+    border-repository-border
+    rounded-[0.5rem]
+    flex
+    flex-col
+    justify-center
+    items-center
+    text-white
+  `}
+>
+  {icon ? (
+    <img
+      src={icon}
+      alt={resource?.media_type_display}
+      className="w-7 h-7"
+    />
+  ) : (
+    <FileIcon className="w-7 h-7" />
+  )}
+
+  <span className="mt-1 text-[0.6875rem] font-semibold uppercase">
+    {resource?.media_type_display || t("repository.file")}
+  </span>
+</div>
+
+        {/* Title */}
+        <div className="flex-1 min-w-0 flex items-center h-[4.625rem] py-[0.625rem]">
+          <h3
+            className="
+              text-[1rem]
+              leading-[1.125rem]
+              font-['Comfortaa'] 
+              font-semibold
+              text-repository-title
+              line-clamp-3
+            "
+          >
+            {resource?.title || t("repository.notAvailable")}
+          </h3>
+        </div>
+      </div>
+
+      {/* Description */}
+      <p
+        className="
+        font-['Source_Sans_3']
+          w-full
+          text-[0.875rem]
+          leading-[1.25rem]
+          text-repository-cardDescription
+          line-clamp-3
+        "
+      >
+        {resource?.description || t("repository.notAvailable")}
+      </p>
+
+      {/* Tags + Footer Section */}
+      <div className="w-full flex flex-col gap-[0.3125rem] mt-auto">
+        {/* Tags */}
+        {resource?.tag_names?.length > 0 && (
+  <div className="pb-[0.75rem] border-b border-repository-subtitle">
+    <div className="flex items-center gap-[0.25rem] overflow-hidden">
+  {resource.tag_names.slice(0, 2).map((tag, index) => (
+    <span
+      key={index}
+      className={`
+        ${tagBg}
+        ${tagText}
+        px-[0.625rem]
+        py-[0.125rem]
+        rounded-full
+        text-[0.875rem]
+        leading-[1.25rem]
+        font-['Source_Sans_3']
+        whitespace-nowrap
+        ${
+          index === 1
+            ? "max-w-full truncate"
+            : "flex-shrink-0"
+        }
+      `}
+    >
+      {tag}
+    </span>
+  ))}
+</div>
+  </div>
+)}
+
+        {/* Footer */}
+        <div className="flex items-center justify-between min-h-[1.8125rem]">
+          <div className="flex items-center gap-[1.0625rem] text-repository-subtitle">
+            <div className="flex items-center gap-[0.375rem]">
+              <Eye size={16} strokeWidth={1.8} />
+
+              <span
+                className="
+                  text-[1.25rem]
+                  leading-[1.5rem]
+                  font-['Source_Sans_3']
+                "
+              >
+                {resource?.view_count ?? 0}k
+              </span>
+            </div>
+
+            <div className="flex items-center gap-[0.375rem]">
+              <Download size={16} strokeWidth={1.8} />
+
+              <span
+                className="
+                  text-[1.25rem]
+                  leading-[1.5rem]
+                  font-['Source_Sans_3']
+                "
+              >
+                {resource?.download_count ?? 0}
+              </span>
+            </div>
+          </div>
+
+          {resource?.organization && (
+            <button
+              type="button"
+              className="
+                flex
+                items-center
+                gap-2
+                min-w-0
+                text-[1.25rem]
+              "
+              onClick={e => {
+                e.preventDefault()
+                e.stopPropagation()
+
+                if (resource?.organization_url) {
+                  openSafeUrl(resource.organization_url)
+                }
+              }}
+            >
+              <span
+                className="
+                  text-[1.125rem]
+                  text-repository-subtitle
+                  font-['Source_Sans_3']
+                  underline
+                  truncate
+                  max-w-[7.5rem]
+                  mr-3
+                "
+              >
+                {resource.organization}
+              </span>
+
+             <img
+  src={GoogleDriveIcon}
+  alt={t("repository.googleDrive")}
+  className="
+    h-[1.25rem]
+    w-[1.25rem]
+    object-contain
+    flex-shrink-0
+  "
+/>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)
 }

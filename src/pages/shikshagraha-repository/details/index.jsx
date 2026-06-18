@@ -1,6 +1,6 @@
 // ResourceDetailPage.jsx
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Download, Heart, Share2, Star } from "lucide-react";
+import { ArrowLeft, Download, Heart, Share2, Star, Eye, ChevronDown } from "lucide-react";
 import left1 from "../../../assets/dandelion-left-1.png";
 import left2 from "../../../assets/dandelion-left-2.png";
 import right1 from "../../../assets/dandelion-right-1.png";
@@ -14,6 +14,8 @@ import ROUTES from "../../../url";
 import { trackResourceDownload } from "api/endpoints/analytics";
 import { theme } from "../../../theme";
 import { useTranslation } from "react-i18next";
+import { openSafeUrl } from "../../../utils/urlUtils";
+import { sanitizeHtml } from "../../../utils/htmlUtils";
 
 export default function ResourceDetailPage() {
   const { t } = useTranslation();
@@ -56,9 +58,9 @@ export default function ResourceDetailPage() {
         className="fixed top-0 left-0 right-0 w-screen h-screen pointer-events-none z-0"
         style={{
           backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
-          backgroundPosition: "left 0px top 400px, right 0px top 500px, left 0px bottom 0px, right 0px bottom 0px",
+          backgroundPosition: "left 0rem top 25rem, right 0rem top 31.25rem, left 0rem bottom 0rem, right 0rem bottom 0rem",
           backgroundRepeat: "no-repeat",
-          backgroundSize: "160px, 160px, 200px, 200px",
+          backgroundSize: "10rem, 10rem, 12.5rem, 12.5rem",
         }}
       />
       <div
@@ -66,20 +68,20 @@ export default function ResourceDetailPage() {
         ref={containerRef}
         style={{...theme.vars, backgroundImage: "none"}}
       >
-        <section className="relative z-10 min-h-screen max-w-[1500px] mx-auto px-6">
-        <ToastContainer />
+<section className="relative z-10 min-h-screen max-w-[80rem] mx-auto px-8">        <ToastContainer />
         {isLoading && (
           <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-black bg-opacity-75 text-white h-screen">
             {t("common.loadingText")}
           </div>
         )}
-        <BackButton />
+        <BackButton title={resourceData?.title} />
         <div className="flex gap-8 mt-2">
           {/* <ResourceImages images={resourceData?.images} /> */}
           <ResourceMeta resource={resourceData} />
         </div>
-        <Tabs tab={tab} setTab={setTab} />
-        <TabContent tab={tab} resource={resourceData} />
+        {/* <Tabs tab={tab} setTab={setTab} />
+        <TabContent tab={tab} resource={resourceData} /> */}
+        <AccordionOverview overview={resourceData?.key_values} />
         </section>
       </div>
       <Footer />
@@ -89,18 +91,30 @@ export default function ResourceDetailPage() {
 
 // --- Components below --- //
 
-function BackButton() {
-  // Optionally handle navigation
+function BackButton({ title }) {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
   return (
-    <button className="mb-4" onClick={() => window.close()}>
-      <ArrowLeft size={28} />
-    </button>
+    <div className="flex items-center gap-2 text-sm text-repository-textSecondary mb-6">
+      <button onClick={() => navigate(-1)}>
+        <ArrowLeft size={16} />
+      </button>
+
+      <span>{t("common.back")}</span>
+
+      <span>/</span>
+
+      <span className="text-repository-controlIcon">
+        {title}
+      </span>
+    </div>
   );
 }
 
 export function ResourceImages({ images }) {
   return (
-    <div className="flex flex-col items-center min-w-[260px] max-w-[320px]">
+    <div className="flex flex-col items-center min-w-[16.25rem] max-w-[20rem]">
       <img
         src={images?.[0]}
         alt="Primary"
@@ -122,67 +136,102 @@ export function ResourceImages({ images }) {
 
 function ResourceMeta({ resource }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const fileType =
+    resource?.media_type_display?.toUpperCase() || "DOCX";
 
   return (
-    <div className="flex-1 flex flex-col gap-2">
-      <h1 className="text-2xl font-bold">{resource?.title}</h1>
-      {/* <div className="flex justify-between">
-        <div className="flex items-center gap-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star
-              key={i}
-              fill={i < Math.floor(resource?.rating) ? "#FFD700" : "none"}
-              stroke="#FFD700"
-              size={20}
-            />
-          ))}
-          <span className="font-medium">{resource?.rating}</span>
-          <span className="text-gray-500 text-sm">
-            ({resource?.reviews} Reviews)
-          </span>
-        </div>
-        <div className="flex items-center mt-1 gap-3 text-gray-600 text-sm">
-          <Download
-            size={16}
-            className="font-bold text-gray-700 stroke-2 stroke-slate-700 "
-          />{" "}
-          {resource?.downloads} Downloads
-        </div>
-      </div> */}
-      <div className="text-gray-500 mt-2 text-[1rem]">
-        {resource?.description}
-      </div>
-      <div className="flex gap-8 mt-2 items-center text-gray-600 text-sm">
-        <div>
-          <span>{t("repository.fileType")}</span>
-          <div className="font-bold mt-1">{resource?.media_type_display}</div>
-        </div>
-        <div>
-          <span>{t("repository.fileSize")}</span>
-          <div className="font-bold mt-1">{resource?.size || t("repository.notAvailable")}</div>
-        </div>
-        <div>
-          <span>{t("repository.dateAdded")}</span>
-          <div className="font-bold mt-1">
-            {new Date(resource?.created_at).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+    <div className="w-full">
+      <div className="bg-white border border-repository-divider rounded-2xl p-6">
+        {/* Top Row */}
+        <div className="flex flex-col lg:flex-row justify-between gap-4">
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-[2.25rem] font-semibold text-repository-detailTitle leading-tight">
+                {resource?.title}
+              </h1>
+
+              <span className="bg-repository-fileTypeBadge text-white text-[0.6875rem] px-2 py-1 rounded font-semibold">
+                {fileType}
+              </span>
+
+              <span className="border border-repository-controlBorder rounded-md px-3 py-1 text-sm">
+                <span className="text-repository-success font-medium">
+                  {t("repository.publishedOn")}
+                </span>{" "}
+                {new Date(resource?.created_at).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2 text-repository-strongText">
+              <Eye size={22} />
+              <span className="text-[1.75rem] font-medium">
+                {resource?.views || "0"}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 text-repository-strongText">
+              <Download size={22} />
+              <span className="text-[1.75rem] font-medium">
+                {resource?.downloads || "0"}
+              </span>
+            </div>
           </div>
         </div>
-        <div>
-          <span>{t("repository.lastUpdated")}</span>
-          <div className="font-bold mt-1">
-            {new Date(resource?.updated_at).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+
+        {/* Description */}
+        <p className="mt-5 text-repository-textSecondary text-[1.125rem] leading-8">
+          {resource?.description}
+        </p>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mt-5">
+         {resource?.tags?.map((tag, idx) => (
+  <span
+    key={tag.id || idx}
+    className="bg-repository-surfaceSoft text-repository-textSecondary text-sm px-3 py-1 rounded-full"
+  >
+    {tag?.name}
+  </span>
+))}
+        </div>
+
+        {/* Buttons */}
+        <div className="mt-6 flex justify-between items-center flex-wrap gap-4">
+          <div className="flex gap-3">
+            <button
+  onClick={() => {
+    const success = openSafeUrl(resource?.s3_url);
+
+    if (!success) {
+      toast.error(t("repository.invalidDownloadURL"));
+    }
+  }}
+  className="bg-repository-downloadBtn hover:bg-repository-downloadBtnHover text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium"
+>
+              <Download size={18} />
+              {t("common.download")}
+            </button>
+
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast("Link copied");
+              }}
+              className="border border-repository-controlBorder px-6 py-3 rounded-lg flex items-center gap-2"
+            >
+              <Share2 size={18} />
+              {t("common.share")}
+            </button>
           </div>
+
+          <button onClick={() => navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?org=${resource?.organization}`)} className="border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg">
+            {t("repository.viewAllResources")} ↗
+          </button>
         </div>
       </div>
-      <Actions downloadUrl={resource?.s3_url} resourceId={resource?.id} />
     </div>
   );
 }
@@ -191,9 +240,14 @@ function Actions({ downloadUrl, resourceId }) {
   const { t } = useTranslation();
 
   const handleDownload = () => {
-    trackResourceDownload(resourceId)
-    window.open(downloadUrl, "_blank")
+  trackResourceDownload(resourceId);
+
+  const success = openSafeUrl(downloadUrl);
+
+  if (!success) {
+    toast.error(t("repository.invalidDownloadURL"));
   }
+};
 
   return (
     <div className="flex gap-2 mt-4">
@@ -253,6 +307,70 @@ function TabContent({ tab, resource }) {
   return null;
 }
 
+function AccordionOverview({ overview }) {
+  const [openIndex, setOpenIndex] = useState(0);
+
+  const renderValue = (value) => {
+    if (Array.isArray(value)) {
+      return (
+        <ul className="list-disc pl-6 space-y-2">
+          {value.map((item, idx) => (
+            <li
+              key={idx}
+             dangerouslySetInnerHTML={{
+    __html: sanitizeHtml(item),
+  }}
+            />
+          ))}
+        </ul>
+      );
+    }
+
+    return (
+      <div
+        dangerouslySetInnerHTML={{
+    __html: sanitizeHtml(value),
+  }}
+      />
+    );
+  };
+
+  return (
+    <div className="mt-8 space-y-4">
+      {overview?.map(({ key, value }, index) => (
+        <div
+          key={index}
+          className="border border-repository-divider rounded-xl overflow-hidden bg-white"
+        >
+          <button
+            onClick={() =>
+              setOpenIndex(openIndex === index ? null : index)
+            }
+            className="w-full flex items-center justify-between px-6 py-5 text-left"
+          >
+            <span className="text-repository-accordionTitle text-lg font-medium">
+              {index + 1}. {key}
+            </span>
+
+            <ChevronDown
+              size={20}
+              className={`transition-transform ${
+                openIndex === index ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          {openIndex === index && (
+            <div className="px-6 pb-6 text-repository-body leading-8">
+              {renderValue(value)}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function OverviewContent({ overview }) {
   const processValue = (value) => {
     if (Array.isArray(value)) {
@@ -262,7 +380,9 @@ function OverviewContent({ overview }) {
             <li
               className="text-gray-600  leading-relaxed mt-2 mb-2 font-sans"
               key={index}
-              dangerouslySetInnerHTML={{ __html: item }}
+             dangerouslySetInnerHTML={{
+    __html: sanitizeHtml(item),
+  }}
             />
           ))}
         </ul>
@@ -276,7 +396,9 @@ function OverviewContent({ overview }) {
             <div
               className="d-block"
               key={index}
-              dangerouslySetInnerHTML={{ __html: item }}
+             dangerouslySetInnerHTML={{
+    __html: sanitizeHtml(item),
+  }}
             />
           ))}
         </div>
@@ -319,8 +441,8 @@ function ReviewsSection({ reviews }) {
                 {Array.from({ length: 5 }).map((_, j) => (
                   <Star
                     key={j}
-                    fill={j < review.rating ? "#FFD700" : "none"}
-                    stroke="#FFD700"
+                    fill={j < review.rating ? "var(--tw-rating)" : "none"}
+                    stroke="var(--tw-rating)"
                     size={22}
                   />
                 ))}

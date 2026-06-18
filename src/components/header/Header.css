@@ -13,8 +13,8 @@ body {
   margin: 0;
   min-height: 100%;
   background-color: #fff;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
   color: #333;
 }
 
@@ -28,11 +28,11 @@ body {
 
 .header-container {
   width: 100%;
-  max-width: 1670px;
+  max-width: 104.375rem;
   margin-left: 0;
   margin-right: 0;
-  padding-top: 19px;
-  padding-bottom: 19px;
+  padding-top: 1.1875rem;
+  padding-bottom: 1.1875rem;
 }
 
 .header-container .w-nav-brand {
@@ -43,8 +43,8 @@ body {
 }
 
 .header-container .brand {
-  margin-top: 4px;
-  margin-bottom: 4px;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .w-nav-menu {
@@ -57,7 +57,7 @@ body {
   background-position: 0 0, 0 0;
   background-size: auto, cover;
   height: 100vh;
-  padding-top: 59px;
+  padding-top: 3.6875rem;
 }
 
 .w-nav[data-collapse="all"] .w-nav-menu {
@@ -70,7 +70,7 @@ body {
   vertical-align: top;
   text-decoration: none;
   color: #222222;
-  padding: 20px;
+  padding: 1.25rem;
   text-align: left;
   margin-left: auto;
   margin-right: auto;
@@ -80,7 +80,7 @@ body {
   color: #fff;
   text-align: center;
   text-transform: none;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .w-dropdown {
@@ -91,7 +91,7 @@ body {
   margin-right: auto;
   z-index: 0;
   width: 100%;
-  max-width: 1670px;
+  max-width: 104.375rem;
 }
 
 .dropdown-2 {
@@ -108,7 +108,7 @@ body {
   vertical-align: top;
   text-decoration: none;
   color: #222222;
-  padding: 20px;
+  padding: 1.25rem;
   text-align: left;
   margin-left: auto;
   margin-right: auto;
@@ -119,7 +119,7 @@ body {
   user-select: none;
   display: inline-block;
   cursor: pointer;
-  padding-right: 40px;
+  padding-right: 2.5rem;
 }
 
 .dropdown-toggle-2 {
@@ -146,7 +146,7 @@ body {
   right: 0;
   bottom: 0;
   margin: auto;
-  margin-right: 20px;
+  margin-right: 1.25rem;
   width: 1em;
   height: 1em;
 }
@@ -157,14 +157,14 @@ body {
 
 .nav-link.sms {
   text-transform: none;
-  padding-top: 3px;
-  padding-bottom: 3px;
+  padding-top: 0.1875rem;
+  padding-bottom: 0.1875rem;
 }
 
 .w-nav-button {
   position: relative;
   float: right;
-  font-size: 24px;
+  font-size: 1.5rem;
   display: none;
   cursor: pointer;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -209,8 +209,8 @@ body {
 }
 
 .header-container .image-12 {
-  width: 175px;
-  height: 40px;
+  width: 10.9375rem;
+  height: 2.5rem;
 }
 
 .w-nav {
@@ -257,7 +257,7 @@ body {
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin-top: 40px;
+  margin-top: 2.5rem;
   display: flex;
 }
 
@@ -270,7 +270,7 @@ body {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 1670px;
+  max-width: 104.375rem;
   display: flex;
   position: relative;
 }
@@ -278,8 +278,8 @@ body {
 .div-block-16 {
   background-color: #bebebe;
   width: 100%;
-  height: 1px;
-  margin-right: 20px;
+  height: 0.0625rem;
+  margin-right: 1.25rem;
 }
 
 .paragraph.asd.sc {
@@ -288,8 +288,8 @@ body {
 
 .paragraph {
   flex: none;
-  max-width: 340px;
-  font-size: 14px;
+  max-width: 21.25rem;
+  font-size: 0.875rem;
   font-weight: 300;
   margin: 0;
 }

@@ -33,7 +33,7 @@ export default function Header({ isHeroSection = true, isBackButton = false, onS
 
   return (
     <>
-      <header className={`flex flex-col !p-3 md:!p-[25px] md:pb-8 w-full bg-white rounded-[16px] ${!isMobile ? "shadow-[0px_0px_4px_rgba(0,0,0,0.2)]" : ""} ${isMobile && isBackButton ? "items-start" : "items-end"}`}>
+      <header className={`flex flex-col !p-3 md:!p-[1.5625rem] md:pb-8 w-full bg-white rounded-[1rem] ${!isMobile ? "shadow-[0rem_0rem_0.25rem_rgba(0,0,0,0.2)]" : ""} ${isMobile && isBackButton ? "items-start" : "items-end"}`}>
         {(isHeroSection || !isMobile) && <div className="w-full">
           <>
             <div data-animation="default" data-collapse="all" data-duration={400} data-easing="ease" data-easing2="ease" data-doc-height={1} role="banner" className="navbar-2 w-nav" style={{ zIndex: 40 }}>
@@ -69,11 +69,11 @@ export default function Header({ isHeroSection = true, isBackButton = false, onS
                 }
               }}
             >
-              <FiArrowLeft className="w-8 h-8 text-[#1E1E1E]" />
+              <FiArrowLeft className="w-8 h-8 text-repository-backIcon" />
             </button>
             {isMobile && onSidebarToggle && (
               <button onClick={onSidebarToggle} className="bg-transparent w-fit px-1" aria-label="Toggle sidebar">
-                {isSidebarOpen ? <HiX className="w-6 h-6 text-[#555555]" /> : <HiMenu className="w-6 h-6 text-[#555555]" />}
+                {isSidebarOpen ? <HiX className="w-6 h-6 text-repository-sidebarIcon" /> : <HiMenu className="w-6 h-6 text-repository-sidebarIcon" />}
               </button>
             )}
           </div>
@@ -91,7 +91,7 @@ export default function Header({ isHeroSection = true, isBackButton = false, onS
       )}{" "}
       {menuOpen && (
         <div className="w-screen h-[100dvh]  absolute z-[999] top-0" onClick={() => setMenuOpen(false)}>
-          <div className="w-nav-overlay active w-full h-[calc(100vh-9rem)] top-[9rem]" data-wf-ignore="" id="w-nav-overlay-0" style={menuOpen ? { display: "block" } : { height: "0px", display: "none" }}>
+          <div className="w-nav-overlay active w-full h-[calc(100vh-9rem)] top-[9rem]" data-wf-ignore="" id="w-nav-overlay-0" style={menuOpen ? { display: "block" } : { height: "0rem", display: "none" }}>
             <nav role="navigation" className={" " + (menuOpen ? "nav-menu w-nav-menu" : "nav-menu w-nav-menu")} onClick={e => e.stopPropagation()}>
               <div className="grid">
                 <a href="https://shikshagraha.org/" className="nav-link w-nav-link">
