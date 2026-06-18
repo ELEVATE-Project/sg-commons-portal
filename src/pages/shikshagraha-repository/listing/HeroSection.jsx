@@ -10,7 +10,7 @@ import { useChatStorage } from "hooks/useStorage";
 import Notification, { showNotification } from "../../../components/ToastMessage/TotastMessage";
 import { handleS3Upload } from "../../../services/storage_service";
 import { ai4BharatASRApi } from "api/endpoints/ai";
-// import { formatTime, isSilentAudio } from "pages/ShikshalokamVoiceChat/voiceToText";
+import { isSilentAudio } from "../../../utils/helpers";
 import { bot_routes } from "configure";
 import left1 from "../../../assets/hero-section-image-1.svg";
 import left2 from "../../../assets/hero-section-image-2.svg";
@@ -192,9 +192,9 @@ return (
       style={{
         backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
         backgroundPosition:
-          "left -8px top 70px, right -8px top 110px, left -8px bottom 80px, right -8px bottom 60px",
+          "left -0.5rem top 4.375rem, right -0.5rem top 6.875rem, left -0.5rem bottom 5rem, right -0.5rem bottom 3.75rem",
         backgroundRepeat: "no-repeat",
-        backgroundSize: "72px, 72px, 96px, 96px",
+        backgroundSize: "4.5rem, 4.5rem, 6rem, 6rem",
       }}
     />
 
@@ -203,9 +203,9 @@ return (
       style={{
         backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
         backgroundPosition:
-          "left 50px top 110px, right 20px top 200px, left 30px bottom 180px, right 30px bottom 80px",
+          "left 3.125rem top 6.875rem, right 1.25rem top 12.5rem, left 1.875rem bottom 11.25rem, right 1.875rem bottom 5rem",
         backgroundRepeat: "no-repeat",
-        backgroundSize: "120px, 120px, 160px, 160px",
+        backgroundSize: "7.5rem, 7.5rem, 10rem, 10rem",
       }}
     />
 
@@ -278,7 +278,7 @@ return (
           "
         >
           {/* Search Icon */}
-          <Search className="w-6 h-6 text-purple-600 flex-shrink-0" />
+          <Search className="w-6 h-6 flex-shrink-0" style={{ color: 'var(--listing-primary)' }} />
 
           {/* Input */}
           <input
@@ -311,7 +311,8 @@ return (
           <button
             type="button"
             onClick={hasStartedRecording ? stopRecording : startRecording}
-            className="flex h-10 w-10 items-center justify-center rounded-xl transition flex-shrink-0"
+            className="flex h-8 w-8 items-center justify-center rounded-xl transition flex-shrink-0"
+            aria-label="Start voice search"
           >
             {hasStartedRecording ? (
               <FaRegStopCircle className="w-5 h-5 text-red-500" />
@@ -324,11 +325,10 @@ return (
           <button
             type="submit"
             disabled={disableSendButton}
-            className={`flex items-center justify-center h-10 w-10 rounded-xl transition flex-shrink-0 ${
-              disableSendButton
-                ? "bg-gray-300"
-                : "bg-purple-600 hover:bg-purple-700"
+            className={`flex items-center justify-center h-10 w-10 rounded-xl transition flex-shrink-0 hover:opacity-90 ${
+              disableSendButton ? 'cursor-not-allowed' : ''
             }`}
+            style={{ backgroundColor: disableSendButton ? 'var(--listing-disabled)' : 'var(--listing-primary)' }}
           >
             <TbSend2 className="w-5 h-5 text-white" />
           </button>

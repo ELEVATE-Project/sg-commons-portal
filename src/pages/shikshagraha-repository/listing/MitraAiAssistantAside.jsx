@@ -71,7 +71,7 @@ export default function MitraAiAssistantAside({ defaultBottom = 70 }) {
       {/* Floating Button */}
       <button
         onClick={() => setOpen(!open)}
-        className={`fixed ${isMobile ? "right-4" : "right-10"} z-[9999] bg-[var(--listing-primary)] text-white border border-white ${isMobile ? "w-14 h-14" : "w-16 h-16"} rounded-full shadow-[0_18px_40px_rgba(0,0,0,0.45)] flex items-center justify-center hover:scale-105`}
+        className={`mitra-floating fixed ${isMobile ? "right-4" : "right-10"} z-[9999] bg-[var(--listing-primary)] text-white border border-white ${isMobile ? "w-14 h-14" : "w-16 h-16"} rounded-full shadow-[0_18px_40px_rgba(0,0,0,0.45)] flex items-center justify-center hover:scale-105`}
         style={{
           bottom: `${buttonBottom}px`,
           transition: "bottom 220ms ease-out, transform 220ms ease-out",
@@ -88,7 +88,7 @@ export default function MitraAiAssistantAside({ defaultBottom = 70 }) {
       {/* Floating Card */}
       {renderCard && (
         <aside
-          className={`fixed z-[9999] ${isMobile ? "left-4 right-4 max-w-[calc(100vw-2rem)]" : "right-20 w-72"} bg-white px-3 py-3 md:px-4 md:py-6 rounded-lg shadow-2xl ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"}`}
+          className={`mitra-floating fixed z-[9999] ${isMobile ? "left-4 right-4 max-w-[calc(100vw-2rem)]" : "right-20 w-72"} bg-white px-3 py-3 md:px-4 md:py-6 rounded-lg shadow-2xl ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"}`}
           style={{
             ...theme.vars,
             bottom: `${cardBottom}px`,
@@ -124,6 +124,8 @@ export default function MitraAiAssistantAside({ defaultBottom = 70 }) {
           </button>
         </aside>
       )}
+
+        <style>{`body.filters-open .mitra-floating { z-index: 40 !important; }`}</style>
     </>
   );
 }
