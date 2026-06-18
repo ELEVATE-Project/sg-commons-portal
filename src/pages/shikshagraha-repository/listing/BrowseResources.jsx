@@ -86,7 +86,7 @@ const Dropdown = ({
       <div>
         <button
           type="button"
-          className={`min-w-[6.2500rem] inline-flex items-center gap-1 text-sm focus:outline-none ${
+          className={`min-w-[6.25rem] inline-flex items-center gap-1 text-sm focus:outline-none ${
             disabled
               ? "text-[var(--listing-disabled-text)] cursor-not-allowed"
               : "text-[var(--listing-strong-text)] hover:text-[var(--listing-muted-text)]"
@@ -213,7 +213,7 @@ const displayedResources = compact
         className="absolute inset-0 z-0 pointer-events-none"
       />
       <section
-  className={`relative z-10 max-w-[93.7500rem] mx-auto ${
+  className={`relative z-10 max-w-[93.75rem] mx-auto ${
     compact ? "" : "min-h-screen"
   }`}
 >
@@ -222,7 +222,7 @@ const displayedResources = compact
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
   <div className="w-full mb-3 md:mb-0" data-browse-resources>
-      <h2 className="text-[1.2500rem] md:text-[1.3750rem] font-['Comfortaa'] font-semibold tracking-[0.0625rem] text-repository-heading capitalize">
+      <h2 className="text-[1.25rem] md:text-[1.375rem] font-['Comfortaa'] font-semibold tracking-[0.0625rem] text-repository-heading capitalize">
 
       {t(title ?? "repository.browseResources")}
     </h2>
@@ -232,7 +232,7 @@ const displayedResources = compact
   className="
     font-['Source_Sans_3']
     font-medium
-    text-[0.8750rem]
+    text-[0.875rem]
     leading-[1.3125rem]
     text-repository-body
   "
@@ -251,7 +251,7 @@ const displayedResources = compact
     setSortBy(value);
   }}
   renderButton={(selected) => (
-  <span className="whitespace-nowrap font-['Inter'] text-[0.7500rem] leading-[1.1250rem] flex items-center">
+  <span className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem] flex items-center">
     <span className="font-normal text-repository-textPrimary">
       {t("repository.sortByLabel")}:  
     </span>{" "}
@@ -267,10 +267,10 @@ const displayedResources = compact
   onClick={() => navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST)}
   className="
     flex items-center justify-center gap-1
-    w-[7.5000rem]
-    h-[2.2500rem]
+    w-[7.5rem]
+    h-[2.25rem]
     px-1 py-2
-    rounded-[0.5000rem]
+    rounded-[0.5rem]
     bg-repository-primary
     hover:opacity-90
     transition-all
@@ -281,7 +281,7 @@ const displayedResources = compact
     className="
       font-medium
       text-[0.8125rem]
-      leading-[1.2500rem]
+      leading-[1.25rem]
       text-white
     "
   >
@@ -294,7 +294,7 @@ const displayedResources = compact
   ) : (
     <div className="flex flex-col md:flex-row items-center gap-6 w-full">
       <div className="flex items-center justify-between lg:justify-end w-full lg:gap-6">
-        <div className="whitespace-nowrap font-['Inter'] text-[0.7500rem] leading-[1.1250rem]">
+        <div className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem]">
   <span className="font-bold text-repository-textPrimary">
     {mediaCount}
   </span>{" "}
@@ -310,7 +310,7 @@ const displayedResources = compact
             setSortBy(value);
           }}
  renderButton={(selected) => (
-  <span className="whitespace-nowrap font-['Inter'] text-[0.7500rem] leading-[1.1250rem]">
+  <span className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem]">
     <span className="font-normal text-repository-textSecondary">
       {t("repository.sortByLabel")}:
     </span>{" "}
@@ -343,7 +343,7 @@ const displayedResources = compact
   `}
 >
   <Grid
-  className={`w-[0.8750rem] h-[0.8750rem]`}
+  className={`w-[0.875rem] h-[0.875rem]`}
 />
 </button>
 
@@ -364,7 +364,7 @@ const displayedResources = compact
   `}
 >
   <List
-  className={`w-[0.8750rem] h-[0.8750rem]`}
+  className={`w-[0.875rem] h-[0.875rem]`}
 />
 </button>
         </div>
@@ -376,7 +376,7 @@ const displayedResources = compact
     handleItemsPerPageChange(value);
   }}
   className="
-    [&>div>button]:w-[5.5000rem]
+    [&>div>button]:w-[5.5rem]
     [&>div>button]:h-[1.8656rem]
     [&>div>button]:border
     [&>div>button]:border-repository-controlBorder
@@ -385,14 +385,14 @@ const displayedResources = compact
     [&>div>button]:px-3
     [&>div>button]:justify-between
   "
-  dropdownClassName="w-[5.5000rem]"
+  dropdownClassName="w-[5.5rem]"
   renderButton={(selected) => (
     <span
   className="
     font-['Inter']
     font-normal
     text-[0.7682rem]
-    leading-[1.1250rem]
+    leading-[1.125rem]
     text-repository-textPrimary
     flex
     items-center

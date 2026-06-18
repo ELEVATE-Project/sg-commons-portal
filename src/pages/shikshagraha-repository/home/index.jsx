@@ -37,7 +37,7 @@ export default function RepositoryPage() {
 
   return (
     <div className="bg-[var(--listing-white)]  relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
-      <div className="container max-w-[93.7500rem] mx-auto">
+      <div className="container max-w-[93.75rem] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
           <div className="w-full">
             <Header />

@@ -9,7 +9,7 @@ function Pagination({
   selectedPage,
 }) {
   const pageCount = Math.ceil(totalResources / resourcesPerPage);
-  const isMobile = useMediaQuery({ query: "(max-width: 48.0000rem)" });
+  const isMobile = useMediaQuery({ query: "(max-width: 48rem)" });
 
   const handlePageClick = (e) => {
     paginate(e.selected);

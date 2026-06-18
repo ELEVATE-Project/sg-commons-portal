@@ -88,7 +88,7 @@ export default function Filters() {
       },
       {
         threshold: 0,
-        rootMargin: "-0.0625rem 0.0000rem 0.0000rem 0.0000rem",
+        rootMargin: "-0.0625rem 0rem 0rem 0rem",
       }
     )
 
@@ -146,13 +146,13 @@ export default function Filters() {
       placeholder.style.display = 'block'
 
       el.style.position = 'fixed'
-      el.style.top = '0.0000rem'
+      el.style.top = '0rem'
       el.style.left = `${rect.left}px`
       el.style.width = `${rect.width}px`
       el.style.zIndex = '1000'
-      el.style.boxShadow = '0 0 0.2500rem rgba(0,0,0,0.2)'
+      el.style.boxShadow = '0 0 0.25rem rgba(0,0,0,0.2)'
     } else {
-      placeholder.style.height = '0.0000rem'
+      placeholder.style.height = '0rem'
       placeholder.style.display = 'none'
 
       el.style.position = ''
@@ -173,7 +173,7 @@ export default function Filters() {
         el.style.boxShadow = ''
       }
       if (placeholder) {
-        placeholder.style.height = '0.0000rem'
+        placeholder.style.height = '0rem'
         placeholder.style.display = 'none'
       }
     }
@@ -402,7 +402,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
 
   const searchInput = (
     <form
-      className="relative flex flex-row items-center justify-center w-full h-full px-3 py-2 rounded-[0.7500rem] border border-[var(--listing-border)]"
+      className="relative flex flex-row items-center justify-center w-full h-full px-3 py-2 rounded-[0.75rem] border border-[var(--listing-border)]"
       onSubmit={event => {
         if (!hasStartedListening && !isConvertingVoiceToText && !loadingList) {
           handleSendMessage(event)
@@ -415,12 +415,12 @@ if (inpText.trim() === "" && search.trim() !== "") {
       </div>
       <div className="relative w-full flex items-center justify-center">
         <textarea
-          className={`${isConvertingVoiceToText ? "min-h-[1.8125rem] sm:min-h-0" : ""} pl-3 max-w-[20.6875rem] w-full border-0 focus:outline-none focus:bg-transparent bg-transparent rounded-[0.7500rem] text-[0.8750rem] font-['Manrope'] text-[var(--listing-muted-text)] placeholder-[var(--listing-subdued-text)] resize-none !overflow-y-auto`}
+          className={`${isConvertingVoiceToText ? "min-h-[1.8125rem] sm:min-h-0" : ""} pl-3 max-w-[20.6875rem] w-full border-0 focus:outline-none focus:bg-transparent bg-transparent rounded-[0.75rem] text-[0.875rem] font-['Manrope'] text-[var(--listing-muted-text)] placeholder-[var(--listing-subdued-text)] resize-none !overflow-y-auto`}
           style={{
             backgroundColor: "transparent",
             height: "1.8125rem",
             minHeight: "1.8125rem",
-            maxHeight: "3.1250rem",
+            maxHeight: "3.125rem",
             resize: "none",
           }}
           onInput={e => {
@@ -491,10 +491,10 @@ if (inpText.trim() === "" && search.trim() !== "") {
         )}
       </div>
       <button className={`flex items-center justify-center relative ${hasStartedRecording ? "text-[var(--listing-danger)]" : "text-black"} disabled:text-[var(--listing-disabled-text)] disabled:cursor-not-allowed cursor-pointer`} onClick={hasStartedRecording ? stopRecording : startRecording}>
-        {hasStartedRecording ? <FaRegStopCircle className="w-[1.1250rem] h-[1.1250rem] md:w-[1.2500rem] md:h-[1.2500rem] lg:w-[1.5000rem] lg:h-[1.5000rem]" /> : <IoMicOutline className="w-[1.1250rem] h-[1.1250rem] md:w-[1.2500rem] md:h-[1.2500rem] lg:w-[1.5000rem] lg:h-[1.5000rem]" />}
+        {hasStartedRecording ? <FaRegStopCircle className="w-[1.125rem] h-[1.125rem] md:w-[1.25rem] md:h-[1.25rem] lg:w-[1.5rem] lg:h-[1.5rem]" /> : <IoMicOutline className="w-[1.125rem] h-[1.125rem] md:w-[1.25rem] md:h-[1.25rem] lg:w-[1.5rem] lg:h-[1.5rem]" />}
       </button>
-      <button type="submit" disabled={hasStartedRecording || isConvertingVoiceToText || loadingList} className={`flex items-center justify-center relative md:pl-[0.3750rem] pl-[0.7500rem] disabled:cursor-not-allowed disabled:text-[var(--listing-disabled-text)] cursor-pointer ${!disableSendButton ? "text-[var(--listing-info)]" : ""}`}>
-        <TbSend2 className="md:w-[1.1250rem] md:h-[1.1250rem] lg:w-[1.5000rem] lg:h-[1.5000rem]" />
+      <button type="submit" disabled={hasStartedRecording || isConvertingVoiceToText || loadingList} className={`flex items-center justify-center relative md:pl-[0.375rem] pl-[0.75rem] disabled:cursor-not-allowed disabled:text-[var(--listing-disabled-text)] cursor-pointer ${!disableSendButton ? "text-[var(--listing-info)]" : ""}`}>
+        <TbSend2 className="md:w-[1.125rem] md:h-[1.125rem] lg:w-[1.5rem] lg:h-[1.5rem]" />
       </button>
     </form>
   )
@@ -502,7 +502,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
   // build filters inner content so we can reuse in-place and in a portal
   const filtersInner = (
     <>
-      <div className="min-h-[2.5000rem] flex items-center pt-2 gap-1 w-full lg:w-[75%] overflow-x-auto flex-shrink-0 lg:flex-wrap">
+      <div className="min-h-[2.5rem] flex items-center pt-2 gap-1 w-full lg:w-[75%] overflow-x-auto flex-shrink-0 lg:flex-wrap">
         {dropdown_meta?.length
           ? dropdown_meta?.map(({ label, options, key }, index) => (
             <React.Fragment key={`label-${label}-${index}`}>
@@ -512,7 +512,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
           : null}
 
         {Object.keys(filters).some(key => filters[key]?.length) && (
-          <button className="min-w-[6.2500rem] p-2 rounded-[0.7500rem] flex items-center gap-2 text-[var(--listing-danger)] bg-[var(--listing-danger-soft)]" onClick={() => {
+          <button className="min-w-[6.25rem] p-2 rounded-[0.75rem] flex items-center gap-2 text-[var(--listing-danger)] bg-[var(--listing-danger-soft)]" onClick={() => {
             resetFilters()
             scrollToBrowseResources()
           }}>
@@ -550,14 +550,14 @@ if (inpText.trim() === "" && search.trim() !== "") {
           padding-bottom: 0.3125rem;
         }
         textarea[name="message-box"]::-webkit-scrollbar {
-          width: 0.2500rem;
+          width: 0.25rem;
         }
         textarea[name="message-box"]::-webkit-scrollbar-track {
           background: transparent;
         }
         textarea[name="message-box"]::-webkit-scrollbar-thumb {
           background-color: var(--listing-subdued-text);
-          border-radius: 0.1250rem;
+          border-radius: 0.125rem;
         }
         textarea[name="message-box"]::-webkit-scrollbar-thumb:hover {
           background-color: var(--listing-muted-text);
@@ -571,7 +571,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
       <div
         ref={filtersRef}
         id="filters-boundary"
-        className="sticky top-0 z-100 isolate flex flex-col lg:flex-row items-stretch lg:items-center p-3 bg-white max-w-[104.3750rem] w-full rounded-[1rem] shadow-[0_0_0.2500rem_rgba(0,0,0,0.2)]"
+        className="sticky top-0 z-100 isolate flex flex-col lg:flex-row items-stretch lg:items-center p-3 bg-white max-w-[104.375rem] w-full rounded-[1rem] shadow-[0_0_0.25rem_rgba(0,0,0,0.2)]"
         style={undefined}
       >
         {filtersInner}
@@ -722,7 +722,7 @@ const DropdownSelect = ({ label, options, selected, onChange }) => {
             border: "none",
             background: "var(--listing-surface-soft)",
             boxShadow: "none",
-            minHeight: "2.2500rem",
+            minHeight: "2.25rem",
             "&:hover": { border: "none" },
           }),
 
