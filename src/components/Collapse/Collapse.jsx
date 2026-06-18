@@ -10,9 +10,9 @@ const Collapse = ({ title, children, defaultOpen = false, customClassNames = {} 
   };
 
   return (
-    <div className={`sm:w-full md:w-[90%] border border-gray-200 rounded-lg overflow-hidden shadow-[0px_0px_10px_0px_#00000026] ${wrapperStyles}`}>
+    <div className={`sm:w-full md:w-[90%] border border-gray-200 rounded-lg overflow-hidden shadow-[0rem_0rem_0.625rem_0rem_#00000026] ${wrapperStyles}`}>
       <div
-        className="flex justify-between items-center h-[50px] pt-3 pr-5 pb-3 pl-5 bg-white cursor-pointer"
+        className="flex justify-between items-center h-[3.125rem] pt-3 pr-5 pb-3 pl-5 bg-white cursor-pointer"
         onClick={toggleCollapse}
       >
         <span className="text-base font-medium leading-none text-[#1D4ED8] flex-1">{title}</span>

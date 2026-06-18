@@ -87,7 +87,7 @@ const SourcePopup = ({ isOpen, onClose, sourcesData = {} }) => {
       <div className="absolute inset-0 bg-black bg-opacity-50" />
 
       {/* Popup Content */}
-      <div className="overflow-scroll relative bg-white rounded-[20px] shadow-lg w-[90%] max-w-2xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+      <div className="overflow-scroll relative bg-white rounded-[1.25rem] shadow-lg w-[90%] max-w-2xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between p-6">
           <h3 className="text-xl font-semibold text-gray-900">{label || ""}</h3>

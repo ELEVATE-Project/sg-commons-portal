@@ -41,7 +41,7 @@ const SuggestOrAddCta = ({
       {showAddOwnButton && (
         <div className="flex justify-center">
           <button className={buttonStyle} onClick={handleAddOwnClick}>
-            <FiPlusCircle className="mr-[5px]" />
+            <FiPlusCircle className="mr-[0.3125rem]" />
             {getAddOwnButtonTranslation(language)}
           </button>
         </div>

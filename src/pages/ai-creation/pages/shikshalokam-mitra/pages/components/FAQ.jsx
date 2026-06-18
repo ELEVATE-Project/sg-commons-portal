@@ -90,7 +90,7 @@ export default function FAQ({ onBack }) {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-white rounded-[20px] p-6 md:p-8">
+    <div className="w-full h-full overflow-y-auto bg-white rounded-[1.25rem] p-6 md:p-8">
       {/* Back Button */}
       {onBack && (
         <button

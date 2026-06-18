@@ -19,7 +19,7 @@ const ImprovementPlan = () => {
 
   return (
     <>
-    <div className="container max-w-[1500px] h-full mx-auto py-3">
+    <div className="container max-w-[93.75rem] h-full mx-auto py-3">
       <Notification />
       <Header
         isHeroSection={false}

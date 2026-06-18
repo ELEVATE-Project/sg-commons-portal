@@ -556,7 +556,7 @@ function MainPage() {
       <Notification /> 
 
 <div className="bg-[#F0F2F5]">
-    <div className="container max-w-[1500px] h-full mx-auto py-3">
+    <div className="container max-w-[93.75rem] h-full mx-auto py-3">
 
 
       <Header
@@ -568,7 +568,7 @@ function MainPage() {
    
   
       <main
-        className={`w-full sm:[50%] h-[calc(100vh-200px)] md:h-[80vh] flex flex-col md:flex-row relative gap-10 sm:p-0 md:py-12 md:px-8 lg:px-16 xl:px-32 2xl:px-48 ${
+        className={`w-full sm:[50%] h-[calc(100vh-12.5rem)] md:h-[80vh] flex flex-col md:flex-row relative gap-10 sm:p-0 md:py-12 md:px-8 lg:px-16 xl:px-32 2xl:px-48 ${
           isMobile ? "bg-white mt-3" : "bg-[#F0F2F5]"
         }`}
       >

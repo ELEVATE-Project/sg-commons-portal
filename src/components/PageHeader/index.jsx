@@ -35,7 +35,7 @@ const PageHeader = ({
   </>
 )}
 
-        <h1 className="text-[20px] font-semibold text-repository-pageTitle">
+        <h1 className="text-[1.25rem] font-semibold text-repository-pageTitle">
           {title}
         </h1>
       </div>

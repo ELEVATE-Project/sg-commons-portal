@@ -23,7 +23,7 @@ const Tabs = ({ tabs = [], defaultActiveTab = 0 }) => {
                 px-4 py-3 text-left font-['Urbanist'] font-medium text-xs leading-none whitespace-nowrap
                 ${
                   activeTab === index
-                    ? "bg-[#F1E9FF] text-[#7C3AED] rounded-[6px]"
+                    ? "bg-[#F1E9FF] text-[#7C3AED] rounded-[0.375rem]"
                     : "bg-white text-gray-700"
                 }
               `}

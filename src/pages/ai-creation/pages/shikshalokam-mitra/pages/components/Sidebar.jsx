@@ -14,7 +14,7 @@ function Action({ icon: Icon, text, onClick, disabled = false }) {
       disabled={disabled}
     >
       <Icon className={`w-6 h-6 flex-shrink-0 ${disabled ? "text-gray-400" : "text-[#555555]"}`} />
-      <p className={`font-medium text-base leading-[24px] break-words ${disabled ? "text-gray-400" : "text-[#555555]"}`}>
+      <p className={`font-medium text-base leading-[1.5rem] break-words ${disabled ? "text-gray-400" : "text-[#555555]"}`}>
         {text}
       </p>
     </button>
@@ -57,7 +57,7 @@ export default function Sidebar({
           isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="w-[280px] md:w-[220px] lg:w-[250px] h-full flex flex-col gap-8 rounded-[20px] p-10 border border-[#DBDBDB] bg-[#F0F2F5] shadow-[0px_0px_8px_0px_#0000001A] pt-20 md:pt-10">
+        <div className="w-[17.5rem] md:w-[13.75rem] lg:w-[15.625rem] h-full flex flex-col gap-8 rounded-[1.25rem] p-10 border border-[#DBDBDB] bg-[#F0F2F5] shadow-[0rem_0rem_0.5rem_0rem_#0000001A] pt-20 md:pt-10">
           <Action
             icon={FaRegPlusSquare}
             text={t("sidebar.newMIP")}
