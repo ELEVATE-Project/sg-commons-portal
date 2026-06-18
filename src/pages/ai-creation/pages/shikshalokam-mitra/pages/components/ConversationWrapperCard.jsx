@@ -41,7 +41,7 @@ export default function ConversationWrapperCard({ children, scrollRef }) {
           }
         }
       }}
-      className={`relative flex flex-col w-[calc(100%-2rem)] md:w-[100%] h-full rounded-[1.25rem] p-[0.625rem] md:p-[1.875rem] border border-[#DBDBDB] bg-[#F0F2F5] shadow-[0rem_0rem_0.5rem_0rem_#0000001A] mx-auto my-4 md:mx-0 md:!my-0 lg:!mx-0 lg:!my-0 ${shouldScroll ? 'overflow-y-auto [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:w-2 md:[&::-webkit-scrollbar]:bg-transparent md:[&::-webkit-scrollbar-thumb]:bg-transparent md:[&::-webkit-scrollbar-thumb]:rounded-full md:hover:[&::-webkit-scrollbar-thumb]:bg-gray-400' : 'overflow-y-auto'}`}
+      className={`relative flex flex-col w-[calc(100%-2rem)] md:w-[100%] h-full rounded-[1.25rem] p-[0.625rem] md:p-[1.875rem] border border-repository-neutralGray bg-repository-pageBackground shadow-[0rem_0rem_0.5rem_0rem_#0000001A] mx-auto my-4 md:mx-0 md:!my-0 lg:!mx-0 lg:!my-0 ${shouldScroll ? 'overflow-y-auto [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:w-2 md:[&::-webkit-scrollbar]:bg-transparent md:[&::-webkit-scrollbar-thumb]:bg-transparent md:[&::-webkit-scrollbar-thumb]:rounded-full md:hover:[&::-webkit-scrollbar-thumb]:bg-gray-400' : 'overflow-y-auto'}`}
       style={shouldScroll ? {
         msOverflowStyle: 'none',
         scrollbarWidth: 'none',

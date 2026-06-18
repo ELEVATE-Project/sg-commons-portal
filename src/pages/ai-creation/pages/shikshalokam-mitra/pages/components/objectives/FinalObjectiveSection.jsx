@@ -262,7 +262,7 @@ export function FinalObjectiveSection({
   
                 <div className="secondpage-add-div1">
                   <button
-                    className="flex items-center font-sans font-normal text-base leading-[1.4] text-right text-[#1177FF]"
+                    className="flex items-center font-sans font-normal text-base leading-[1.4] text-right text-repository-hadfieldBlue"
                     onClick={() => {
                       handleAddObjective();
                     }}
@@ -282,7 +282,7 @@ export function FinalObjectiveSection({
                     onClick={() => {
                       setHasClickedOnAddmore(false);
                     }}
-                    className="flex items-center font-sans font-normal text-base leading-[1.4] text-right text-[#1177FF]"
+                    className="flex items-center font-sans font-normal text-base leading-[1.4] text-right text-repository-hadfieldBlue"
                     disabled={isFetchingData}
                   >
                     {t("selectObjective.goBack")}

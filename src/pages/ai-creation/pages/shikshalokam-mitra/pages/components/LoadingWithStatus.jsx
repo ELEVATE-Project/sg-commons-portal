@@ -36,7 +36,7 @@ function LoadingWithStatus({
 
   return (
     <div className={`flex items-center gap-4 py-6 ${wrapperStyles}`}>
-      <p className={`text-base font-medium text-[#572E91] animate-pulse ${textStyles}`}>
+      <p className={`text-base font-medium text-repository-cardAccent animate-pulse ${textStyles}`}>
         {statusMessages[currentIndex]}
       </p>
       {showDefaultLoader && <div className={loaderWrapperStyles}>

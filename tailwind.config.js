@@ -79,6 +79,25 @@ module.exports = {
 					// Ratings
 					rating: "#FFD700",
 
+					cardAccent: "#572E91",
+					link: "#1D4ED8",
+
+					backIcon: "#1E1E1E",
+					sidebarIcon: "#555555",
+					tabActiveBg: "#F1E9FF",
+  pageBackground: "#F0F2F5",
+  hadfieldBlue: "1177FF",
+  "extremeBlack": "#101010",
+  "softGray": "#DDDDDD",
+  "lightGray": "#AAAAAA",
+  "electricBlue": "#007BFF",
+  "bluishPurple": "#4A3B94",
+  "magnolia": "#F6F2FE",
+  "darkCharcoal":"#333333",
+  "neutralGray": "#DBDBDB",
+  "mediumDarkGray": "#666666",
+  "slateGray": "#64748b"
+
 				},
 			},
 			fontFamily: {

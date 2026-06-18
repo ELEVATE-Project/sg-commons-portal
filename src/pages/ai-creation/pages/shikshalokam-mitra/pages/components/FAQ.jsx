@@ -14,7 +14,7 @@ const FAQItem = ({ question, answer, index, isOpen, onToggle }) => {
       }`}
     >
       <button
-        className="bg-[#F0F2F5] w-full flex items-center justify-between p-3 text-left focus:outline-none"
+        className="bg-repository-pageBackground w-full flex items-center justify-between p-3 text-left focus:outline-none"
         onClick={onToggle}
         aria-expanded={isOpen}
       >
@@ -95,7 +95,7 @@ export default function FAQ({ onBack }) {
       {onBack && (
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-[#1177FF] hover:text-blue-700 mb-4 transition-colors"
+          className="flex items-center gap-2 text-repository-hadfieldBlue hover:text-blue-700 mb-4 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           <span className="font-medium">{t("common.back") || "Back"}</span>

@@ -904,7 +904,7 @@ const handleInputChange = (id, value) => {
 
               <div className="secondpage-add-div1">
                 <button
-                  className="flex items-center font-sans font-normal text-base leading-[1.4] text-right text-[#1177FF]"
+                  className="flex items-center font-sans font-normal text-base leading-[1.4] text-right text-repository-hadfieldBlue"
                   onClick={() => {
                     handleAddAction()
                   }}
@@ -925,7 +925,7 @@ const handleInputChange = (id, value) => {
                   //   setWantsToMoveForward(false)
                   // }}
                   onClick={handleGoBackToObjectives}
-                  className="flex items-center font-sans font-normal text-base leading-[1.4] text-right text-[#1177FF]"
+                  className="flex items-center font-sans font-normal text-base leading-[1.4] text-right text-repository-hadfieldBlue"
                 >
                   {t("selectObjective.goBack")}
                 </button>

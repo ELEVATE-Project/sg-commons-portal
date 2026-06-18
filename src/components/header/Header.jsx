@@ -69,11 +69,11 @@ export default function Header({ isHeroSection = true, isBackButton = false, onS
                 }
               }}
             >
-              <FiArrowLeft className="w-8 h-8 text-[#1E1E1E]" />
+              <FiArrowLeft className="w-8 h-8 text-repository-backIcon" />
             </button>
             {isMobile && onSidebarToggle && (
               <button onClick={onSidebarToggle} className="bg-transparent w-fit px-1" aria-label="Toggle sidebar">
-                {isSidebarOpen ? <HiX className="w-6 h-6 text-[#555555]" /> : <HiMenu className="w-6 h-6 text-[#555555]" />}
+                {isSidebarOpen ? <HiX className="w-6 h-6 text-repository-sidebarIcon" /> : <HiMenu className="w-6 h-6 text-repository-sidebarIcon" />}
               </button>
             )}
           </div>

@@ -103,7 +103,7 @@ const SourcePopup = ({ isOpen, onClose, sourcesData = {} }) => {
             </div>}
           <div className="mb-2">
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6 border rounded-md border-[#DBDBDB] m-6 mt-2">
+            <div className="flex-1 overflow-y-auto p-6 border rounded-md border-repository-neutralGray m-6 mt-2">
               {uniqueChunks?.map((item, index) => (
                 <div key={index} className="mb-4">
                   <p>{highlightText(item.chunk, item.highlights)}</p>

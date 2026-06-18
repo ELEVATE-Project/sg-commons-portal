@@ -15,7 +15,7 @@ const Collapse = ({ title, children, defaultOpen = false, customClassNames = {} 
         className="flex justify-between items-center h-[3.125rem] pt-3 pr-5 pb-3 pl-5 bg-white cursor-pointer"
         onClick={toggleCollapse}
       >
-        <span className="text-base font-medium leading-none text-[#1D4ED8] flex-1">{title}</span>
+        <span className="text-base font-medium leading-none text-repository-link flex-1">{title}</span>
         <span className="flex items-center justify-center text-gray-500">
           {isOpen ? (
             <svg
