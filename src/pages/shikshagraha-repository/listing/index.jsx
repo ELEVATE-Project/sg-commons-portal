@@ -69,6 +69,7 @@ const orgId = searchParams.get("org");
   compact={false}
   title="repository.browseResources"
   setViewMode={setViewMode}
+  cardsSpacing={true}
               />
             )}
          

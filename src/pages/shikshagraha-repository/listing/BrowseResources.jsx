@@ -167,7 +167,7 @@ const DefaultDropdownItem = ({ option, isSelected, onSelect }) => {
   );
 };
 
-export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false }) {
+export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false, cardsSpacing = false }) {
   const pagination = useRepositoryStore((state) => state.pagination);
   const setPagination = useRepositoryStore((state) => state.setPagination);
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
@@ -413,8 +413,10 @@ const displayedResources = compact
           />
           <div className="relative z-10">
             <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">
-              <div
+<div
   className={`grid gap-6 w-full ${
+    cardsSpacing ? "px-4 md:px-6 lg:px-16" : ""
+  } ${
     viewMode === "grid"
       ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
       : "grid-cols-1"
@@ -432,9 +434,6 @@ const displayedResources = compact
                 ))}
               </div>
             </div>
-          </div>
-          <div className="hidden lg:block w-[20%] self-stretch p-4 rounded-xl z-[9999]">
-            <MitraAiAssistantAside />
           </div>
         </div>
 </div>

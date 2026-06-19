@@ -115,7 +115,6 @@ const handleCardKeyDown = (e) => {
         px-3
         py-3
         flex
-        items-center
         gap-4
         cursor-pointer
         hover:shadow-sm
@@ -128,7 +127,7 @@ const handleCardKeyDown = (e) => {
           ${background}
           w-[6rem]
           min-w-[6rem]
-          h-[4.25rem]
+          h-[4.5rem]
           rounded-[0.5rem]
           flex
           flex-col
@@ -157,7 +156,7 @@ const handleCardKeyDown = (e) => {
         {/* Title */}
         <h3
           className="
-            text-[1.25rem]
+            text-[0.875rem]
             font-medium
             text-repository-cardTitle
             truncate
@@ -169,8 +168,8 @@ const handleCardKeyDown = (e) => {
         {/* Description */}
         <p
           className="
-            mt-1
-            text-[0.875rem]
+            
+            text-[0.750rem]
             text-repository-cardDescription
             line-clamp-1
           "
@@ -178,78 +177,111 @@ const handleCardKeyDown = (e) => {
           {resource?.description || t("repository.notAvailable")}
         </p>
 
-        {/* Tags */}
-{resource?.tag_names?.length > 0 && (
-  <div className="flex flex-wrap gap-2 mt-2">
-    {resource.tag_names.slice(0, 4).map((tag, index) => (
-      <span
-        key={index}
-        className={`
-          ${tagBg}
-          ${tagText}
-          text-[0.75rem]
-          px-3
-          py-1
-          rounded-full
-          whitespace-nowrap
-        `}
-      >
-        {tag}
-      </span>
-    ))}
-  </div>
-)}
+
 
         {/* Footer */}
-        <div className="flex items-center gap-5 mt-3 text-repository-cardMeta">
-          <div className="flex items-center gap-1">
-            <Eye size={14} />
-            <span className="text-[0.875rem]">
-              {resource?.view_count ?? 0}k
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <Download size={14} />
-            <span className="text-[0.875rem]">
-              {resource?.download_count ?? 0}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Organization */}
-      {resource?.organization && (
-        <button
-          type="button"
-          className="flex items-center gap-3 ml-4 flex-shrink-0"
-          onClick={e => {
-            e.preventDefault()
-            e.stopPropagation()
-
-            if (resource?.organization_url) {
-              openSafeUrl(resource.organization_url)
-            }
-          }}
-        >
+        <div className="flex items-center justify-between mt-2 gap-4 min-w-0">
+  {/* Left Side - Tags */}
+  <div className="flex-1 min-w-0">
+    {resource?.tag_names?.length > 0 && (
+      <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
+        {resource.tag_names.slice(0, 4).map((tag, index) => (
           <span
-            className="
-              text-[0.875rem]
-              text-repository-cardMeta
-              underline
+            key={index}
+            className={`
+              ${tagBg}
+              ${tagText}
+              text-[0.5625rem] sm:text-[0.625rem]
+px-1.5 sm:px-2
+              py-0.5
+              rounded-full
               whitespace-nowrap
-            "
+              ${
+  index === resource.tag_names.slice(0, 4).length - 1
+    ? "truncate min-w-0"
+    : "flex-shrink-0"
+}
+            `}
           >
-            {resource.organization}
+            {tag}
           </span>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+  {/* Right Side - Stats + Organization */}
+<div
+  className="
+    flex
+    items-center
+    justify-between
+    gap-2
+    mt-2
+    text-repository-cardMeta
+  "
+>
+  {/* Left Side */}
+  <div className="flex items-center gap-3 sm:gap-5">
+    <div className="flex items-center gap-1">
+      <Eye size={14} />
+      <span className="text-[0.813rem]">
+        {resource?.view_count ?? 0}k
+      </span>
+    </div>
 
-          <img
-            src={GoogleDriveIcon}
-            alt={t("repository.organization")}
-            className="w-6 h-6 object-contain"
-          />
-        </button>
-      )}
+    <div className="flex items-center gap-1">
+      <Download size={14} />
+      <span className="text-[0.813rem]">
+        {resource?.download_count ?? 0}
+      </span>
+    </div>
+  </div>
+
+  {/* Right Side */}
+  {resource?.organization && (
+    <button
+      type="button"
+      className="
+    flex
+    items-center
+    gap-1
+    ml-auto
+    min-w-0
+    max-w-[40%]
+    sm:max-w-none
+  "
+      onClick={e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (resource?.organization_url) {
+          openSafeUrl(resource.organization_url);
+        }
+      }}
+    >
+      <span
+  className="
+    text-[0.813rem]
+    underline
+    truncate
+    max-w-[5rem]
+    sm:max-w-none
+    sm:whitespace-nowrap
+  "
+>
+        {resource.organization}
+      </span>
+
+      <img
+        src={GoogleDriveIcon}
+        alt={t("repository.organization")}
+        className="w-5 h-5 object-contain flex-shrink-0"
+      />
+    </button>
+  )}
+</div>
+      </div>
     </div>
   )
 }
