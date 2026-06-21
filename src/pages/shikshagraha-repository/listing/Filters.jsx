@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react"
+import { createPortal } from "react-dom"
 import { useTranslation } from "react-i18next"
+import { theme } from "../../../theme"
 import Select, { components } from "react-select"
 import { Search, X, Filter } from "lucide-react"
 /** Icons */
@@ -71,117 +73,13 @@ export default function Filters() {
 
   const [shouldScrollToTop, setShouldScrollToTop] = useState(false)
 
-  const [isSticky, setIsSticky] = useState(false)
   const filtersRef = useRef(null)
-  const stickySentinelRef = useRef(null)
-  const placeholderRef = useRef(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [queryMap, setQueryMap] = useState({})
   const [openMap, setOpenMap] = useState({})
   const [pendingFilters, setPendingFilters] = useState({})
 
-  useEffect(() => {
-    if (!stickySentinelRef.current || typeof IntersectionObserver === "undefined") {
-      return undefined
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const nextStickyState = !entry.isIntersecting
-        setIsSticky(prev => (prev === nextStickyState ? prev : nextStickyState))
-      },
-      {
-        threshold: 0,
-        rootMargin: "-0.0625rem 0rem 0rem 0rem",
-      }
-    )
-
-    observer.observe(stickySentinelRef.current)
-
-    return () => observer.disconnect()
-  }, [])
-
-  // Fallback: also update sticky state from scroll position to handle layouts
-  useEffect(() => {
-    const sentinel = stickySentinelRef.current
-    const el = sentinel || filtersRef.current
-    if (!el) return
-
-    const handleScroll = () => {
-      const rect = el.getBoundingClientRect()
-      const nextSticky = rect.top <= 0
-      setIsSticky(prev => (prev === nextSticky ? prev : nextSticky))
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    // initial check
-    handleScroll()
-
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  // rAF polling fallback to ensure `isSticky` updates in all environments
-  useEffect(() => {
-    let rafId
-    const check = () => {
-      const sentinel = stickySentinelRef.current
-      const el = sentinel || filtersRef.current
-      if (el) {
-        const rect = el.getBoundingClientRect()
-        const nextSticky = rect.top <= 0
-        setIsSticky(prev => (prev === nextSticky ? prev : nextSticky))
-      }
-      rafId = requestAnimationFrame(check)
-    }
-    rafId = requestAnimationFrame(check)
-    return () => cancelAnimationFrame(rafId)
-  }, [])
-
-  // When isSticky toggles, apply inline fixed positioning to the filters element
-  useEffect(() => {
-    const el = filtersRef.current
-    const placeholder = placeholderRef.current
-    if (!el || !placeholder) return
-
-      if (isSticky) {
-      // measure before changing position
-      const rect = el.getBoundingClientRect()
-      placeholder.style.height = `${rect.height / 16}rem`
-      placeholder.style.display = 'block'
-
-      el.style.position = 'fixed'
-      el.style.top = '0rem'
-      el.style.left = `${rect.left / 16}rem`
-      el.style.width = `${rect.width / 16}rem`
-      el.style.zIndex = '1000'
-      el.style.boxShadow = '0 0 0.25rem rgba(0,0,0,0.2)'
-    } else {
-      placeholder.style.height = '0rem'
-      placeholder.style.display = 'none'
-
-      el.style.position = ''
-      el.style.top = ''
-      el.style.left = ''
-      el.style.width = ''
-      el.style.zIndex = ''
-      el.style.boxShadow = ''
-    }
-
-    return () => {
-      if (el) {
-        el.style.position = ''
-        el.style.top = ''
-        el.style.left = ''
-        el.style.width = ''
-        el.style.zIndex = ''
-        el.style.boxShadow = ''
-      }
-      if (placeholder) {
-        placeholder.style.height = '0rem'
-        placeholder.style.display = 'none'
-      }
-    }
-  }, [isSticky])
+  // sticky behavior removed: filters will remain in normal document flow
 
   useEffect(() => {
     if (!loadingList && shouldScrollToTop) {
@@ -579,19 +477,15 @@ if (inpText.trim() === "" && search.trim() !== "") {
           </button>
         </div>
 
-      <div className={`flex justify-end ml-auto relative z-10 w-auto lg:w-[25%] overflow-hidden ${
-        isSticky
-          ? "lg:mt-0 opacity-100 block"
-          : "max-h-0 mt-0 opacity-0 invisible pointer-events-none hidden"
-      }`} aria-hidden={!isSticky} style={{}}>
+      <div className="flex justify-end ml-auto relative z-10 w-auto lg:w-[25%] overflow-hidden lg:mt-0 opacity-100 block">
         <div className="flex flex-col items-start w-full">
         </div>
       </div>
 
-      {isDrawerOpen && (
-        <div className="fixed inset-0 z-50">
+      {isDrawerOpen && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[99999]" style={{ ...theme.vars }}>
           <div className="absolute inset-0 bg-black/40" onClick={() => setIsDrawerOpen(false)} />
-          <aside className="absolute right-0 top-0 h-full w-full md:w-[550px] bg-white shadow-lg p-4 filters-drawer flex flex-col">
+          <aside className="absolute right-0 top-0 h-full w-full md:w-[550px] bg-white shadow-lg p-4 filters-drawer flex flex-col" style={{ zIndex: 99999 }}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Filters</h3>
               <button onClick={() => setIsDrawerOpen(false)} className="p-2 rounded hover:bg-gray-100">
@@ -671,7 +565,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
                     <button
                       className={`px-3 py-2 rounded-[12px] bg-[var(--listing-secondary)] text-white ${pendingCount === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                       onClick={() => { if (pendingCount === 0) return; setFilters(pendingFilters || {}); setIsDrawerOpen(false); scrollToBrowseResources(); }}
-                      disabled={pendingCount === 0}
+                      disabled={pendingCount === 0}  
                     >
                       Apply
                     </button>
@@ -680,7 +574,8 @@ if (inpText.trim() === "" && search.trim() !== "") {
               </div>
             </div>
           </aside>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
@@ -741,14 +636,11 @@ if (inpText.trim() === "" && search.trim() !== "") {
       `}</style>
       {!isDrawerOpen && <HiddenRecorder />}
       <Notification />
-      <div ref={stickySentinelRef} className="h-px -mb-px" aria-hidden="true" />
-      <div ref={placeholderRef} style={{height: 0, display: 'none'}} aria-hidden="true" />
 
       <div
         ref={filtersRef}
         id="filters-boundary"
-        className="sticky top-0 z-100 isolate flex flex-col lg:flex-row items-stretch lg:items-center bg-white w-fit rounded-[1rem] shadow-[0_0_4px_rgba(0,0,0,0.2)]"
-        style={undefined}
+        className="relative z-10 isolate flex flex-col lg:flex-row items-stretch lg:items-center bg-white w-fit rounded-[1rem] shadow-[0_0_4px_rgba(0,0,0,0.2)]"
       >
         {filtersInner}
       </div>

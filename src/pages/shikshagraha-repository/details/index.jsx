@@ -139,6 +139,27 @@ function ResourceMeta({ resource }) {
   const navigate = useNavigate();
   const fileType =
     resource?.media_type_display?.toUpperCase() || "DOCX";
+  const masterList = useRepositoryStore((state) => state.masterList);
+  const fetchMasterList = useRepositoryStore((state) => state.fetchMasterList);
+
+  useEffect(() => {
+    if (!masterList) fetchMasterList();
+  }, [masterList, fetchMasterList]);
+
+  const resolvedOrgParam = (() => {
+    const raw = resource?.organization;
+    if (!raw) return null;
+    try {
+      const orgDropdown = masterList?.find((d) => d.key === "organizations");
+      const match = orgDropdown?.options?.find(
+        (o) => String(o.value) === String(raw) || String((o.display || "")).toLowerCase() === String(raw).toLowerCase()
+      );
+      const val = match ? match.value : raw;
+      return encodeURIComponent(val);
+    } catch (e) {
+      return encodeURIComponent(raw);
+    }
+  })();
 
   return (
     <div className="w-full">
@@ -227,7 +248,11 @@ function ResourceMeta({ resource }) {
             </button>
           </div>
 
-          <button onClick={() => navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?org=${resource?.organization}`)} className="border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg">
+          <button onClick={() => {
+            if (!resolvedOrgParam) return;
+            const fromParam = resource?.id ? `&fromResource=${encodeURIComponent(resource.id)}` : "";
+            navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?org=${resolvedOrgParam}${fromParam}`);
+          }} className="border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg">
             {t("repository.viewAllResources")} ↗
           </button>
         </div>

@@ -1,10 +1,11 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { Grid, List, ChevronDown, Check, ArrowRight } from "lucide-react";
+import { Grid, List, ChevronDown, Check, ArrowRight, X } from "lucide-react";
 import ResourceCard from "./ResourceCard";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
 import MitraAiAssistantAside from "./MitraAiAssistantAside.jsx";
+import Filters from "./Filters";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import ROUTES from "../../../url";
 // Custom hook for dropdown functionality
 const useDropdown = () => {
@@ -174,9 +175,140 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const sortBy = useRepositoryStore((state) => state.sortBy);
   const setSortBy = useRepositoryStore((state) => state.setSortBy);
   const searchInput = useRepositoryStore((state) => state.searchInput);
+  const fetchMasterList = useRepositoryStore((state) => state.fetchMasterList);
+  const masterList = useRepositoryStore((state) => state.masterList);
+  const setFilters = useRepositoryStore((state) => state.setFilters);
   const isSearchActive = searchInput && searchInput.trim().length > 0;
   const navigate = useNavigate();
   const {t} = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const orgParam = searchParams.get("org");
+  const themeParam = searchParams.get("theme");
+  const filters = useRepositoryStore((state) => state.filters);
+
+  const selectedSingleLabel = useMemo(() => {
+    const orgs = filters?.organizations || [];
+    const tags = filters?.tags || [];
+
+    // If exactly one organisation selected, prefer its full display name from masterList
+    if (Array.isArray(orgs) && orgs.length === 1 && (!tags || tags.length <= 1)) {
+      const selected = orgs[0] || {};
+      let name = selected.display || selected.value || "";
+      try {
+        const orgDropdown = masterList?.find(d => d.key === 'organizations');
+        const match = orgDropdown?.options?.find(o => String(o.value) === String(selected.value));
+        if (match && match.display) name = match.display;
+      } catch (e) {
+        // ignore
+      }
+      return { type: "Organisation", name };
+    }
+
+    // If exactly one theme (tag) selected, prefer its full display name from masterList
+    if (Array.isArray(tags) && tags.length === 1 && (!orgs || orgs.length !== 1)) {
+      const selected = tags[0] || {};
+      let name = selected.display || selected.value || "";
+      try {
+        const tagDropdown = masterList?.find(d => d.key === 'tags');
+        const match = tagDropdown?.options?.find(o => String(o.value) === String(selected.value));
+        if (match && match.display) name = match.display;
+      } catch (e) {
+        // ignore
+      }
+      return { type: "Theme", name };
+    }
+
+    return null;
+  }, [filters]);
+  // Sync filters -> URL (org, theme). Use replace to avoid polluting history.
+  useEffect(() => {
+    if (!setSearchParams) return;
+
+    const currentOrg = searchParams.get("org");
+    const currentTheme = searchParams.get("theme");
+
+    const orgValues = Array.isArray(filters?.organizations) ? filters.organizations.map(o => o.value).filter(Boolean) : [];
+    const tagValues = Array.isArray(filters?.tags) ? filters.tags.map(t => t.value).filter(Boolean) : [];
+
+    const newOrg = orgValues.length ? orgValues.join(",") : null;
+    const newTheme = tagValues.length ? tagValues.join(",") : null;
+
+    // avoid updating if params equal
+    const shouldUpdateOrg = (currentOrg || null) !== (newOrg || null);
+    const shouldUpdateTheme = (currentTheme || null) !== (newTheme || null);
+
+    if (!shouldUpdateOrg && !shouldUpdateTheme) return;
+
+    const next = new URLSearchParams(searchParams.toString());
+    if (newOrg) next.set("org", newOrg); else next.delete("org");
+    if (newTheme) next.set("theme", newTheme); else next.delete("theme");
+
+    setSearchParams(next, { replace: true });
+  }, [filters, searchParams, setSearchParams]);
+
+  // Apply URL -> filters: when `org` or `theme` present in URL, map them
+  // to masterList options and set filters accordingly. If masterList is
+  // not yet available, attempt to fetch it and wait for the effect to re-run.
+  useEffect(() => {
+    if (!orgParam && !themeParam) return;
+
+    const safeDecode = (s) => {
+      try {
+        return decodeURIComponent(s);
+      } catch (e) {
+        return s;
+      }
+    };
+
+    if (!masterList) {
+      fetchMasterList?.();
+      return;
+    }
+
+    const orgValues = orgParam ? orgParam.split(",").map((s) => safeDecode(s).trim()).filter(Boolean) : [];
+    const themeValues = themeParam ? themeParam.split(",").map((s) => safeDecode(s).trim()).filter(Boolean) : [];
+
+    const orgDropdown = masterList.find((d) => d.key === "organizations");
+    const tagDropdown = masterList.find((d) => d.key === "tags");
+
+    const orgs = orgValues.map((v) => {
+      const match = orgDropdown?.options?.find((o) => String(o.value) === String(v) || String((o.display || "")).toLowerCase() === String(v).toLowerCase());
+      return { value: match?.value ?? v, display: match?.display ?? v };
+    });
+
+    const tags = themeValues.map((v) => {
+      const match = tagDropdown?.options?.find((o) => String(o.value) === String(v) || String((o.display || "")).toLowerCase() === String(v).toLowerCase());
+      return { value: match?.value ?? v, display: match?.display ?? v };
+    });
+
+    setFilters({ organizations: orgs, tags });
+  }, [orgParam, themeParam, masterList, fetchMasterList, setFilters]);
+
+  // Ensure URL params are fully cleared when there are no active filters.
+  // This runs on mount and on browser back navigation (popstate) so params
+  // like `org`, `theme`, or `fromResource` don't linger when filters are empty.
+  useEffect(() => {
+    const tryClear = () => {
+      const paramKeys = ["org", "theme", "resource_type", "resource_types", "media_type", "media_types", "file_type", "filetype", "tags", "fromResource"];
+      const hasAny = paramKeys.some((k) => Boolean(searchParams.get(k)));
+
+      const noFilters = (!filters?.organizations || filters.organizations.length === 0) && (!filters?.tags || filters.tags.length === 0) && (!filters?.resource_types || filters.resource_types.length === 0) && (!filters?.media_types || filters.media_types.length === 0);
+
+      if (noFilters && hasAny) {
+        const next = new URLSearchParams(searchParams.toString());
+        paramKeys.forEach((k) => next.delete(k));
+        setSearchParams(next, { replace: true });
+      }
+    };
+
+    // initial attempt
+    tryClear();
+
+    // clear on back/forward navigation
+    const onPop = () => tryClear();
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [searchParams, filters, setSearchParams]);
   
   const sortOptions = [
     { value: "title", label: t("repository.sort.titleAsc") },
@@ -201,6 +333,8 @@ const displayedResources = compact
   const handleItemsPerPageChange = (value) => {
     setPagination({ limit: Number(value) });
   };
+  
+  // (Old org-only effect removed; handled by combined org/theme effect above)
    
   return (
     <div
@@ -224,7 +358,7 @@ const displayedResources = compact
   <div className="w-full mb-3 md:mb-0" data-browse-resources>
       <h2 className="text-[1.25rem] md:text-[1.375rem] font-['Comfortaa'] font-semibold tracking-[0.0625rem] text-repository-heading capitalize">
 
-      {t(title ?? "repository.browseResources")}
+      {selectedSingleLabel ? `${selectedSingleLabel.name} Resources` : t(title ?? "repository.browseResources")}
     </h2>
 
     {!compact && (
@@ -239,6 +373,61 @@ const displayedResources = compact
 >
   {t("repository.browseResourcesDescription")}
 </p>
+    )}
+    {/* Conditional single filter label (Organisation or Theme) */}
+    {selectedSingleLabel && (
+      <p className="mt-2 text-sm text-repository-textSecondary flex items-center gap-2">
+        <span>{selectedSingleLabel.type}: {selectedSingleLabel.name}</span>
+        {(selectedSingleLabel.type === "Organisation" || selectedSingleLabel.type === "Theme") && (
+          <button
+            type="button"
+            aria-label={`Clear ${selectedSingleLabel.type.toLowerCase()}`}
+            className="p-1 rounded hover:bg-gray-100"
+            onClick={() => {
+                const fromResource = searchParams.get("fromResource");
+                if (fromResource) {
+                  // If the listing was opened from a resource detail, go back to it
+                  // and replace history so the listing params aren't restored on back.
+                  navigate(`/resources/${fromResource}`, { replace: true });
+                  return;
+                }
+
+                // If no fromResource param but the previous page (referrer) was
+                // a resource detail, go back there. This covers cases where the
+                // browser back/page history has the detail page.
+                try {
+                  const ref = document.referrer;
+                  if (ref) {
+                    const p = new URL(ref).pathname;
+                    const m = p.match(/^\/resources\/(.+)/);
+                    if (m && m[1]) {
+                      // Prefer history back to preserve user navigation stack
+                      window.history.back();
+                      return;
+                    }
+                  }
+                } catch (e) {
+                  // ignore
+                }
+
+                if (selectedSingleLabel.type === "Organisation") {
+                  setFilters({ organizations: [] });
+                  const next = new URLSearchParams(searchParams.toString());
+                  ["org", "theme", "resource_type", "resource_types", "media_type", "media_types", "file_type", "filetype", "tags", "fromResource"].forEach(k => next.delete(k));
+                  setSearchParams(next, { replace: true });
+                } else {
+                  // Theme
+                  setFilters({ tags: [] });
+                  const next = new URLSearchParams(searchParams.toString());
+                  ["org", "theme", "resource_type", "resource_types", "media_type", "media_types", "file_type", "filetype", "tags", "fromResource"].forEach(k => next.delete(k));
+                  setSearchParams(next, { replace: true });
+                }
+            }}
+          >
+            <X className="w-4 h-4 text-repository-textSecondary" />
+          </button>
+        )}
+      </p>
     )}
   </div>
 
@@ -264,7 +453,10 @@ const displayedResources = compact
 
       <button
   type="button"
-  onClick={() => navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST)}
+  onClick={() => {
+    try { setSearchParams(new URLSearchParams(), { replace: true }); } catch (e) {}
+    navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
+  }}
   className="
     flex items-center justify-center gap-1
     w-[7.5rem]
@@ -346,8 +538,8 @@ const displayedResources = compact
   className={`w-[0.875rem] h-[0.875rem]`}
 />
 </button>
-
-          <button
+      <button
+  type="button"
   onClick={() => setViewMode("list")}
   className={`
     flex items-center justify-center
@@ -402,6 +594,7 @@ const displayedResources = compact
 </span>
   )}
 />
+        <Filters />
       </div>
     </div>
   )}
