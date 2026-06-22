@@ -251,7 +251,8 @@ function ResourceMeta({ resource }) {
           <button onClick={() => {
             if (!resolvedOrgParam) return;
             const fromParam = resource?.id ? `&fromResource=${encodeURIComponent(resource.id)}` : "";
-            navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?org=${resolvedOrgParam}${fromParam}`);
+            const search = `?org=${resolvedOrgParam}${fromParam}`;
+            navigate({ pathname: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, search });
           }} className="border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg">
             {t("repository.viewAllResources")} ↗
           </button>

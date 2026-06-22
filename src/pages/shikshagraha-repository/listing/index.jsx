@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../../components/header/Header.jsx";
-import Filters from "./Filters.jsx";
 import BrowseResources from "./BrowseResources.jsx";
 import Pagination from "./Pagination.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
@@ -9,12 +7,10 @@ import { useRepositoryStore } from "../repository-hooks/useRepositoryStore.js";
 import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
-import { useSearchParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader";
 
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
-  const [sortBy, setSortBy] = useState("recent");
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
   const { t } = useTranslation()
@@ -30,9 +26,6 @@ export default function RepositoryPage() {
   (state) => state.fetchMediaList
 );
   const itemsPerPage = pagination.limit;
-const [searchParams] = useSearchParams();
-
-const orgId = searchParams.get("org");
 
   useEffect(() => {
   fetchMediaList();
@@ -53,7 +46,7 @@ const orgId = searchParams.get("org");
       <div className="container max-w-[93.75rem] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
         <div className="w-full">
-                    <PageHeader />
+                    <PageHeader showSearch />
                   </div>
            <div className="">
 
@@ -73,7 +66,7 @@ const orgId = searchParams.get("org");
             )}
          
            
-            {!isLoading && !!!mediaList?.length && (
+            {!isLoading && !mediaList?.length && (
               <div className="w-full pt-10 mx-auto flex flex-col items-center justify-center">
                 <div className="text-muted">
                   <GrResources size={100} />
