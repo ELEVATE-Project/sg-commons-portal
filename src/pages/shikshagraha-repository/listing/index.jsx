@@ -34,6 +34,11 @@ export default function RepositoryPage() {
 const [searchParams] = useSearchParams();
 
 const orgId = searchParams.get("org");
+const isMobile = window.innerWidth < 768;
+
+useEffect(() => {
+  window.scrollTo(0, 0);
+}, []);
 
   useEffect(() => {
   fetchMediaList();
@@ -50,13 +55,22 @@ const orgId = searchParams.get("org");
   }, [mediaList, q, loadingList]);
 
   return (
-    <div className="bg-white relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible',
+    <div
+  className="bg-white relative listing-pages overflow-x-hidden overflow-y-visible"
+  style={{
+    ...theme.vars,
+    overflowY: "visible",
     backgroundImage: `url(${left1}), url(${right2})`,
-              backgroundPosition: "left 2.8rem top 18.5rem, right 1.7rem top 27.8rem",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "8rem, 10rem",
-              backgroundAttachment: "fixed",
-    }}>
+    backgroundPosition: isMobile
+      ? "left -2rem top 12rem, right -2rem top 20rem"
+      : "left 2.8rem top 18.5rem, right 1.7rem top 27.8rem",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: isMobile
+      ? "5rem, 6rem"
+      : "8rem, 10rem",
+    backgroundAttachment: "fixed",
+  }}
+>
       <div className="container max-w-[93.75rem] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
         <div className="w-full">

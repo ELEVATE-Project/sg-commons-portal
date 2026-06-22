@@ -204,7 +204,7 @@ const displayedResources = compact
    
   return (
     <div
-  className={`relative overflow-hidden py-12 w-full scroll-mt-24 ${
+  className={`relative overflow-hidden py-5 lg:py-12 w-full scroll-mt-24 ${
     compact ? "" : "min-h-screen"
   }`}
   data-browse-resources
