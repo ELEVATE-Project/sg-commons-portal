@@ -107,7 +107,7 @@ function BackButton({ title }) {
   return (
     <div className="flex items-center gap-2 text-sm text-repository-textSecondary mb-6">
       <button onClick={async () => {
-        console.debug('[Details] Back button clicked - attempting clearTransientFiltersAtomic');
+        
         try {
           const ref = document.referrer;
           const histState = (window && window.history && window.history.state) || {};
@@ -117,7 +117,7 @@ function BackButton({ title }) {
               // clear transient filters before navigating back to listing
               const clearAtomic = useRepositoryStore.getState().clearTransientFiltersAtomic;
               if (clearAtomic) await clearAtomic();
-              console.debug('[Details] clearTransientFiltersAtomic awaited successfully');
+              
             } catch (e) {
               try {
                 const forceReset = useRepositoryStore.getState().forceResetFilters;
@@ -287,21 +287,28 @@ function ResourceMeta({ resource }) {
             </button>
           </div>
 
-          <button onClick={() => {
-                if (!resolvedOrgParam) return;
+          <button
+            disabled={!resolvedOrgParam}
+            onClick={() => {
+              if (!resolvedOrgParam) return;
               const fromParam = resource?.id ? `&fromResource=${encodeURIComponent(resource.id)}` : "";
               const search = `?org=${resolvedOrgParam}${fromParam}`;
               try {
                 // mark recent navigation from a detail page so listing can treat URL params as transient
                 sessionStorage.setItem('sg:lastFromDetail', JSON.stringify({ id: resource?.id, ts: Date.now() }));
-              } catch (e) {}
+              } catch (err) {
+                
+              }
               navigate({ pathname: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, search }, { state: { fromDetail: true, fromResource: resource?.id } });
               try {
                 // stamp the new history entry with a transient marker so popstate handlers can detect it
                 const st = Object.assign({}, window.history.state || {}, { fromDetail: true, fromResource: resource?.id, sgTransient: true });
-                try { window.history.replaceState(st, '', window.location.href); } catch (e) {}
-              } catch (e) {}
-          }} className="border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg">
+                try { window.history.replaceState(st, '', window.location.href); } catch (err) { }
+              } catch (err) {
+                
+              }
+            }}
+            className={`border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg ${!resolvedOrgParam ? 'opacity-50 cursor-not-allowed' : ''}`}>
             {t("repository.viewAllResources")} ↗
           </button>
         </div>
@@ -496,10 +503,11 @@ function OverviewContent({ overview }) {
   );
 }
 function ReviewsSection({ reviews }) {
+  const { t } = useTranslation();
   return (
     <div className="py-8">
       <h2 className="text-[1.5rem] font-semibold text-[var(--listing-secondary)] mb-6">
-        User Feedback
+        {t('repository.userFeedback')}
       </h2>
       <div className="flex flex-col gap-6">
         {reviews?.map((review, i) => (
@@ -526,16 +534,17 @@ function ReviewsSection({ reviews }) {
           </div>
         ))}
       </div>
-      <ReviewForm onSubmit={(review) => console.log(review)} />
+      <ReviewForm onSubmit={() => {}} />
     </div>
   );
 }
 
 function RelatedResources({ related }) {
+  const { t } = useTranslation();
   return (
     <div className="py-8">
       {/* Implement related resources list */}
-      <span>Related resources go here.</span>
+      <span>{t('repository.relatedResourcesPlaceholder')}</span>
     </div>
   );
 }

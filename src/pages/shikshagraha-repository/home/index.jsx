@@ -39,7 +39,7 @@ export default function RepositoryPage() {
       let fromDetailState = false;
       try {
         fromDetailState = (window && window.history && window.history.state && window.history.state.fromDetail) || false;
-      } catch (e) {
+      } catch {
         fromDetailState = false;
       }
 
@@ -50,7 +50,7 @@ export default function RepositoryPage() {
           const parsed = JSON.parse(raw);
           recentMarker = !!(parsed && parsed.ts && (Date.now() - parsed.ts < 30000));
         }
-      } catch (e) {
+      } catch {
         recentMarker = false;
       }
 
@@ -66,10 +66,10 @@ export default function RepositoryPage() {
         // replace so we don't pollute history
         try {
           setSearchParams(next, { replace: true });
-        } catch (e) {
+        } catch {
           // ignore
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
 
@@ -105,9 +105,9 @@ export default function RepositoryPage() {
         } else {
           resetFilters();
         }
-      } catch (e) {
-        try { resetFilters(); } catch (er) {}
-      }
+      } catch {
+          try { resetFilters(); } catch {}
+        }
     }
   }, [searchParams, resetFilters]);
 

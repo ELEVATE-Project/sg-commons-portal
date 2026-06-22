@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import RepositorySearch from "../../../components/RepositorySearch/RepositorySearch";
 import left1 from "../../../assets/hero-section-image-1.svg";
 import left2 from "../../../assets/hero-section-image-2.svg";
@@ -6,6 +7,7 @@ import right1 from "../../../assets/hero-section-image-3.svg";
 import right2 from "../../../assets/hero-section-image-4.svg";
 
 export default function HeroSection() {
+  const { t } = useTranslation();
   return (
     <div
       className="relative w-full overflow-hidden min-h-[78vh] md:min-h-[70vh] flex items-center justify-center"
@@ -46,11 +48,11 @@ export default function HeroSection() {
         {/* Tags */}
         <div className="flex gap-3 flex-wrap justify-center">
           <span className="px-4 py-1 rounded-full border border-white/30 text-white text-sm font-light bg-gray-700/40">
-            Open-access
+            {t('repository.hero.tags.openAccess')}
           </span>
 
           <span className="px-4 py-1 rounded-full border border-white/30 text-white text-sm font-light bg-gray-700/40">
-            CC BY-SA
+            {t('repository.hero.tags.license')}
           </span>
         </div>
 
@@ -68,7 +70,7 @@ export default function HeroSection() {
             md:whitespace-nowrap
           "
         >
-          Discover. Learn. Reuse. Build.
+          {t('repository.hero.title')}
         </h1>
 
         {/* Description */}
@@ -82,15 +84,14 @@ export default function HeroSection() {
             font-normal
           "
         >
-          A curated knowledge repository of solutions, resources and assets for
-          education leaders working to strengthen India's public schools.
+          {t('repository.hero.description')}
         </p>
 
         <RepositorySearch />
 
         {/* Scroll */}
         <div className="mt-8 text-white/80">
-          <p>Scroll down</p>
+          <p>{t('repository.hero.scrollDown')}</p>
           <div className="animate-bounce text-2xl">⌄</div>
         </div>
 

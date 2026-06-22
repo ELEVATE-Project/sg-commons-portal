@@ -264,7 +264,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   useEffect(() => {
     if (!setSearchParams) return;
     if (applyingUrlFilters) return; // don't sync while we're programmatically applying URL filters
-    console.debug('[BrowseResources] sync filters->URL', { orgs: filters?.organizations, tags: filters?.tags });
+    
 
     const currentOrg = searchParams.get("org");
     const currentTheme = searchParams.get("theme");
@@ -295,7 +295,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   // to masterList options and set filters accordingly. If masterList is
   // not yet available, attempt to fetch it and wait for the effect to re-run.
   useEffect(() => {
-    console.debug('[BrowseResources] apply URL->filters effect', { orgParam, themeParam, masterListLoaded: !!masterList, searchStr });
+    
     if (!orgParam && !themeParam) return;
 
     const safeDecode = (s) => {
@@ -338,12 +338,12 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     const sameOrgs = JSON.stringify(curOrgs) === JSON.stringify(derivedOrgs);
     const sameTags = JSON.stringify(curTags) === JSON.stringify(derivedTags);
     if (sameOrgs && sameTags) {
-      console.debug('[BrowseResources] URL filters already applied - skipping setFilters');
+    
       return;
     }
 
     // start hidden while we apply URL filters and fetch
-    console.debug('[BrowseResources] mapping URL to filters', { orgs, tags });
+    
     setFiltersInitialized(false);
     // indicate we're applying URL-driven filters so other effects don't react
     setApplyingUrlFilters(true);
@@ -364,28 +364,33 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   // This runs on mount and on browser back navigation (popstate) so params
   // like `org`, `theme`, or `fromResource` don't linger when filters are empty.
   useEffect(() => {
-    const searchStr = searchParams.toString();
-      const tryClear = () => {
-        if (suppressTryClearRef.current) {
-          // ignore transient programmatic updates
+    const handlePopstateOrMount = async (e) => {
+      if (suppressTryClearRef.current) return;
+      if (applyingUrlFilters) {
+        window.setTimeout(() => {
+          try { handlePopstateOrMount(e); } catch {}
+        }, 200);
+        return;
+      }
+
+      // If the popstate indicates we came from a detail page, clear transient filters first
+      try {
+        const s = (e && e.state) || window.history.state || {};
+        const urlParams = new URLSearchParams(window.location.search || "");
+        const hasFromResourceInUrl = Boolean(urlParams.get("fromResource"));
+        if ((s && s.fromDetail) || hasFromResourceInUrl) {
+          
+          await clearTransientFiltersAtomic({ navigateToResourceId: undefined });
           return;
         }
-        if (applyingUrlFilters) {
-          // If we're currently applying URL-driven filters, retry shortly —
-          // this avoids missing a clear due to a transient flag left true.
-          window.setTimeout(() => {
-            try {
-              tryClear();
-            } catch (e) {}
-          }, 200);
-          return;
-        }
-        // read directly from window.location to avoid stale hook values during popstate
-        const currentParams = new URLSearchParams(window.location.search || '');
-        const currentSearch = currentParams.toString();
-        console.debug('[BrowseResources] tryClear checking params', { search: currentSearch, filters });
-        const paramKeys = ["org", "theme", "resource_type", "resource_types", "media_type", "media_types", "file_type", "filetype", "tags", "fromResource"];
-        const hasAny = paramKeys.some((k) => Boolean(currentParams.get(k)));
+      } catch {}
+
+      // read directly from window.location to avoid stale hook values during popstate
+      const currentParams = new URLSearchParams(window.location.search || '');
+      const currentSearch = currentParams.toString();
+      
+      const paramKeys = ["org", "theme", "resource_type", "resource_types", "media_type", "media_types", "file_type", "filetype", "tags", "fromResource"];
+      const hasAny = paramKeys.some((k) => Boolean(currentParams.get(k)));
 
       const isEmptyFilterValue = (v) => {
         if (v == null) return true;
@@ -397,72 +402,42 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
 
       const noFilters = Object.keys(filters || {}).length === 0 || Object.values(filters || {}).every(isEmptyFilterValue);
 
-        // If we recently navigated from a detail page, treat URL params as transient and clear them.
+      // If we recently navigated from a detail page, treat URL params as transient and clear them.
+      try {
+        const raw = sessionStorage.getItem && sessionStorage.getItem('sg:lastFromDetail');
+        if (raw) {
           try {
-            const raw = sessionStorage.getItem && sessionStorage.getItem('sg:lastFromDetail');
-            if (raw) {
-              try {
-                const parsed = JSON.parse(raw);
-                const recent = parsed && parsed.ts && (Date.now() - parsed.ts < 30000);
-                if (recent && hasAny) {
-                  // delegate to the atomic clear routine which will reset URL, store and fetch
-                  try { clearTransientFiltersAtomic(); } catch (e) {}
-                  try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (e) {}
-                  return;
-                }
-                // stale marker -> remove
-                if (!recent) {
-                  try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (e) {}
-                }
-              } catch (e) {
-                try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (er) {}
-              }
+            const parsed = JSON.parse(raw);
+            const recent = parsed && parsed.ts && (Date.now() - parsed.ts < 30000);
+            if (recent && hasAny) {
+              try { clearTransientFiltersAtomic(); } catch {}
+              try { sessionStorage.removeItem('sg:lastFromDetail'); } catch {}
+              return;
             }
-          } catch (e) {}
+            if (!recent) { try { sessionStorage.removeItem('sg:lastFromDetail'); } catch {} }
+          } catch { try { sessionStorage.removeItem('sg:lastFromDetail'); } catch {} }
+        }
+      } catch {}
 
       // Case A: noFilters && hasAny -> URL has params but store empty: remove URL params
       if (noFilters && hasAny) {
-        try { clearTransientFiltersAtomic(); } catch (e) {}
+        try { clearTransientFiltersAtomic(); } catch {}
         return;
       }
 
       // Case B: URL has no params but store has filters -> reset store filters
       if (!hasAny && !noFilters) {
         setFiltersInitialized(false);
-        try { clearTransientFiltersAtomic(); } catch (e) {}
+        try { clearTransientFiltersAtomic(); } catch {}
         return;
       }
     };
 
-    // initial attempt
-    tryClear();
-
-    // clear on back/forward navigation
-    const onPop = () => {
-      tryClear();
-    };
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, [searchStr, filters, applyingUrlFilters]);
-  
-  // Handle popstate entries created from a detail page: clear transient filters
-  useEffect(() => {
-    const onPopState = async (e) => {
-      try {
-        const s = (e && e.state) || window.history.state || {};
-        const urlParams = new URLSearchParams(window.location.search || "");
-        const hasFromResourceInUrl = Boolean(urlParams.get("fromResource"));
-        if ((s && s.fromDetail) || hasFromResourceInUrl) {
-          console.debug('[BrowseResources] popstate detected detail-origin; delegating clear');
-          await clearTransientFiltersAtomic({ navigateToResourceId: undefined });
-        }
-      } catch (err) {
-        // ignore
-      }
-    };
-    window.addEventListener('popstate', onPopState);
-    return () => window.removeEventListener('popstate', onPopState);
-  }, []);
+    // initial attempt (mount)
+    handlePopstateOrMount(null);
+    window.addEventListener("popstate", handlePopstateOrMount);
+    return () => window.removeEventListener("popstate", handlePopstateOrMount);
+  }, [filters, applyingUrlFilters, clearTransientFiltersAtomic]);
   
   const sortOptions = [
     { value: "title", label: t("repository.sort.titleAsc") },
@@ -539,7 +514,7 @@ const displayedResources = compact
             className="p-1 rounded hover:bg-gray-100"
             onClick={async () => {
               const fromResource = searchParams.get("fromResource") || (window.history.state && window.history.state.fromResource);
-              console.debug('[BrowseResources] clear-button clicked (delegating)', { fromResource, search: searchParams.toString() });
+              
               try {
                 const clearAtomic = useRepositoryStore.getState().clearTransientFiltersAtomic;
                 if (clearAtomic) await clearAtomic();

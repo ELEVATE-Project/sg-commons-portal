@@ -77,12 +77,11 @@ export const useRepositoryStore = create((set, get) => ({
             try { return await _inFlightQueryMap[key]; } catch (e) { throw e; }
           }
 
-          console.debug('[repo] fetchMediaList start', { filters, pagination, sortBy, q, params: queryParams });
+          
           // If we recently completed an identical query, reuse its result for a short window
           try {
             const cached = _recentQueryCache[key];
             if (cached && (Date.now() - cached.ts) < 500) {
-              console.debug('[repo] fetchMediaList returning recent cache for key', key);
               // apply cached response to state if needed
               const data = cached.data;
               const prevCount = get().mediaCount;
@@ -111,7 +110,7 @@ export const useRepositoryStore = create((set, get) => ({
               const prevIds = prevList.map((m) => m?.id).join(",");
               const newIds = (data.results || []).map((m) => m?.id).join(",");
               if (prevCount === data.count && prevIds === newIds) {
-                console.debug('[repo] fetchMediaList noop - identical result', { count: data?.count });
+                
               } else {
                 set({
                   mediaList: data.results,
@@ -119,7 +118,7 @@ export const useRepositoryStore = create((set, get) => ({
                   mediaNext: data.next,
                   mediaPrevious: data.previous,
                 });
-                console.debug('[repo] fetchMediaList done', { count: data?.count });
+                
               }
               return data;
             } catch (err) {
@@ -140,7 +139,7 @@ export const useRepositoryStore = create((set, get) => ({
           // Ignore cancellation errors caused by aborting previous requests
           const isCanceled = error && (error.code === "ERR_CANCELED" || error.name === "CanceledError" || (error.message && error.message.toLowerCase().includes("canceled")));
           if (isCanceled) {
-            console.debug('[repo] fetchMediaList canceled');
+            
           } else {
             console.error("Error fetching media list:", error);
           }
@@ -348,7 +347,7 @@ export const useRepositoryStore = create((set, get) => ({
     const nCurr = canonicalize(current);
     const nMerged = canonicalize(merged);
     if (JSON.stringify(nCurr) === JSON.stringify(nMerged)) {
-      console.debug('[repo] setFilters noop - identical filters', newFilters);
+    
       return;
     }
 
@@ -358,7 +357,7 @@ export const useRepositoryStore = create((set, get) => ({
         ? { ...state.pagination, offset: 0 }
         : state.pagination,
     }));
-    console.debug('[repo] setFilters', newFilters, options);
+    
     if (!options.skipFetch) {
       get().fetchMediaList();
     }
@@ -367,16 +366,16 @@ export const useRepositoryStore = create((set, get) => ({
    * Reset filters to empty object
    */
   resetFilters: (options = {}) => {
-    console.debug('[repo] resetFilters', options);
+    
     // avoid clearing filters while we're in the middle of applying URL-driven filters
     if (get().applyingUrlFilters) {
-      console.debug('[repo] resetFilters noop - applyingUrlFilters active');
+      
       return;
     }
     const current = get().filters || {};
     const noFilters = Object.keys(current).length === 0 || Object.values(current).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
     if (noFilters) {
-      console.debug('[repo] resetFilters noop - already empty');
+      
       return;
     }
     set((state) => ({ filters: {}, pagination: { ...state.pagination, offset: 0 } }));
@@ -385,7 +384,7 @@ export const useRepositoryStore = create((set, get) => ({
   // Forcefully reset filters bypassing `applyingUrlFilters` guard. Use only
   // when we want to sync the store to the URL (e.g., on popstate/back).
   forceResetFilters: (options = {}) => {
-    console.debug('[repo] forceResetFilters', options);
+    
     set((state) => ({ filters: {}, pagination: { ...state.pagination, offset: 0 } }));
     if (!options.skipFetch) get().fetchMediaList();
   },
@@ -395,40 +394,47 @@ export const useRepositoryStore = create((set, get) => ({
    * Use when we want to ensure URL and store are in sync and listing shows unfiltered results.
    */
   clearTransientFiltersAtomic: async () => {
-    console.debug('[repo] clearTransientFiltersAtomic start');
+    
     try {
       get().setApplyingUrlFilters(true);
     } catch (e) {}
     try {
       try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (e) {}
       try { window.history.replaceState({}, '', window.location.pathname); } catch (e) {}
-      console.debug('[repo] clearTransientFiltersAtomic - replaced history, removing transient params');
+      
       // force reset filters and reset pagination
       const forceReset = get().forceResetFilters;
       if (forceReset) {
-        console.debug('[repo] clearTransientFiltersAtomic - using forceResetFilters');
+        
         forceReset({ skipFetch: true });
       } else {
-        console.debug('[repo] clearTransientFiltersAtomic - using resetFilters');
+        
         get().resetFilters({ skipFetch: true });
       }
       // ensure page offset reset
       set((state) => ({ pagination: { ...state.pagination, offset: 0 } }));
+      // clear any submitted search text so the store and URL remain consistent
+      try {
+        set({ q: "", searchInput: "" });
+        
+      } catch (err) {
+        
+      }
       // fetch unfiltered list - pass a unique param to avoid recent-cache / in-flight dedupe
       const fetch = get().fetchMediaList;
       if (fetch) {
         const forceKey = Date.now();
-        console.debug('[repo] clearTransientFiltersAtomic - triggering fetchMediaList immediate (forceKey)', forceKey);
+        
         await fetch({ _forceRefresh: forceKey }, true);
-        console.debug('[repo] clearTransientFiltersAtomic - fetchMediaList completed (forced)');
+        
       } else {
-        console.debug('[repo] clearTransientFiltersAtomic - no fetch function found');
+        
       }
     } catch (err) {
       console.error('[repo] clearTransientFiltersAtomic error', err);
     } finally {
       try { get().setApplyingUrlFilters(false); } catch (e) {}
-      console.debug('[repo] clearTransientFiltersAtomic end');
+      
     }
   },
   /**

@@ -76,6 +76,8 @@ export default function Filters() {
 
   const filtersRef = useRef(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const prevOverflowRef = useRef('')
+  const prevPaddingRightRef = useRef('')
   const [queryMap, setQueryMap] = useState({})
   const [openMap, setOpenMap] = useState({})
   const [pendingFilters, setPendingFilters] = useState({})
@@ -386,10 +388,9 @@ if (inpText.trim() === "" && search.trim() !== "") {
   // Prevent background scrolling when drawer is open and avoid layout shift by
   // preserving scrollbar space via padding-right.
   useEffect(() => {
-    const prevOverflow = document.body.style.overflow
-    const prevPaddingRight = document.body.style.paddingRight || ''
-
     if (isDrawerOpen) {
+      prevOverflowRef.current = document.body.style.overflow
+      prevPaddingRightRef.current = document.body.style.paddingRight || ''
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
       if (scrollbarWidth > 0) {
         document.body.style.paddingRight = `${scrollbarWidth / 16}rem`
@@ -397,14 +398,14 @@ if (inpText.trim() === "" && search.trim() !== "") {
       document.body.style.overflow = 'hidden'
       document.body.classList.add('filters-open')
     } else {
-      document.body.style.overflow = prevOverflow || ''
-      document.body.style.paddingRight = prevPaddingRight
+      document.body.style.overflow = prevOverflowRef.current || ''
+      document.body.style.paddingRight = prevPaddingRightRef.current
       document.body.classList.remove('filters-open')
     }
 
     return () => {
-      document.body.style.overflow = prevOverflow || ''
-      document.body.style.paddingRight = prevPaddingRight
+      document.body.style.overflow = prevOverflowRef.current || ''
+      document.body.style.paddingRight = prevPaddingRightRef.current
       document.body.classList.remove('filters-open')
     }
   }, [isDrawerOpen])
@@ -505,9 +506,9 @@ if (inpText.trim() === "" && search.trim() !== "") {
   const filtersInner = (
     <>
         <div className="min-h-[40px] self-start flex items-center pt-2 gap-1 w-auto overflow-x-visible flex-shrink-0">
-          <button onClick={openDrawer} aria-label="Open filters" className="relative inline-flex items-center justify-center p-2 rounded-md bg-transparent hover:bg-transparent text-[var(--listing-strong-text)]">
+          <button onClick={openDrawer} aria-label={t('repository.filters.open')} className="relative inline-flex items-center justify-center p-2 rounded-md bg-transparent hover:bg-transparent text-[var(--listing-strong-text)]">
             <Filter className="w-5 h-5 text-[var(--listing-strong-text)]" />
-            <span className="sr-only">Filters</span>
+            <span className="sr-only">{t('repository.filters')}</span>
             {Object.values(filters || {}).reduce((s, v) => s + (Array.isArray(v) ? v.length : 0), 0) > 0 && (
               <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-[var(--listing-primary)] rounded-full">{Object.values(filters || {}).reduce((s, v) => s + (Array.isArray(v) ? v.length : 0), 0)}</span>
             )}
@@ -524,7 +525,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
           <div className="absolute inset-0 bg-black/40" onClick={() => setIsDrawerOpen(false)} />
           <aside className="absolute right-0 top-0 h-full w-full md:w-[550px] bg-white shadow-lg p-4 filters-drawer flex flex-col" style={{ zIndex: 99999 }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Filters</h3>
+              <h3 className="text-lg font-semibold">{t('repository.filters.title')}</h3>
               <button onClick={() => setIsDrawerOpen(false)} className="p-2 rounded hover:bg-gray-100">
                 <X className="w-7 h-7 text-[var(--listing-danger)]" />
               </button>
@@ -565,10 +566,10 @@ if (inpText.trim() === "" && search.trim() !== "") {
                                   aria-label={`Search ${label}`}
                                   placeholder={
                                     hasStartedRecording
-                                      ? `Recording... ${seconds.toFixed(1)}s`
+                                      ? t('repository.recording', { seconds: seconds.toFixed(1) })
                                       : isConvertingVoiceToText
-                                      ? "Converting voice to text..."
-                                      : `Search ${label}`
+                                      ? t('repository.convertingVoice')
+                                      : t('repository.searchIn', { section: label })
                                   }
                                   className="flex-1 min-w-0 bg-transparent px-2 py-1 outline-none text-[14px] placeholder:text-[var(--listing-muted-text)]"
                                   value={queryMap[key] || ""}
@@ -595,13 +596,12 @@ if (inpText.trim() === "" && search.trim() !== "") {
               <div className="max-w-full mx-auto px-0">
                 <div className="flex items-center justify-between">
                   <button className="px-3 py-2 rounded-[12px] text-[var(--listing-muted-text)] bg-transparent" onClick={async () => {
-                      console.debug('[Filters] Clear All clicked - calling clearTransientFiltersAtomic');
                       try {
                         await clearTransientFiltersAtomic();
                       } catch (e) { console.error('[Filters] clearTransientFiltersAtomic error', e); }
                       setPendingFilters({}); setQueryMap({}); setIsDrawerOpen(false); scrollToBrowseResources();
                     }}>
-                      Clear All
+                      {t('repository.filters.clearAll')}
                     </button>
 
                   <div className="flex items-center gap-2">
@@ -610,7 +610,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
                       onClick={() => { if (pendingCount === 0) return; setFilters(pendingFilters || {}); setIsDrawerOpen(false); scrollToBrowseResources(); }}
                       disabled={pendingCount === 0}  
                     >
-                      Apply
+                      {t('repository.filters.apply')}
                     </button>
                   </div>
                 </div>
@@ -757,7 +757,7 @@ const MenuList = props => {
 
   return (
     <components.MenuList {...props}>
-      <div
+        <div
         className="flex items-center px-3 py-2 border-b border-[var(--listing-border)] bg-transparent cursor-pointer"
         onClick={toggleSelectAll}
       >
@@ -781,8 +781,8 @@ const MenuList = props => {
             borderRadius: 3,
             flexShrink: 0,
           }}
-        >
-          {allSelected && (
+      >
+        {allSelected && (
             <svg
               width="10"
               height="10"
@@ -795,7 +795,7 @@ const MenuList = props => {
         </span>
 
         <label className="font-medium text-[var(--listing-strong-text)] cursor-pointer select-none">
-          {allSelected ? "Deselect All" : "Select All"}
+          {allSelected ? t('repository.filters.deselectAll') : t('repository.filters.selectAll')}
         </label>
       </div>
 
@@ -836,7 +836,7 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
           <div className="max-h-[140px] overflow-auto compact-list">
             <label key="__select_all__" className="flex items-center gap-2 py-1 cursor-pointer">
               <input type="checkbox" checked={allSelected} onChange={toggleSelectAll} />
-              <span className="text-sm text-[var(--listing-strong-text)]">Select All</span>
+              <span className="text-sm text-[var(--listing-strong-text)]">{t('repository.filters.selectAll')}</span>
             </label>
 
             {optionsList.map(opt => {

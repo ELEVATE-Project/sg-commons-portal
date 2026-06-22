@@ -216,6 +216,15 @@
         "googleDrive": "Google Drive",
         "publishedOn": "Published on",
         "viewAllResources": "View all resources",
+        "hero": {
+            "tags": {
+                "openAccess": "Open-access",
+                "license": "CC BY-SA"
+            },
+            "title": "Discover. Learn. Reuse. Build.",
+            "description": "A curated knowledge repository of solutions, resources and assets for education leaders working to strengthen India's public schools.",
+            "scrollDown": "Scroll down"
+        },
         "invalidDownloadURL": "Invalid download URL"
     }
 }
