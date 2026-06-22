@@ -30,10 +30,20 @@ export default function ResourceDetailPage() {
   const isLoading = useRepositoryStore((state) => state.loadingDetail);
   const containerRef = useRef(null);
   useEffect(() => {
+    let mounted = true;
     setHasPageLoaded(false);
-    fetchMediaDetail(params.id);
-    setHasPageLoaded(true);
-  }, [fetchMediaDetail, params.id]);
+    (async () => {
+      try {
+        await fetchMediaDetail(params.id);
+      } catch (e) {
+        // ignore
+      }
+      if (mounted) setHasPageLoaded(true);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [params.id]);
 
   const [tab, setTab] = useState("Overview");
 
@@ -94,10 +104,39 @@ export default function ResourceDetailPage() {
 function BackButton({ title }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
   return (
     <div className="flex items-center gap-2 text-sm text-repository-textSecondary mb-6">
-      <button onClick={() => navigate(-1)}>
+      <button onClick={async () => {
+        console.debug('[Details] Back button clicked - attempting clearTransientFiltersAtomic');
+        try {
+          const ref = document.referrer;
+          const histState = (window && window.history && window.history.state) || {};
+          // If previous page was listing (either via referrer or history.state), navigate to clean listing and clear filters
+          if ((ref && ref.includes('/resources')) || histState?.fromDetail || histState?.fromResource) {
+            try {
+              // clear transient filters before navigating back to listing
+              const clearAtomic = useRepositoryStore.getState().clearTransientFiltersAtomic;
+              if (clearAtomic) await clearAtomic();
+              console.debug('[Details] clearTransientFiltersAtomic awaited successfully');
+            } catch (e) {
+              try {
+                const forceReset = useRepositoryStore.getState().forceResetFilters;
+                const fetchMediaList = useRepositoryStore.getState().fetchMediaList;
+                if (forceReset) forceReset({ skipFetch: true });
+                else useRepositoryStore.getState().resetFilters({ skipFetch: true });
+                navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, { replace: true });
+                if (fetchMediaList) fetchMediaList({}, true);
+                return;
+              } catch (er) {}
+            }
+            navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, { replace: true });
+            return;
+          }
+        } catch (e) {
+          // fallback to history back
+        }
+        navigate(-1);
+      }}>
         <ArrowLeft size={16} />
       </button>
 
@@ -249,10 +288,19 @@ function ResourceMeta({ resource }) {
           </div>
 
           <button onClick={() => {
-            if (!resolvedOrgParam) return;
-            const fromParam = resource?.id ? `&fromResource=${encodeURIComponent(resource.id)}` : "";
-            const search = `?org=${resolvedOrgParam}${fromParam}`;
-            navigate({ pathname: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, search });
+                if (!resolvedOrgParam) return;
+              const fromParam = resource?.id ? `&fromResource=${encodeURIComponent(resource.id)}` : "";
+              const search = `?org=${resolvedOrgParam}${fromParam}`;
+              try {
+                // mark recent navigation from a detail page so listing can treat URL params as transient
+                sessionStorage.setItem('sg:lastFromDetail', JSON.stringify({ id: resource?.id, ts: Date.now() }));
+              } catch (e) {}
+              navigate({ pathname: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, search }, { state: { fromDetail: true, fromResource: resource?.id } });
+              try {
+                // stamp the new history entry with a transient marker so popstate handlers can detect it
+                const st = Object.assign({}, window.history.state || {}, { fromDetail: true, fromResource: resource?.id, sgTransient: true });
+                try { window.history.replaceState(st, '', window.location.href); } catch (e) {}
+              } catch (e) {}
           }} className="border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg">
             {t("repository.viewAllResources")} ↗
           </button>

@@ -17,6 +17,7 @@ const apiClientV2 = axios.create({
   timeout: 20000,
   headers: { "Content-Type": "application/json" },
 })
+let _lastListMediaController = null;
 
 /**
  * Fetch paginated list of media documents with optional filtering and sorting.
@@ -40,8 +41,19 @@ const apiClientV2 = axios.create({
  * @returns {Promise<Object>} Response with { count, next, previous, results }.
  */
 const listMedia = async (params = {}) => {
-  const response = await apiClientV2.get("/", { params })
-  return response.data
+  // cancel previous request if still in-flight
+  try {
+    if (_lastListMediaController) {
+      _lastListMediaController.abort();
+    }
+  } catch (e) {
+    // ignore
+  }
+  const controller = new AbortController();
+  _lastListMediaController = controller;
+  const response = await apiClientV2.get("/", { params, signal: controller.signal });
+  _lastListMediaController = null;
+  return response.data;
 }
 
 /**

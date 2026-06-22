@@ -33,6 +33,7 @@ export default function Filters() {
   const dropdown_meta = useRepositoryStore(state => state.masterList)
 
   const resetFilters = useRepositoryStore(state => state.resetFilters)
+  const clearTransientFiltersAtomic = useRepositoryStore(state => state.clearTransientFiltersAtomic)
 
   const setFilters = useRepositoryStore(state => state.setFilters)
   const setGlobalSearch = useRepositoryStore(state => state.setSearch)
@@ -557,9 +558,15 @@ if (inpText.trim() === "" && search.trim() !== "") {
             <div className="flex-none border-t bg-white py-3">
               <div className="max-w-full mx-auto px-0">
                 <div className="flex items-center justify-between">
-                  <button className="px-3 py-2 rounded-[12px] text-[var(--listing-muted-text)] bg-transparent" onClick={() => { resetFilters(); setPendingFilters({}); setQueryMap({}); setIsDrawerOpen(false); scrollToBrowseResources(); }}>
-                    Clear All
-                  </button>
+                  <button className="px-3 py-2 rounded-[12px] text-[var(--listing-muted-text)] bg-transparent" onClick={async () => {
+                      console.debug('[Filters] Clear All clicked - calling clearTransientFiltersAtomic');
+                      try {
+                        await clearTransientFiltersAtomic();
+                      } catch (e) { console.error('[Filters] clearTransientFiltersAtomic error', e); }
+                      setPendingFilters({}); setQueryMap({}); setIsDrawerOpen(false); scrollToBrowseResources();
+                    }}>
+                      Clear All
+                    </button>
 
                   <div className="flex items-center gap-2">
                     <button

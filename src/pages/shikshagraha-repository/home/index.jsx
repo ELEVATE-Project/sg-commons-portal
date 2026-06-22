@@ -4,6 +4,7 @@ import BrowseResources from "../listing/BrowseResources.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
 import MitraAiAssistantAside from "../listing/MitraAiAssistantAside.jsx";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore.js";
+import { useSearchParams } from "react-router-dom";
 import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
@@ -20,10 +21,52 @@ export default function RepositoryPage() {
   const fetchMediaList = useRepositoryStore(
   (state) => state.fetchMediaList
 );
+  const resetFilters = useRepositoryStore((state) => state.resetFilters);
+
+  const [searchParams] = useSearchParams();
+
+  // If Home loads with `org` or `theme` params (e.g., via Back navigation),
+  // remove them and ensure repository store is cleared so Home shows unfiltered data.
+  useEffect(() => {
+    const org = searchParams.get("org");
+    const theme = searchParams.get("theme");
+    if (org || theme) {
+      try {
+        const next = new URLSearchParams(searchParams.toString());
+        next.delete("org");
+        next.delete("theme");
+        // replace so we don't pollute history
+        const setSP = useSearchParams()[1];
+        setSP(next, { replace: true });
+      } catch (e) {
+        // ignore
+      }
+
+      try {
+        const forceReset = useRepositoryStore.getState().forceResetFilters;
+        if (forceReset) forceReset({ skipFetch: true });
+        else resetFilters({ skipFetch: true });
+        // fetch unfiltered list
+        const fetchMediaList = useRepositoryStore.getState().fetchMediaList;
+        if (fetchMediaList) fetchMediaList({}, true);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
   fetchMediaList();
 }, [fetchMediaList]);
+
+  // If there are no org/theme params in URL, ensure repository filters are cleared
+  useEffect(() => {
+    const org = searchParams.get("org");
+    const theme = searchParams.get("theme");
+    if (!org && !theme) {
+      resetFilters();
+    }
+  }, [searchParams, resetFilters]);
 
 
   useEffect(() => {
@@ -44,7 +87,7 @@ export default function RepositoryPage() {
             <Header />
           </div>
            <div className="">
-          <ExploreByTheme />
+          {/* <ExploreByTheme /> */}
 
           <main className="w-full mx-auto">
             {!!mediaList?.length && (
