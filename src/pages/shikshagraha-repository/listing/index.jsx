@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../../components/header/Header.jsx";
 import Filters from "./Filters.jsx";
 import BrowseResources from "./BrowseResources.jsx";
 import Pagination from "./Pagination.jsx";
@@ -11,6 +10,8 @@ import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
 import { useSearchParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader";
+import left1 from "assets/dandelion-left-1.png";
+import right2 from "assets/dandelion-right-2.png";
 
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
@@ -49,7 +50,13 @@ const orgId = searchParams.get("org");
   }, [mediaList, q, loadingList]);
 
   return (
-    <div className="bg-white relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
+    <div className="bg-white relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible',
+    backgroundImage: `url(${left1}), url(${right2})`,
+              backgroundPosition: "left 2.8rem top 18.5rem, right 1.7rem top 27.8rem",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "8rem, 10rem",
+              backgroundAttachment: "fixed",
+    }}>
       <div className="container max-w-[93.75rem] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
         <div className="w-full">

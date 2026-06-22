@@ -414,7 +414,7 @@ const displayedResources = compact
           <div className="relative z-10">
             <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">
 <div
-  className={`grid gap-6 w-full ${
+  className={`grid gap-y-12 gap-x-4 w-full ${
     cardsSpacing ? "px-4 md:px-6 lg:px-16" : ""
   } ${
     viewMode === "grid"
