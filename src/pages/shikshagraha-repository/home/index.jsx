@@ -23,7 +23,7 @@ export default function RepositoryPage() {
 );
   const resetFilters = useRepositoryStore((state) => state.resetFilters);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // If Home loads with `org` or `theme` params (e.g., via Back navigation),
   // remove them and ensure repository store is cleared so Home shows unfiltered data.
@@ -31,13 +31,44 @@ export default function RepositoryPage() {
     const org = searchParams.get("org");
     const theme = searchParams.get("theme");
     if (org || theme) {
+      // If navigation arrived from a resource detail (transient), keep the
+      // `org`/`theme` params so listing can apply the filter on first render.
+      // Detect via `fromResource` param, history.state.fromDetail, or a
+      // recently set sessionStorage marker `sg:lastFromDetail`.
+      let fromResource = searchParams.get("fromResource");
+      let fromDetailState = false;
+      try {
+        fromDetailState = (window && window.history && window.history.state && window.history.state.fromDetail) || false;
+      } catch (e) {
+        fromDetailState = false;
+      }
+
+      let recentMarker = false;
+      try {
+        const raw = sessionStorage.getItem && sessionStorage.getItem('sg:lastFromDetail');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          recentMarker = !!(parsed && parsed.ts && (Date.now() - parsed.ts < 30000));
+        }
+      } catch (e) {
+        recentMarker = false;
+      }
+
+      if (fromResource || fromDetailState || recentMarker) {
+        // allow listing to map URL -> filters and fetch; do not clear params here
+        return;
+      }
+
       try {
         const next = new URLSearchParams(searchParams.toString());
         next.delete("org");
         next.delete("theme");
         // replace so we don't pollute history
-        const setSP = useSearchParams()[1];
-        setSP(next, { replace: true });
+        try {
+          setSearchParams(next, { replace: true });
+        } catch (e) {
+          // ignore
+        }
       } catch (e) {
         // ignore
       }
@@ -56,15 +87,27 @@ export default function RepositoryPage() {
   }, [searchParams]);
 
   useEffect(() => {
-  fetchMediaList();
-}, [fetchMediaList]);
+    // Only fetch if we don't already have data to avoid duplicate calls
+    if (!mediaList || mediaList.length === 0) {
+      fetchMediaList();
+    }
+  }, [fetchMediaList, mediaList]);
 
   // If there are no org/theme params in URL, ensure repository filters are cleared
   useEffect(() => {
     const org = searchParams.get("org");
     const theme = searchParams.get("theme");
     if (!org && !theme) {
-      resetFilters();
+      try {
+        const forceReset = useRepositoryStore.getState().forceResetFilters;
+        if (forceReset) {
+          forceReset();
+        } else {
+          resetFilters();
+        }
+      } catch (e) {
+        try { resetFilters(); } catch (er) {}
+      }
     }
   }, [searchParams, resetFilters]);
 

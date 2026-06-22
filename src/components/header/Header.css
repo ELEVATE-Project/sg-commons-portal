@@ -177,7 +177,7 @@ body {
 
 .w-nav-button.w--open {
   background-color: #c8c8c8;
-  color: var(--listing-white);;
+  color: var(--listing-white);
 }
 
 .w-nav[data-collapse="all"] .w-nav-button {

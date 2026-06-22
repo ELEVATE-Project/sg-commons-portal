@@ -88,7 +88,15 @@ const { bg: tagBg, text: tagText } = getTagStyles(
 
 const handleCardClick = () => {
   trackResourceView(resource?.id);
-
+  try {
+    // mark recent navigation from listing to detail so listing can treat return as transient
+    sessionStorage.setItem && sessionStorage.setItem('sg:lastFromDetail', JSON.stringify({ id: resource?.id, ts: Date.now() }));
+  } catch (e) {}
+  try {
+    const prevState = window.history.state || {};
+    const newPrevState = Object.assign({}, prevState, { fromDetail: true, fromResource: resource?.id });
+    try { window.history.replaceState(newPrevState, '', window.location.href); } catch (e) {}
+  } catch (e) {}
   navigate(`/resources/${resource?.id}`);
 };
 

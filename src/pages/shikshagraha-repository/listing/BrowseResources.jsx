@@ -366,8 +366,18 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   useEffect(() => {
     const searchStr = searchParams.toString();
       const tryClear = () => {
-        if (suppressTryClearRef.current || applyingUrlFilters) {
+        if (suppressTryClearRef.current) {
           // ignore transient programmatic updates
+          return;
+        }
+        if (applyingUrlFilters) {
+          // If we're currently applying URL-driven filters, retry shortly —
+          // this avoids missing a clear due to a transient flag left true.
+          window.setTimeout(() => {
+            try {
+              tryClear();
+            } catch (e) {}
+          }, 200);
           return;
         }
         // read directly from window.location to avoid stale hook values during popstate
@@ -377,78 +387,49 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
         const paramKeys = ["org", "theme", "resource_type", "resource_types", "media_type", "media_types", "file_type", "filetype", "tags", "fromResource"];
         const hasAny = paramKeys.some((k) => Boolean(currentParams.get(k)));
 
-      const noFilters = (!filters?.organizations || filters.organizations.length === 0) && (!filters?.tags || filters.tags.length === 0) && (!filters?.resource_types || filters.resource_types.length === 0) && (!filters?.media_types || filters.media_types.length === 0);
+      const isEmptyFilterValue = (v) => {
+        if (v == null) return true;
+        if (Array.isArray(v)) return v.length === 0;
+        if (typeof v === "string") return v.trim() === "";
+        if (typeof v === "object") return Object.keys(v).length === 0;
+        return !v;
+      };
+
+      const noFilters = Object.keys(filters || {}).length === 0 || Object.values(filters || {}).every(isEmptyFilterValue);
 
         // If we recently navigated from a detail page, treat URL params as transient and clear them.
-        try {
-          const raw = sessionStorage.getItem && sessionStorage.getItem('sg:lastFromDetail');
-          if (raw) {
-            try {
-              const parsed = JSON.parse(raw);
-              const recent = parsed && parsed.ts && (Date.now() - parsed.ts < 30000);
-              if (recent && hasAny) {
-                const next = new URLSearchParams(currentParams.toString());
-                paramKeys.forEach((k) => next.delete(k));
-                // force-reset store to match cleared URL and fetch fresh unfiltered list
-                try {
-                  const forceReset = useRepositoryStore.getState().forceResetFilters;
-                  const fetch = useRepositoryStore.getState().fetchMediaList;
-                  if (forceReset) forceReset({ skipFetch: true }); else useRepositoryStore.getState().resetFilters({ skipFetch: true });
-                  safeSetSearchParams(next, { replace: true });
-                  if (fetch) fetch({}, true).finally(() => { try { setFiltersInitialized(true); } catch (e) {} });
-                } catch (e) {
-                  safeSetSearchParams(next, { replace: true });
-                  try { setFiltersInitialized(true); } catch (e) {}
+          try {
+            const raw = sessionStorage.getItem && sessionStorage.getItem('sg:lastFromDetail');
+            if (raw) {
+              try {
+                const parsed = JSON.parse(raw);
+                const recent = parsed && parsed.ts && (Date.now() - parsed.ts < 30000);
+                if (recent && hasAny) {
+                  // delegate to the atomic clear routine which will reset URL, store and fetch
+                  try { clearTransientFiltersAtomic(); } catch (e) {}
+                  try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (e) {}
+                  return;
                 }
-                try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (e) {}
-                return;
+                // stale marker -> remove
+                if (!recent) {
+                  try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (e) {}
+                }
+              } catch (e) {
+                try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (er) {}
               }
-              // stale marker -> remove
-              if (!recent) {
-                try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (e) {}
-              }
-            } catch (e) {
-              try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (er) {}
             }
-          }
-        } catch (e) {}
+          } catch (e) {}
 
       // Case A: noFilters && hasAny -> URL has params but store empty: remove URL params
       if (noFilters && hasAny) {
-        const next = new URLSearchParams(currentParams.toString());
-        paramKeys.forEach((k) => next.delete(k));
-        try {
-          const forceReset = useRepositoryStore.getState().forceResetFilters;
-          const fetch = useRepositoryStore.getState().fetchMediaList;
-          if (forceReset) forceReset({ skipFetch: true }); else useRepositoryStore.getState().resetFilters({ skipFetch: true });
-          safeSetSearchParams(next, { replace: true });
-          if (fetch) fetch({}, true).finally(() => { try { setFiltersInitialized(true); } catch (e) {} });
-        } catch (e) {
-          safeSetSearchParams(next, { replace: true });
-          try { setFiltersInitialized(true); } catch (e) {}
-        }
+        try { clearTransientFiltersAtomic(); } catch (e) {}
         return;
       }
 
       // Case B: URL has no params but store has filters -> reset store filters
       if (!hasAny && !noFilters) {
-        console.debug('[BrowseResources] tryClear detected URL has no params but store has filters - resetting filters');
-        // Hide grid while we reset and fetch to avoid flicker
         setFiltersInitialized(false);
-        try {
-          // force reset to ensure store follows URL on back/forward
-          const forceReset = useRepositoryStore.getState().forceResetFilters;
-          if (forceReset) forceReset({ skipFetch: true });
-          else resetFilters({ skipFetch: true });
-        } catch (e) {
-          // ignore
-        }
-        // perform a single fetch to load unfiltered data, then reveal
-        fetchMediaList({}, true).finally(() => {
-          try {
-            setFiltersInitialized(true);
-          } catch (e) {}
-        });
+        try { clearTransientFiltersAtomic(); } catch (e) {}
         return;
       }
     };
@@ -462,7 +443,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
-  }, [searchStr, filters]);
+  }, [searchStr, filters, applyingUrlFilters]);
   
   // Handle popstate entries created from a detail page: clear transient filters
   useEffect(() => {
@@ -598,7 +579,9 @@ const displayedResources = compact
   type="button"
   onClick={() => {
     try { safeSetSearchParams(new URLSearchParams(), { replace: true }); } catch (e) {}
-    try { resetFilters(); } catch (e) {}
+    // Do not call clearTransientFiltersAtomic or fetch here —
+    // the URL change will trigger the BrowseResources tryClear effect
+    // which will clear store filters and perform a single fetch.
     navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
   }}
   className="

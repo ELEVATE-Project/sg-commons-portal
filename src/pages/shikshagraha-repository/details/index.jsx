@@ -58,7 +58,7 @@ export default function ResourceDetailPage() {
 
   useEffect(() => {
     if (containerRef.current) {
-      containerRef.current?.scrollIntoView({ behavior: "smooth", y: -999 });
+      containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [resourceData]);
 

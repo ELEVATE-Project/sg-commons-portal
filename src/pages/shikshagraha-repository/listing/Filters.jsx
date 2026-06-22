@@ -187,28 +187,9 @@ export default function Filters() {
               }
 
               setIsConvertingVoiceToText(true)
-              let transcriptResult = ""
-              let s3Url = await handleS3Upload(audioBlob, `${Date.now()}`, `chatbot/companychat/${sessionId}/`)
-              if (!s3Url || s3Url === "") {
-                transcriptResult = t("asrError")
-              }
-              let storedRoute = bot_routes.search_bot
-
-              transcriptResult = await ai4BharatASRApi(s3Url, languageToUse, storedRoute)
-              if (!transcriptResult || transcriptResult === "") {
-                showNotification({
-                  message: t("asrError"),
-                  type: "error",
-                  options: {
-                    position: "top-center",
-                    autoClose: 6000,
-                    style: { fontWeight: "bold" },
-                  },
-                })
-              } else {
-                const storedRoute = bot_routes.search_bot
-                transcriptResult = await ai4BharatASRApi(s3Url, languageToUse, storedRoute)
-                if (!transcriptResult || transcriptResult === "") {
+              try {
+                const s3Url = await handleS3Upload(audioBlob, `${Date.now()}`, `chatbot/companychat/${sessionId}/`)
+                if (!s3Url || s3Url === "") {
                   showNotification({
                     message: t("asrError"),
                     type: "error",
@@ -219,12 +200,37 @@ export default function Filters() {
                     },
                   })
                 } else {
-                  setSearchInput(transcriptResult)
-                  setGlobalSearch(transcriptResult)
-                  scrollToBrowseResources()
+                  const transcriptResult = await ai4BharatASRApi(s3Url, languageToUse, bot_routes.search_bot)
+                  if (!transcriptResult || transcriptResult === "") {
+                    showNotification({
+                      message: t("asrError"),
+                      type: "error",
+                      options: {
+                        position: "top-center",
+                        autoClose: 6000,
+                        style: { fontWeight: "bold" },
+                      },
+                    })
+                  } else {
+                    setSearchInput(transcriptResult)
+                    setGlobalSearch(transcriptResult)
+                    scrollToBrowseResources()
+                  }
                 }
+              } catch (err) {
+                console.error(err)
+                showNotification({
+                  message: t("asrError"),
+                  type: "error",
+                  options: {
+                    position: "top-center",
+                    autoClose: 6000,
+                    style: { fontWeight: "bold" },
+                  },
+                })
+              } finally {
+                setIsConvertingVoiceToText(false)
               }
-              setIsConvertingVoiceToText(false)
             } else {
               console.warn("No audio chunks were recorded.")
               setIsConvertingVoiceToText(false)
@@ -439,12 +445,30 @@ if (inpText.trim() === "" && search.trim() !== "") {
     } catch (e) {
       setPendingFilters({ ...filters })
     }
-    // ensure only first section is open when drawer opens
+    // determine which sections to open based on currently applied filters
     if (dropdown_meta && dropdown_meta.length) {
+      const isNonEmpty = (v) => {
+        if (v == null) return false
+        if (Array.isArray(v)) return v.length > 0
+        if (typeof v === 'string') return v.trim() !== ''
+        if (typeof v === 'object') return Object.keys(v).length > 0
+        return Boolean(v)
+      }
+
+      const selectedKeys = Object.keys(filters || {}).filter(k => isNonEmpty(filters[k]))
+
       const map = {}
-      dropdown_meta.forEach((d, i) => {
-        map[d.key] = i === 0
-      })
+      if (selectedKeys.length > 0) {
+        // open only the filter sections that are currently selected
+        dropdown_meta.forEach((d) => {
+          map[d.key] = selectedKeys.includes(d.key)
+        })
+      } else {
+        // default: open the first section
+        dropdown_meta.forEach((d, i) => {
+          map[d.key] = i === 0
+        })
+      }
       setOpenMap(map)
     }
     setIsDrawerOpen(true)
@@ -455,13 +479,25 @@ if (inpText.trim() === "" && search.trim() !== "") {
   useEffect(() => {
     if (!dropdown_meta || !dropdown_meta.length) return
 
-    // Initialize openMap only once: first item open, others closed
+    // Initialize openMap only once: open selected sections (themes/org) or first by default
     setOpenMap(prev => {
       if (Object.keys(prev).length > 0) return prev
+
+      const isNonEmpty = (v) => {
+        if (v == null) return false
+        if (Array.isArray(v)) return v.length > 0
+        if (typeof v === 'string') return v.trim() !== ''
+        if (typeof v === 'object') return Object.keys(v).length > 0
+        return Boolean(v)
+      }
+
+      const selectedKeys = Object.keys(filters || {}).filter(k => isNonEmpty(filters[k]))
       const map = {}
-      dropdown_meta.forEach((d, i) => {
-        map[d.key] = i === 0
-      })
+      if (selectedKeys.length > 0) {
+        dropdown_meta.forEach(d => { map[d.key] = selectedKeys.includes(d.key) })
+      } else {
+        dropdown_meta.forEach((d, i) => { map[d.key] = i === 0 })
+      }
       return map
     })
   }, [dropdown_meta])

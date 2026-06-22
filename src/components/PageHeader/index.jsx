@@ -44,9 +44,11 @@ const PageHeader = ({
             </>
           )}
 
-          <h1 className="text-[1.25rem] font-semibold text-repository-pageTitle">
-            {title}
-          </h1>
+          {title ? (
+            <h1 className="text-[1.25rem] font-semibold text-repository-pageTitle">
+              {title}
+            </h1>
+          ) : null}
         </div>
 
         {showSearch && (

@@ -28,8 +28,11 @@ export default function RepositoryPage() {
   const itemsPerPage = pagination.limit;
 
   useEffect(() => {
-  fetchMediaList();
-}, [fetchMediaList]);
+    // Only fetch if media list is empty to avoid duplicate initial requests
+    if (!mediaList || mediaList.length === 0) {
+      fetchMediaList();
+    }
+  }, [fetchMediaList, mediaList]);
 
 
   useEffect(() => {

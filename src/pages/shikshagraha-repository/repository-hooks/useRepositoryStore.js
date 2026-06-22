@@ -103,8 +103,9 @@ export const useRepositoryStore = create((set, get) => ({
 
           // store the in-flight promise for this query key
           _inFlightQueryMap[key] = (async () => {
+            let data;
             try {
-              const data = await listMedia(queryParams);
+              data = await listMedia(queryParams);
               const prevCount = get().mediaCount;
               const prevList = get().mediaList || [];
               const prevIds = prevList.map((m) => m?.id).join(",");
@@ -121,8 +122,15 @@ export const useRepositoryStore = create((set, get) => ({
                 console.debug('[repo] fetchMediaList done', { count: data?.count });
               }
               return data;
+            } catch (err) {
+              throw err;
             } finally {
-              try { _recentQueryCache[key] = { ts: Date.now(), data }; delete _inFlightQueryMap[key]; } catch (e) {}
+              try {
+                if (typeof data !== "undefined") {
+                  _recentQueryCache[key] = { ts: Date.now(), data };
+                }
+                delete _inFlightQueryMap[key];
+              } catch (e) {}
             }
           })();
 
@@ -246,7 +254,7 @@ export const useRepositoryStore = create((set, get) => ({
         },
         {
           key: "tags",
-          label: "Categories",
+          label: "Themes",
           options: master?.tags?.map((x) => ({
             value: x?.name,
             display: x?.name,
@@ -290,22 +298,55 @@ export const useRepositoryStore = create((set, get) => ({
     const current = get().filters || {};
     const merged = { ...current, ...newFilters };
 
-    const normalize = (f) => {
+    // Remove empty or cleared keys from merged so removals are treated as changes
+    Object.keys(merged).forEach((k) => {
+      const v = merged[k];
+      if (Array.isArray(v) && v.length === 0) {
+        delete merged[k];
+      } else if (v == null) {
+        delete merged[k];
+      } else if (typeof v === "string" && v.trim() === "") {
+        delete merged[k];
+      }
+    });
+
+    // Canonicalize filters for stable equality checks: arrays -> sorted comma list,
+    // strings that look like comma-lists are normalized, objects try to extract .value
+    const canonicalize = (f) => {
       const out = {};
       Object.entries(f || {}).forEach(([k, v]) => {
-        if (Array.isArray(v)) {
-          out[k] = v.map((x) => (x && x.value != null ? String(x.value) : String(x))).join(",");
-        } else if (v && typeof v === "object") {
-          out[k] = JSON.stringify(v);
-        } else {
-          out[k] = v;
+        try {
+          if (Array.isArray(v)) {
+            const vals = v
+              .map((x) => (typeof x === "string" ? x : (x && x.value != null ? String(x.value) : String(x))))
+              .filter(Boolean)
+              .map((s) => String(s).trim())
+              .sort();
+            out[k] = vals.join(",");
+          } else if (typeof v === "string") {
+            const vals = v
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+              .sort();
+            out[k] = vals.join(",");
+          } else if (v && typeof v === "object") {
+            if (v.value != null) out[k] = String(v.value);
+            else out[k] = JSON.stringify(v);
+          } else if (v == null) {
+            // skip
+          } else {
+            out[k] = String(v);
+          }
+        } catch (e) {
+          out[k] = String(v);
         }
       });
       return out;
     };
 
-    const nCurr = normalize(current);
-    const nMerged = normalize(merged);
+    const nCurr = canonicalize(current);
+    const nMerged = canonicalize(merged);
     if (JSON.stringify(nCurr) === JSON.stringify(nMerged)) {
       console.debug('[repo] setFilters noop - identical filters', newFilters);
       return;
@@ -432,13 +473,30 @@ export const useRepositoryStore = create((set, get) => ({
     get().fetchMediaList();
   },
   getTransformedFilters: (filters) => {
-    const transformedFilters = Object.entries(filters).reduce(
-      (acc, [key, value]) => {
-        acc[key] = value.map((x) => x.value).join(",");
-        return acc;
-      },
-      {}
-    );
+    const transformedFilters = Object.entries(filters || {}).reduce((acc, [key, value]) => {
+      try {
+        if (Array.isArray(value)) {
+          // value may be array of strings or objects like { value, label }
+          acc[key] = value
+            .map((x) => (typeof x === "string" ? x : (x && x.value != null ? String(x.value) : String(x))))
+            .filter(Boolean)
+            .join(",");
+        } else if (value && typeof value === "string") {
+          acc[key] = value;
+        } else if (value && typeof value === "object") {
+          // single object: try to extract .value or stringify
+          acc[key] = value.value != null ? String(value.value) : JSON.stringify(value);
+        } else if (value == null) {
+          // skip
+        } else {
+          acc[key] = String(value);
+        }
+      } catch (e) {
+        // fallback to string conversion
+        acc[key] = String(value);
+      }
+      return acc;
+    }, {});
     return transformedFilters;
   },
 }));
