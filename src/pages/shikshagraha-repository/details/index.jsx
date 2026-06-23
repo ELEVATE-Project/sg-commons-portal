@@ -108,7 +108,6 @@ function BackButton({ title }) {
     <div className="flex items-center gap-2 text-sm text-repository-textSecondary mb-6">
       <button onClick={async () => {
         
-        try {
           const ref = document.referrer;
           const histState = (window && window.history && window.history.state) || {};
           // If previous page was listing (either via referrer or history.state), navigate to clean listing and clear filters
@@ -132,9 +131,6 @@ function BackButton({ title }) {
             navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, { replace: true });
             return;
           }
-        } catch (e) {
-          // fallback to history back
-        }
         navigate(-1);
       }}>
         <ArrowLeft size={16} />

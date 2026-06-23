@@ -42,12 +42,8 @@ let _lastListMediaController = null;
  */
 const listMedia = async (params = {}) => {
   // cancel previous request if still in-flight
-  try {
-    if (_lastListMediaController) {
-      _lastListMediaController.abort();
-    }
-  } catch (e) {
-    // ignore
+  if (_lastListMediaController) {
+    _lastListMediaController.abort();
   }
   const controller = new AbortController();
   _lastListMediaController = controller;

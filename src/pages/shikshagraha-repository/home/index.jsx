@@ -25,66 +25,11 @@ export default function RepositoryPage() {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // If Home loads with `org` or `theme` params (e.g., via Back navigation),
-  // remove them and ensure repository store is cleared so Home shows unfiltered data.
-  useEffect(() => {
-    const org = searchParams.get("org");
-    const theme = searchParams.get("theme");
-    if (org || theme) {
-      // If navigation arrived from a resource detail (transient), keep the
-      // `org`/`theme` params so listing can apply the filter on first render.
-      // Detect via `fromResource` param, history.state.fromDetail, or a
-      // recently set sessionStorage marker `sg:lastFromDetail`.
-      let fromResource = searchParams.get("fromResource");
-      let fromDetailState = false;
-      try {
-        fromDetailState = (window && window.history && window.history.state && window.history.state.fromDetail) || false;
-      } catch {
-        fromDetailState = false;
-      }
-
-      let recentMarker = false;
-      try {
-        const raw = sessionStorage.getItem && sessionStorage.getItem('sg:lastFromDetail');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          recentMarker = !!(parsed && parsed.ts && (Date.now() - parsed.ts < 30000));
-        }
-      } catch {
-        recentMarker = false;
-      }
-
-      if (fromResource || fromDetailState || recentMarker) {
-        // allow listing to map URL -> filters and fetch; do not clear params here
-        return;
-      }
-
-      try {
-        const next = new URLSearchParams(searchParams.toString());
-        next.delete("org");
-        next.delete("theme");
-        // replace so we don't pollute history
-        try {
-          setSearchParams(next, { replace: true });
-        } catch {
-          // ignore
-        }
-      } catch {
-        // ignore
-      }
-
-      try {
-        const forceReset = useRepositoryStore.getState().forceResetFilters;
-        if (forceReset) forceReset({ skipFetch: true });
-        else resetFilters({ skipFetch: true });
-        // fetch unfiltered list
-        const fetchMediaList = useRepositoryStore.getState().fetchMediaList;
-        if (fetchMediaList) fetchMediaList({}, true);
-      } catch (e) {
-        // ignore
-      }
-    }
-  }, [searchParams]);
+  // NOTE: Do not auto-clear `org`/`theme` params on initial mount. Listing
+  // (`BrowseResources`) handles mapping URL -> filters and will control when
+  // to clear transient params (on Back / clear actions). This effect was
+  // previously removing URL params on mount which caused filters to disappear
+  // on hard refresh; keep URL params intact so filters persist across refresh.
 
   useEffect(() => {
     // Only fetch if we don't already have data to avoid duplicate calls

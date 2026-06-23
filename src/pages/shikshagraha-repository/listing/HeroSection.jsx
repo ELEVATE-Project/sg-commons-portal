@@ -1,10 +1,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import RepositorySearch from "../../../components/RepositorySearch/RepositorySearch";
-import left1 from "../../../assets/hero-section-image-1.svg";
-import left2 from "../../../assets/hero-section-image-2.svg";
-import right1 from "../../../assets/hero-section-image-3.svg";
-import right2 from "../../../assets/hero-section-image-4.svg";
+import left1 from "assets/hero-section-image-1.svg";
+import left2 from "assets/hero-section-image-2.svg";
+import right1 from "assets/hero-section-image-3.svg";
+import right2 from "assets/hero-section-image-4.svg";
 
 export default function HeroSection() {
   const { t } = useTranslation();

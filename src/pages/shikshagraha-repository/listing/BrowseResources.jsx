@@ -306,18 +306,19 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       }
     };
 
+    // If masterList isn't available yet, fetch it but still apply URL params
+    // immediately using raw values so the store reflects the URL on first render.
     if (!masterList) {
-      // mark that we're applying URL filters so other effects don't clear them
       setApplyingUrlFilters(true);
       fetchMasterList?.();
-      return;
+      // continue — we'll map URL values into filters below using raw values
     }
 
     const orgValues = orgParam ? orgParam.split(",").map((s) => safeDecode(s).trim()).filter(Boolean) : [];
     const themeValues = themeParam ? themeParam.split(",").map((s) => safeDecode(s).trim()).filter(Boolean) : [];
 
-    const orgDropdown = masterList.find((d) => d.key === "organizations");
-    const tagDropdown = masterList.find((d) => d.key === "tags");
+    const orgDropdown = masterList?.find((d) => d.key === "organizations") ?? null;
+    const tagDropdown = masterList?.find((d) => d.key === "tags") ?? null;
 
     const orgs = orgValues.map((v) => {
       const match = orgDropdown?.options?.find((o) => String(o.value) === String(v) || String((o.display || "")).toLowerCase() === String(v).toLowerCase());
@@ -365,6 +366,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   // like `org`, `theme`, or `fromResource` don't linger when filters are empty.
   useEffect(() => {
     const handlePopstateOrMount = async (e) => {
+      const isInitialMount = e == null;
       if (suppressTryClearRef.current) return;
       if (applyingUrlFilters) {
         window.setTimeout(() => {
@@ -378,8 +380,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
         const s = (e && e.state) || window.history.state || {};
         const urlParams = new URLSearchParams(window.location.search || "");
         const hasFromResourceInUrl = Boolean(urlParams.get("fromResource"));
-        if ((s && s.fromDetail) || hasFromResourceInUrl) {
-          
+        if (!isInitialMount && ((s && s.fromDetail) || hasFromResourceInUrl)) {
           await clearTransientFiltersAtomic({ navigateToResourceId: undefined });
           return;
         }
@@ -409,7 +410,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
           try {
             const parsed = JSON.parse(raw);
             const recent = parsed && parsed.ts && (Date.now() - parsed.ts < 30000);
-            if (recent && hasAny) {
+            if (recent && hasAny && !isInitialMount) {
               try { clearTransientFiltersAtomic(); } catch {}
               try { sessionStorage.removeItem('sg:lastFromDetail'); } catch {}
               return;
@@ -421,6 +422,8 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
 
       // Case A: noFilters && hasAny -> URL has params but store empty: remove URL params
       if (noFilters && hasAny) {
+        try { console.log('[BrowseResources] decision noFilters && hasAny', { noFilters, hasAny, isInitialMount }); } catch (err) {}
+        if (isInitialMount) return;
         try { clearTransientFiltersAtomic(); } catch {}
         return;
       }
@@ -428,6 +431,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       // Case B: URL has no params but store has filters -> reset store filters
       if (!hasAny && !noFilters) {
         setFiltersInitialized(false);
+        if (isInitialMount) return;
         try { clearTransientFiltersAtomic(); } catch {}
         return;
       }

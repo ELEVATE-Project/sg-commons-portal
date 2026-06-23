@@ -216,6 +216,17 @@
         "googleDrive": "Google Drive",
         "publishedOn": "Published on",
         "viewAllResources": "View all resources",
+        "filters": {
+            "open": "Open filters",
+            "title": "Filters",
+            "clearAll": "Clear All",
+            "apply": "Apply",
+            "selectAll": "Select All",
+            "deselectAll": "Deselect All"
+        },
+        "searchIn": "Search in {{section}}",
+        "recording": "Recording... {{seconds}}s",
+        "convertingVoice": "Converting voice...",
         "hero": {
             "tags": {
                 "openAccess": "Open-access",

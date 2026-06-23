@@ -394,8 +394,9 @@ export const useRepositoryStore = create((set, get) => ({
    * Use when we want to ensure URL and store are in sync and listing shows unfiltered results.
    */
   clearTransientFiltersAtomic: async () => {
-    
+
     try {
+      // Debug: log when transient clear is invoked so we can trace unexpected clears
       get().setApplyingUrlFilters(true);
     } catch (e) {}
     try {

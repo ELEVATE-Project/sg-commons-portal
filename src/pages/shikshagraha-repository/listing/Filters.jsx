@@ -743,6 +743,7 @@ const CheckboxOption = props => {
 
 
 const MenuList = props => {
+  const { t } = useTranslation();
   const { options, value, onChange } = props.selectProps
 
   const allSelected = value?.length === options?.length
@@ -805,6 +806,7 @@ const MenuList = props => {
 }
 
 const DropdownSelect = ({ label, options = [], selected = [], onChange, compact = false }) => {
+  const { t } = useTranslation();
   const selectedCount = Array.isArray(selected) ? selected.length : 0
 
   // Normalize options to { value, label }
