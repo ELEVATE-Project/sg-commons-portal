@@ -33,11 +33,7 @@ export default function ResourceDetailPage() {
     let mounted = true;
     setHasPageLoaded(false);
     (async () => {
-      try {
-        await fetchMediaDetail(params.id);
-      } catch (e) {
-        // ignore
-      }
+    await fetchMediaDetail(params.id);
       if (mounted) setHasPageLoaded(true);
     })();
     return () => {
@@ -118,7 +114,6 @@ function BackButton({ title }) {
               if (clearAtomic) await clearAtomic();
               
             } catch (e) {
-              try {
                 const forceReset = useRepositoryStore.getState().forceResetFilters;
                 const fetchMediaList = useRepositoryStore.getState().fetchMediaList;
                 if (forceReset) forceReset({ skipFetch: true });
@@ -126,7 +121,7 @@ function BackButton({ title }) {
                 navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, { replace: true });
                 if (fetchMediaList) fetchMediaList({}, true);
                 return;
-              } catch (er) {}
+              
             }
             navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, { replace: true });
             return;
@@ -289,20 +284,15 @@ function ResourceMeta({ resource }) {
               if (!resolvedOrgParam) return;
               const fromParam = resource?.id ? `&fromResource=${encodeURIComponent(resource.id)}` : "";
               const search = `?org=${resolvedOrgParam}${fromParam}`;
-              try {
+              
                 // mark recent navigation from a detail page so listing can treat URL params as transient
                 sessionStorage.setItem('sg:lastFromDetail', JSON.stringify({ id: resource?.id, ts: Date.now() }));
-              } catch (err) {
-                
-              }
+             
               navigate({ pathname: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, search }, { state: { fromDetail: true, fromResource: resource?.id } });
-              try {
                 // stamp the new history entry with a transient marker so popstate handlers can detect it
                 const st = Object.assign({}, window.history.state || {}, { fromDetail: true, fromResource: resource?.id, sgTransient: true });
-                try { window.history.replaceState(st, '', window.location.href); } catch (err) { }
-              } catch (err) {
-                
-              }
+                window.history.replaceState(st, '', window.location.href); 
+             
             }}
             className={`border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg ${!resolvedOrgParam ? 'opacity-50 cursor-not-allowed' : ''}`}>
             {t("repository.viewAllResources")} ↗
@@ -530,7 +520,7 @@ function ReviewsSection({ reviews }) {
           </div>
         ))}
       </div>
-      <ReviewForm onSubmit={() => {}} />
+      <ReviewForm onSubmit={(review) => console.log(review)} />
     </div>
   );
 }

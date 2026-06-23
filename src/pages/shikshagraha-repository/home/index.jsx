@@ -51,8 +51,8 @@ export default function RepositoryPage() {
           resetFilters();
         }
       } catch {
-          try { resetFilters(); } catch {}
-        }
+        resetFilters();
+      }
     }
   }, [searchParams, resetFilters]);
 
