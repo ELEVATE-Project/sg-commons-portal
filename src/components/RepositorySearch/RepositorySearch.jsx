@@ -194,24 +194,24 @@ return (
     className={`flex flex-row flex-nowrap items-center bg-white ${
       isHeader
         ? "gap-1 rounded-xl px-3 py-4 w-full max-w-[44rem]"
-        : "gap-3 h-[65.37px] w-full max-w-[702px] rounded-[9px] px-4"
+        : "gap-3 h-[4.1rem] w-full max-w-[43.9rem] rounded-[9px] px-4"
     } shadow-[0px_4px_12px_rgba(0,0,0,0.08)] ${className}`}
   >
     <Search
-      className="w-[25px] h-[25px] flex-shrink-0"
+      className="w-[1.6rem] h-[1.6rem] flex-shrink-0"
       style={{ color: "#8B3BB8" }}
     />
 
     <div className="relative flex-1">
-      {!search && !hasStartedRecording && !isConvertingVoiceToText && (
+      {!search.trim() && !hasStartedRecording && !isConvertingVoiceToText && (
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center">
 
           <span
             className="font-bold text-[#4B5563]"
             style={{
               fontFamily: "Manrope",
-              fontSize: "16px",
-              lineHeight: "24px",
+              fontSize: "1rem",
+              lineHeight: "1.5rem",
             }}
           >
             AI Search for
@@ -221,8 +221,8 @@ return (
             className="font-normal text-[#6B7280] ml-1 hidden sm:inline"
             style={{
               fontFamily: "Manrope",
-              fontSize: "16px",
-              lineHeight: "24px",
+              fontSize: "1rem",
+              lineHeight: "1.5rem",
             }}
           >
             content across Commons
@@ -244,7 +244,7 @@ return (
             : ""
         }
         className={`w-full bg-transparent outline-none text-[#111827] ${
-          isHeader ? "text-[14px]" : "text-[15px]"
+          isHeader ? "text-[0.8rem]" : "text-[0.9rem]"
         }`}
       />
     </div>
@@ -252,7 +252,7 @@ return (
     <button
       type="button"
       onClick={hasStartedRecording ? stopRecording : startRecording}
-      className="flex h-[25px] w-[25px] items-center justify-center flex-shrink-0"
+      className="flex h-[1.6rem] w-[1.6rem] items-center justify-center flex-shrink-0"
       aria-label={
         hasStartedRecording
           ? "Stop voice search"
@@ -260,16 +260,16 @@ return (
       }
     >
       {hasStartedRecording ? (
-        <FaRegStopCircle className="w-[19.5px] h-[19.5px] text-red-500" />
+        <FaRegStopCircle className="w-[1.2rem] h-[1.2rem] text-red-500" />
       ) : (
-        <IoMicOutline className="w-[30px] h-[30px] text-[#00000]" />
+        <IoMicOutline className="w-[1.9rem] h-[1.9rem] text-[#000000]" />
       )}
     </button>
 
   <button
   type="submit"
   disabled={disableSendButton}
-  className={`flex h-[26px] w-[26px] items-center justify-center flex-shrink-0 ${
+  className={`flex h-[1.6rem] w-[1.6rem] items-center justify-center flex-shrink-0 ${
     disableSendButton ? "opacity-50 cursor-not-allowed" : ""
   }`}
   aria-label="Search resources"

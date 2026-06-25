@@ -20,7 +20,7 @@ export default function HeroSection() {
   background:
     "linear-gradient(180deg, #572F90 0%, #8C72B9 58%, #E8E1F1 100%)",
 }}
-    ><a href=""></a>
+    >
       <div
         className="absolute inset-0 z-0 pointer-events-none md:hidden"
         style={{
@@ -93,7 +93,7 @@ export default function HeroSection() {
             type="button"
             onClick={handleScrollDown}
             aria-label={t('repository.hero.scrollDown')}
-            className="mt-8 flex flex-col items-center border-0 bg-transparent p-0 focus:outline-none"
+            className="mt-8 flex flex-col items-center border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             <p className="text-[1rem] font-medium text-[#6B6A65]">
               {t('repository.hero.scrollDown')}
