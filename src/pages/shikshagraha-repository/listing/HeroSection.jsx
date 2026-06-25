@@ -5,17 +5,22 @@ import left1 from "assets/hero-section-image-1.svg";
 import left2 from "assets/hero-section-image-2.svg";
 import right1 from "assets/hero-section-image-3.svg";
 import right2 from "assets/hero-section-image-4.svg";
+import scrollDownIcon from 'assets/scroll-down.svg';
 
 export default function HeroSection() {
   const { t } = useTranslation();
+  const handleScrollDown = () => {
+  if (typeof window === "undefined") return;
+  window.scrollBy({ top: 600, left: 0, behavior: "smooth" });
+};
   return (
     <div
       className="relative w-full overflow-hidden min-h-[78vh] md:min-h-[70vh] flex items-center justify-center"
       style={{
-        background:
-          "linear-gradient(180deg, #5B2D90 0%, #8665B5 55%, #D9D0E8 100%)",
-      }}
-    >
+  background:
+    "linear-gradient(180deg, #572F90 0%, #8C72B9 58%, #E8E1F1 100%)",
+}}
+    ><a href=""></a>
       <div
         className="absolute inset-0 z-0 pointer-events-none md:hidden"
         style={{
@@ -46,7 +51,7 @@ export default function HeroSection() {
       <div className="flex w-full max-w-7xl flex-col items-center gap-4 md:gap-5 -mt-10">
 
         {/* Tags */}
-        <div className="flex gap-3 flex-wrap justify-center">
+        {/* <div className="flex gap-3 flex-wrap justify-center">
           <span className="px-4 py-1 rounded-full border border-white/30 text-white text-sm font-light bg-gray-700/40">
             {t('repository.hero.tags.openAccess')}
           </span>
@@ -54,46 +59,52 @@ export default function HeroSection() {
           <span className="px-4 py-1 rounded-full border border-white/30 text-white text-sm font-light bg-gray-700/40">
             {t('repository.hero.tags.license')}
           </span>
-        </div>
+        </div> */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+  <span className="inline-flex items-center px-[10px] py-[4px] rounded-full border border-white/30 bg-[#59544999] text-white text-xs font-normal">
+    {t('repository.hero.tags.openAccess')}
+  </span>
+
+  <span className="inline-flex items-center px-[10px] py-[4px] rounded-full border border-white/30 bg-[#59544999] text-white text-xs font-normal">
+    {t('repository.hero.tags.license')}
+  </span>
+</div>
 
         {/* Title */}
-        <h1
-          className="
-            text-[42px]
-            sm:text-[52px]
-            md:text-[64px]
-            lg:text-[72px]
-            font-extralight
-            leading-[1.08]
-            tracking-[-0.03em]
-            text-white
-            md:whitespace-nowrap
-          "
-        >
-          {t('repository.hero.title')}
-        </h1>
-
+<h1
+  className="text-white text-center font-bold text-[2rem] md:text-[3.4rem] leading-none tracking-[-0.1rem] md:whitespace-nowrap"
+  style={{ fontFamily: "Comfortaa, sans-serif" }}
+>
+  {t('repository.hero.title')}
+</h1>
         {/* Description */}
-        <p
-          className="
-            max-w-4xl
-            text-white/90
-            text-[16px]
-            md:text-[18px]
-            leading-relaxed
-            font-normal
-          "
-        >
-          {t('repository.hero.description')}
-        </p>
+<p
+  className="max-w-2xl text-center text-white font-medium text-[1rem] md:text-[1.2rem] leading-[1.5]"
+  style={{ fontFamily: "'Source Sans 3', sans-serif" }}
+>
+  {t('repository.hero.description')}
+</p>    
 
         <RepositorySearch />
 
-        {/* Scroll */}
-        <div className="mt-8 text-white/80">
-          <p>{t('repository.hero.scrollDown')}</p>
-          <div className="animate-bounce text-2xl">⌄</div>
-        </div>
+          {/* Scroll */}
+
+          <button
+            type="button"
+            onClick={handleScrollDown}
+            aria-label={t('repository.hero.scrollDown')}
+            className="mt-8 flex flex-col items-center border-0 bg-transparent p-0 focus:outline-none"
+          >
+            <p className="text-[1rem] font-medium text-[#6B6A65]">
+              {t('repository.hero.scrollDown')}
+            </p>
+
+            <img
+              src={scrollDownIcon}
+              alt="Scroll down"
+              className="mt-5 h-[1.25rem] w-[1.25rem] animate-bounce"
+            />
+          </button>
 
       </div>
     </div>

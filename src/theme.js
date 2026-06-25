@@ -66,5 +66,6 @@ export const theme = {
     "--listing-pdf": "#DA1618",
     "--listing-docx": "#2563EB",
     "--listing-xlsx": "#0DB563",
+    "--listing-black": "#000000",
   },
 }

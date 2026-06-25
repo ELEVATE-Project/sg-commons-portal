@@ -505,15 +505,38 @@ if (inpText.trim() === "" && search.trim() !== "") {
 
   const filtersInner = (
     <>
-        <div className="min-h-[40px] self-start flex items-center pt-2 gap-1 w-auto overflow-x-visible flex-shrink-0">
-          <button onClick={openDrawer} aria-label={t('repository.filters.open')} className="relative inline-flex items-center justify-center p-2 rounded-md bg-transparent hover:bg-transparent text-[var(--listing-strong-text)]">
-            <Filter className="w-5 h-5 text-[var(--listing-strong-text)]" />
-            <span className="sr-only">{t('repository.filters')}</span>
-            {Object.values(filters || {}).reduce((s, v) => s + (Array.isArray(v) ? v.length : 0), 0) > 0 && (
-              <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-[var(--listing-primary)] rounded-full">{Object.values(filters || {}).reduce((s, v) => s + (Array.isArray(v) ? v.length : 0), 0)}</span>
+
+      <div>
+        <button
+          onClick={openDrawer}
+          aria-label={t('repository.filters.open')}
+          className="relative flex items-center justify-center"
+        >
+          <Filter
+            size={25}
+            strokeWidth={1.8}
+            className="text-[#71717A]"
+          />
+
+          <span className="sr-only">
+            {t('repository.filters')}
+          </span>
+
+          {Object.values(filters || {}).reduce(
+            (s, v) => s + (Array.isArray(v) ? v.length : 0),
+            0
+          ) > 0 && (
+              <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-[var(--listing-primary)] rounded-full">
+                {Object.values(filters || {}).reduce(
+                  (s, v) => s + (Array.isArray(v) ? v.length : 0),
+                  0
+                )}
+              </span>
+
             )}
-          </button>
-        </div>
+        </button>
+      </div>
+
 
       <div className="flex justify-end ml-auto relative z-10 w-auto lg:w-[25%] overflow-hidden lg:mt-0 opacity-100 block">
         <div className="flex flex-col items-start w-full">
@@ -523,17 +546,23 @@ if (inpText.trim() === "" && search.trim() !== "") {
       {isDrawerOpen && typeof document !== "undefined" && createPortal(
         <div className="fixed inset-0 z-[99999]" style={{ ...theme.vars }}>
           <div className="absolute inset-0 bg-black/40" onClick={() => setIsDrawerOpen(false)} />
-          <aside className="absolute right-0 top-0 h-full w-full md:w-[550px] bg-white shadow-lg p-4 filters-drawer flex flex-col" style={{ zIndex: 99999 }}>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">{t('repository.filters.title')}</h3>
-              <button onClick={() => setIsDrawerOpen(false)} className="p-2 rounded hover:bg-gray-100">
-                <X className="w-7 h-7 text-[var(--listing-danger)]" />
+          <aside className="absolute right-0 top-0 h-full w-full md:w-[571px] bg-white shadow-lg p-4 filters-drawer flex flex-col" style={{ zIndex: 99999 }}>
+            <div className="flex items-center justify-between pb-2">
+              <h3 className="font-comfortaa text-[16px] font-bold uppercase leading-none tracking-normal text-[#27272A]">
+                {t('repository.filters.title')}
+              </h3>
+              <button
+                onClick={() => setIsDrawerOpen(false)}
+                className="flex items-center justify-center"
+                aria-label="Close filters"
+              >
+                <X className="w-8 h-8 text-[#FF0505]" strokeWidth={2} />
               </button>
             </div>
 
-            <div className="w-full h-[1px] bg-[var(--listing-border)] mb-4" />
+            <div className="w-full h-[1px] bg-[var(--listing-black)] mb-8" />
 
-            <div className="flex-1 overflow-auto space-y-6">
+            <div className="flex-1 overflow-auto space-y-6 [&::-webkit-scrollbar]:hidden">
               {/* drawer-level search removed per user request; per-section searches below */}
 
               {dropdown_meta?.length
@@ -546,7 +575,8 @@ if (inpText.trim() === "" && search.trim() !== "") {
                       return (
                         <div key={key} className="border-b pb-4">
                           <div className="flex items-center justify-between mb-2">
-                            <label className="block font-medium text-[var(--listing-primary)]">{label}</label>
+                            {/* <label className="block font-medium text-[var(--listing-primary)]">{label}</label> */}
+                            <label className="block font-bold text-[0.8rem] leading-none tracking-normal text-[var(--listing-primary)]" style={{ fontFamily: "Comfortaa" }}>{label}</label>
                             <button
                               type="button"
                               aria-expanded={isOpen}
@@ -559,29 +589,49 @@ if (inpText.trim() === "" && search.trim() !== "") {
 
                           {isOpen ? (
                             <>
-                              <div className="flex items-center gap-2 mb-2 bg-white rounded-2xl px-3 py-2 shadow-sm w-full">
-                                <Search className="w-5 h-5 text-[var(--listing-primary)] flex-shrink-0" />
-                                <input
-                                  type="text"
-                                  aria-label={`Search ${label}`}
-                                  placeholder={
-                                    hasStartedRecording
-                                      ? t('repository.recording', { seconds: seconds.toFixed(1) })
-                                      : isConvertingVoiceToText
-                                      ? t('repository.convertingVoice')
-                                      : t('repository.searchIn', { section: label })
-                                  }
-                                  className="flex-1 min-w-0 bg-transparent px-2 py-1 outline-none text-[14px] placeholder:text-[var(--listing-muted-text)]"
-                                  value={queryMap[key] || ""}
-                                  onChange={e => setLocalFilterQuery(key, e.target.value)}
-                                />
-                                <button type="button" onClick={hasStartedRecording ? stopRecording : () => startSectionRecording(key)} className="flex h-8 w-8 items-center justify-center rounded-xl transition flex-shrink-0">
-                                  {hasStartedRecording ? (
-                                    <FaRegStopCircle className="w-5 h-5 text-red-500" />
-                                  ) : (
-                                    <IoMicOutline className="w-5 h-5 text-gray-500" />
-                                  )}
-                                </button>
+                              <div className="mb-2 w-full">
+                                <div className="flex items-center h-[52px] w-full border border-[#D1D5DB] bg-white px-3 rounded-[10px]">
+                                  <Search
+                                    className="w-[18px] h-[18px] text-[#9CA3AF] flex-shrink-0"
+                                  />
+
+                                  <input
+                                    type="text"
+                                    aria-label={`Search ${label}`}
+                                    placeholder={
+                                      hasStartedRecording
+                                        ? t("repository.recording", {
+                                          seconds: seconds.toFixed(1),
+                                        })
+                                        : isConvertingVoiceToText
+                                          ? t("repository.convertingVoice")
+                                          : t("repository.searchIn", {
+                                            section: label,
+                                          })
+                                    }
+                                    className="flex-1 px-3 bg-transparent outline-none text-[14px] font-normal text-[#4B5563] placeholder:text-[#6B7280]"
+                                    value={queryMap[key] || ""}
+                                    onChange={(e) =>
+                                      setLocalFilterQuery(key, e.target.value)
+                                    }
+                                  />
+
+                                  <button
+                                    type="button"
+                                    onClick={
+                                      hasStartedRecording
+                                        ? stopRecording
+                                        : () => startSectionRecording(key)
+                                    }
+                                    className="flex items-center justify-center w-8 h-8"
+                                  >
+                                    {hasStartedRecording ? (
+                                      <FaRegStopCircle className="w-[18px] h-[18px] text-red-500" />
+                                    ) : (
+                                      <IoMicOutline className="w-[18px] h-[18px] text-[#6B7280]" />
+                                    )}
+                                  </button>
+                                </div>
                               </div>
                               <DropdownSelect compact label={label} options={filtered} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} />
                             </>
@@ -833,20 +883,46 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
     }
 
     return (
-      <div className="relative mr-4 flex-shrink-0 w-full">
-        <div className="border rounded bg-transparent p-2">
-          <div className="max-h-[140px] overflow-auto compact-list">
-            <label key="__select_all__" className="flex items-center gap-2 py-1 cursor-pointer">
-              <input type="checkbox" checked={allSelected} onChange={toggleSelectAll} />
-              <span className="text-sm text-[var(--listing-strong-text)]">{t('repository.filters.selectAll')}</span>
+      <div className="relative mr-4 w-full flex-shrink-0" >
+        <div className="rounded bg-transparent p-2">
+          <div className=" max-h-[140px]
+    overflow-y-auto
+    [scrollbar-width:none]
+    [&::-webkit-scrollbar]:w-0
+    hover:[scrollbar-width:thin]
+    hover:[&::-webkit-scrollbar]:w-[6px]
+    hover:[&::-webkit-scrollbar-thumb]:bg-gray-400
+    hover:[&::-webkit-scrollbar-thumb]:rounded-full">
+            <label
+              key="__select_all__"
+              className="flex items-center gap-2 py-1 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={toggleSelectAll}
+              />
+              <span className="text-sm text-[var(--listing-strong-text)]">
+                {t('repository.filters.selectAll')}
+              </span>
             </label>
 
             {optionsList.map(opt => {
               const isChecked = selectedValues.has(opt.value)
+
               return (
-                <label key={opt.value} className="flex items-center gap-2 py-1 cursor-pointer">
-                  <input type="checkbox" checked={isChecked} onChange={() => toggleOption(opt)} />
-                  <span className="text-sm text-[var(--listing-strong-text)]">{opt.label}</span>
+                <label
+                  key={opt.value}
+                  className="flex items-center gap-2 py-1 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => toggleOption(opt)}
+                  />
+                  <span className="text-sm text-[var(--listing-strong-text)]">
+                    {opt.label}
+                  </span>
                 </label>
               )
             })}
