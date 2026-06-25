@@ -526,7 +526,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
             (s, v) => s + (Array.isArray(v) ? v.length : 0),
             0
           ) > 0 && (
-              <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-[var(--listing-primary)] rounded-full">
+              <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[0.6rem] font-semibold text-white bg-[var(--listing-primary)] rounded-full">
                 {Object.values(filters || {}).reduce(
                   (s, v) => s + (Array.isArray(v) ? v.length : 0),
                   0
@@ -546,9 +546,9 @@ if (inpText.trim() === "" && search.trim() !== "") {
       {isDrawerOpen && typeof document !== "undefined" && createPortal(
         <div className="fixed inset-0 z-[99999]" style={{ ...theme.vars }}>
           <div className="absolute inset-0 bg-black/40" onClick={() => setIsDrawerOpen(false)} />
-          <aside className="absolute right-0 top-0 h-full w-full md:w-[571px] bg-white shadow-lg p-4 filters-drawer flex flex-col" style={{ zIndex: 99999 }}>
+          <aside className="absolute right-0 top-0 h-full w-full md:w-[35.7rem] bg-white shadow-lg p-4 filters-drawer flex flex-col" style={{ zIndex: 99999 }}>
             <div className="flex items-center justify-between pb-2">
-              <h3 className="font-comfortaa text-[16px] font-bold uppercase leading-none tracking-normal text-[#27272A]">
+              <h3 className="font-comfortaa text-[1rem] font-bold uppercase leading-none tracking-normal text-[#27272A]">
                 {t('repository.filters.title')}
               </h3>
               <button
@@ -560,7 +560,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
               </button>
             </div>
 
-            <div className="w-full h-[1px] bg-[var(--listing-black)] mb-8" />
+            <div className="w-full h-[0.1rem] bg-[var(--listing-black)] mb-8" />
 
             <div className="flex-1 overflow-auto space-y-6 [&::-webkit-scrollbar]:hidden">
               {/* drawer-level search removed per user request; per-section searches below */}
@@ -590,9 +590,9 @@ if (inpText.trim() === "" && search.trim() !== "") {
                           {isOpen ? (
                             <>
                               <div className="mb-2 w-full">
-                                <div className="flex items-center h-[52px] w-full border border-[#D1D5DB] bg-white px-3 rounded-[10px]">
+                                <div className="flex items-center h-[3.3rem] w-full border border-[#D1D5DB] bg-white px-3 rounded-[0.6rem]">
                                   <Search
-                                    className="w-[18px] h-[18px] text-[#9CA3AF] flex-shrink-0"
+                                    className="w-[1.1rem] h-[1.1rem] text-[#9CA3AF] flex-shrink-0"
                                   />
 
                                   <input
@@ -609,7 +609,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
                                             section: label,
                                           })
                                     }
-                                    className="flex-1 px-3 bg-transparent outline-none text-[14px] font-normal text-[#4B5563] placeholder:text-[#6B7280]"
+                                    className="flex-1 px-3 bg-transparent outline-none text-[0.9rem] font-normal text-[#4B5563] placeholder:text-[#6B7280]"
                                     value={queryMap[key] || ""}
                                     onChange={(e) =>
                                       setLocalFilterQuery(key, e.target.value)
@@ -626,9 +626,9 @@ if (inpText.trim() === "" && search.trim() !== "") {
                                     className="flex items-center justify-center w-8 h-8"
                                   >
                                     {hasStartedRecording ? (
-                                      <FaRegStopCircle className="w-[18px] h-[18px] text-red-500" />
+                                      <FaRegStopCircle className="w-[1.1rem] h-[1.1rem] text-red-500" />
                                     ) : (
-                                      <IoMicOutline className="w-[18px] h-[18px] text-[#6B7280]" />
+                                      <IoMicOutline className="w-[1.1rem] h-[1.1rem] text-[#6B7280]" />
                                     )}
                                   </button>
                                 </div>
@@ -885,12 +885,12 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
     return (
       <div className="relative mr-4 w-full flex-shrink-0" >
         <div className="rounded bg-transparent p-2">
-          <div className=" max-h-[140px]
+          <div className=" max-h-[8.8rem]
     overflow-y-auto
     [scrollbar-width:none]
     [&::-webkit-scrollbar]:w-0
     hover:[scrollbar-width:thin]
-    hover:[&::-webkit-scrollbar]:w-[6px]
+    hover:[&::-webkit-scrollbar]:w-[0.4rem]
     hover:[&::-webkit-scrollbar-thumb]:bg-gray-400
     hover:[&::-webkit-scrollbar-thumb]:rounded-full">
             <label
