@@ -20,7 +20,7 @@ const PageHeader = ({
   };
 
   return (
-    <div className="w-full border-b border-repository-headerBorder px-6 py-5">
+    <div className="w-full border-b border-repository-headerBorder px-4 sm:px-6 py-5">
       <div
   className={
     showSearch

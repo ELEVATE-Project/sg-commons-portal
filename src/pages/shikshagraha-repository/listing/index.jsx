@@ -69,7 +69,7 @@ export default function RepositoryPage() {
 >
       <div className="container max-w-[93.75rem] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
-        <div className="w-full">
+        <div className="w-full sm:px-6 lg:px-0 lg:w-[96.3%] mx-auto">
                     <PageHeader showSearch />
                   </div>
            <div className="">

@@ -666,8 +666,8 @@ const displayedResources = compact
         />
       </div>
 
-<div className="flex items-center justify-between w-full lg:w-auto lg:flex-nowrap lg:justify-end lg:gap-2 lg:shrink-0">
- <div className="flex items-center gap-2 shrink-0">
+<div className="flex items-center justify-between w-full lg:w-auto lg:flex-nowrap lg:justify-end lg:gap-6 lg:shrink-0">
+<div className="flex items-center gap-3 shrink-0">
           <button
   onClick={() => setViewMode("grid")}
   className={`
@@ -719,16 +719,15 @@ const displayedResources = compact
   }}
  className="
   shrink-0
-  [&>div>button]:w-[5rem]
-  sm:[&>div>button]:w-[5.5rem]
-    [&>div>button]:h-[1.8656rem]
-    [&>div>button]:border
-    [&>div>button]:border-repository-controlBorder
-    [&>div>button]:rounded-[0.5487rem]
-    [&>div>button]:bg-white
-    [&>div>button]:px-3
-    [&>div>button]:justify-between
-  "
+  [&>div>button]:min-w-[5.5rem]
+  [&>div>button]:w-auto
+  [&>div>button]:justify-between
+  [&>div>button]:border
+  [&>div>button]:border-repository-controlBorder
+  [&>div>button]:rounded-[0.5487rem]
+  [&>div>button]:bg-white
+  [&>div>button]:px-3
+"
   dropdownClassName="w-[5.5rem]"
   renderButton={(selected) => (
     <span

@@ -46,6 +46,7 @@ module.exports = {
 					pdfBg: "#F70C36",
 					docxBg: "#2563EB",
 					xlsxBg: "#0DB563",
+					pptxBg: "#C2410C",
 					defaultFileBg: "#6B7280",
 
 					// Tag Colors
@@ -57,6 +58,9 @@ module.exports = {
 
 					xlsxTagBg: "#B4EBC6",
 					xlsxTagText: "#028A4F",
+
+					pptxTagBg: "#E7B39E",
+    				pptxTagText: "#8E2E06",
 
 					defaultTagBg: "#E5E7EB",
 

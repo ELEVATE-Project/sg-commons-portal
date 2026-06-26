@@ -11,11 +11,13 @@ import XlsxIcon from "assets/icons/xlsx.svg"
 import GoogleDriveIcon from "assets/icons/google_drive.svg"
 import { useNavigate } from "react-router-dom"
 import { openSafeUrl } from "../../../utils/urlUtils"
+import PptxIcon from "assets/icons/pptx.svg"
 
 const MEDIA_FILE_TYPE = {
   PDF: "PDF",
   DOCX: "DOCX",
   XLSX: "XLSX",
+  PPTX: "PPTX",
 }
 
 export const getMediaFileTypeStyles = type => {
@@ -36,6 +38,12 @@ export const getMediaFileTypeStyles = type => {
       return {
         background: "bg-repository-xlsxBg",
         icon: XlsxIcon,
+      }
+
+    case MEDIA_FILE_TYPE.PPTX:
+      return {
+        background: "bg-repository-pptxBg",
+        icon: PptxIcon,
       }
 
     default:
@@ -64,6 +72,12 @@ text: "text-repository-docxTagText",
       return {
         bg: "bg-repository-xlsxTagBg",
 text: "text-repository-xlsxTagText",
+      }
+
+    case MEDIA_FILE_TYPE.PPTX:
+      return {
+        bg: "bg-repository-pptxTagBg",
+        text: "text-repository-pptxTagText",
       }
 
     default:
@@ -127,7 +141,8 @@ const handleCardKeyDown = (e) => {
       "
     >
       {/* File Type */}
-      <div
+<div>
+        <div
         className={`
           ${background}
           w-[6rem]
@@ -152,9 +167,27 @@ const handleCardKeyDown = (e) => {
         )}
 
         <span className="mt-1 text-[0.6875rem] font-semibold uppercase">
-          {resource?.media_type_display}
-        </span>
+  {resource?.media_type_display}
+</span>
       </div>
+
+      {/* Mobile only */}
+<div className="sm:hidden flex items-center justify-center gap-3 mt-2 text-repository-cardMeta">
+  <div className="flex items-center gap-1">
+    <Eye size={12} />
+    <span className="text-[0.6875rem]">
+      {resource?.view_count ?? 0}k
+    </span>
+  </div>
+
+  <div className="flex items-center gap-1">
+    <Download size={12} />
+    <span className="text-[0.6875rem]">
+      {resource?.download_count ?? 0}
+    </span>
+  </div>
+</div>
+</div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
@@ -164,7 +197,8 @@ const handleCardKeyDown = (e) => {
             text-[0.875rem]
             font-medium
             text-repository-cardTitle
-            truncate
+            line-clamp-2
+    sm:line-clamp-1
           "
         >
           {resource?.title || t("repository.notAvailable")}
@@ -176,7 +210,8 @@ const handleCardKeyDown = (e) => {
             
             text-[0.750rem]
             text-repository-cardDescription
-            line-clamp-1
+            line-clamp-2
+            sm:line-clamp-1
           "
         >
           {resource?.description || t("repository.notAvailable")}
@@ -190,7 +225,7 @@ const handleCardKeyDown = (e) => {
   <div className="flex-1 min-w-0">
     {resource?.tag_names?.length > 0 && (
       <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
-        {resource.tag_names.slice(0, 4).map((tag, index) => (
+        {resource.tag_names.slice(0, 2).map((tag, index) => (
           <span
             key={index}
             className={`
@@ -202,7 +237,7 @@ px-1.5 sm:px-2
               rounded-full
               whitespace-nowrap
               ${
-  index === resource.tag_names.slice(0, 4).length - 1
+  index === resource.tag_names.slice(0, 2).length - 1
     ? "truncate min-w-0"
     : "flex-shrink-0"
 }
@@ -220,14 +255,14 @@ px-1.5 sm:px-2
   className="
     flex
     items-center
-    justify-between
+    justify-end
     gap-2
     mt-2
     text-repository-cardMeta
   "
 >
   {/* Left Side */}
-  <div className="flex items-center gap-3 sm:gap-5">
+  <div className="hidden sm:flex items-center gap-3 sm:gap-5">
     <div className="flex items-center gap-1">
       <Eye size={14} />
       <span className="text-[0.813rem]">
@@ -249,12 +284,13 @@ px-1.5 sm:px-2
       type="button"
       className="
     flex
-    items-center
-    gap-1
-    ml-auto
-    min-w-0
-    max-w-[40%]
-    sm:max-w-none
+  items-center
+  gap-1
+  min-w-0
+  w-fit
+  sm:w-auto
+  sm:ml-auto
+  truncate
   "
       onClick={e => {
         e.preventDefault();
@@ -266,14 +302,17 @@ px-1.5 sm:px-2
       }}
     >
       <span
-  className="
-    text-[0.813rem]
-    underline
-    truncate
-    max-w-[5rem]
-    sm:max-w-none
-    sm:whitespace-nowrap
-  "
+ className="
+  flex-1
+  text-[0.813rem]
+  underline
+  break-words
+  sm:flex-none
+  sm:truncate
+  sm:max-w-none
+  sm:whitespace-nowrap
+  mr-3
+"
 >
         {resource.organization}
       </span>
@@ -471,7 +510,7 @@ px-1.5 sm:px-2
                   font-['Source_Sans_3']
                   underline
                   truncate
-                  max-w-[7.5rem]
+                  max-w-[8rem]
                   mr-3
                 "
               >
