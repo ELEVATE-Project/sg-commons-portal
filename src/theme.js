@@ -67,5 +67,8 @@ export const theme = {
     "--listing-docx": "#2563EB",
     "--listing-xlsx": "#0DB563",
     "--listing-black": "#000000",
+    "--listing-text-bold":"#4B5563",
+    "--listing-text-normal":"#6B7280",
+
   },
 }

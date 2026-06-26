@@ -207,7 +207,7 @@ return (
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center">
 
           <span
-            className="font-bold text-[#4B5563]"
+            className="font-bold text-[var(--listing-text-bold)]"
             style={{
               fontFamily: "Manrope",
               fontSize: "1rem",
@@ -218,7 +218,7 @@ return (
           </span>
 
           <span
-            className="font-normal text-[#6B7280] ml-1 hidden sm:inline"
+            className="font-normal text-[var(--listing-text-normal)] ml-1 hidden sm:inline"
             style={{
               fontFamily: "Manrope",
               fontSize: "1rem",
@@ -228,7 +228,7 @@ return (
             content across Commons
           </span>
 
-          <span className="ml-1 text-[#4B5563] sm:hidden">...</span>
+          <span className="ml-1 text-[var(--listing-text-bold)] sm:hidden">...</span>
 
         </div>
       )}
