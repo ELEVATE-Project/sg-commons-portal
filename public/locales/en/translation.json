@@ -216,6 +216,26 @@
         "googleDrive": "Google Drive",
         "publishedOn": "Published on",
         "viewAllResources": "View all resources",
+        "filters": {
+            "open": "Open filters",
+            "title": "Filters",
+            "clearAll": "Clear All",
+            "apply": "Apply",
+            "selectAll": "Select All",
+            "deselectAll": "Deselect All"
+        },
+        "searchIn": "Search in {{section}}",
+        "recording": "Recording... {{seconds}}s",
+        "convertingVoice": "Converting voice...",
+        "hero": {
+            "tags": {
+                "openAccess": "Open-access",
+                "license": "CC BY-SA"
+            },
+            "title": "Discover. Learn. Reuse. Build.",
+            "description": "A curated knowledge repository of solutions, resources and assets for education leaders working to strengthen India's public schools.",
+            "scrollDown": "Scroll down"
+        },
         "invalidDownloadURL": "Invalid download URL"
     }
 }

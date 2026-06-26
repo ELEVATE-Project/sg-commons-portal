@@ -30,10 +30,16 @@ export default function ResourceDetailPage() {
   const isLoading = useRepositoryStore((state) => state.loadingDetail);
   const containerRef = useRef(null);
   useEffect(() => {
+    let mounted = true;
     setHasPageLoaded(false);
-    fetchMediaDetail(params.id);
-    setHasPageLoaded(true);
-  }, [fetchMediaDetail, params.id]);
+    (async () => {
+    await fetchMediaDetail(params.id);
+      if (mounted) setHasPageLoaded(true);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [params.id]);
 
   const [tab, setTab] = useState("Overview");
 
@@ -48,7 +54,7 @@ export default function ResourceDetailPage() {
 
   useEffect(() => {
     if (containerRef.current) {
-      containerRef.current?.scrollIntoView({ behavior: "smooth", y: -999 });
+      containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [resourceData]);
 
@@ -94,10 +100,34 @@ export default function ResourceDetailPage() {
 function BackButton({ title }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
   return (
     <div className="flex items-center gap-2 text-sm text-repository-textSecondary mb-6">
-      <button onClick={() => navigate(-1)}>
+      <button onClick={async () => {
+        
+          const ref = document.referrer;
+          const histState = (window && window.history && window.history.state) || {};
+          // If previous page was listing (either via referrer or history.state), navigate to clean listing and clear filters
+          if ((ref && ref.includes('/resources')) || histState?.fromDetail || histState?.fromResource) {
+            try {
+              // clear transient filters before navigating back to listing
+              const clearAtomic = useRepositoryStore.getState().clearTransientFiltersAtomic;
+              if (clearAtomic) await clearAtomic();
+              
+            } catch (e) {
+                const forceReset = useRepositoryStore.getState().forceResetFilters;
+                const fetchMediaList = useRepositoryStore.getState().fetchMediaList;
+                if (forceReset) forceReset({ skipFetch: true });
+                else useRepositoryStore.getState().resetFilters({ skipFetch: true });
+                navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, { replace: true });
+                if (fetchMediaList) fetchMediaList({}, true);
+                return;
+              
+            }
+            navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, { replace: true });
+            return;
+          }
+        navigate(-1);
+      }}>
         <ArrowLeft size={16} />
       </button>
 
@@ -139,6 +169,27 @@ function ResourceMeta({ resource }) {
   const navigate = useNavigate();
   const fileType =
     resource?.media_type_display?.toUpperCase() || "DOCX";
+  const masterList = useRepositoryStore((state) => state.masterList);
+  const fetchMasterList = useRepositoryStore((state) => state.fetchMasterList);
+
+  useEffect(() => {
+    if (!masterList) fetchMasterList();
+  }, [masterList, fetchMasterList]);
+
+  const resolvedOrgParam = (() => {
+    const raw = resource?.organization;
+    if (!raw) return null;
+    try {
+      const orgDropdown = masterList?.find((d) => d.key === "organizations");
+      const match = orgDropdown?.options?.find(
+        (o) => String(o.value) === String(raw) || String((o.display || "")).toLowerCase() === String(raw).toLowerCase()
+      );
+      const val = match ? match.value : raw;
+      return encodeURIComponent(val);
+    } catch (e) {
+      return encodeURIComponent(raw);
+    }
+  })();
 
   return (
     <div className="w-full">
@@ -227,7 +278,23 @@ function ResourceMeta({ resource }) {
             </button>
           </div>
 
-          <button onClick={() => navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?org=${resource?.organization}`)} className="border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg">
+          <button
+            disabled={!resolvedOrgParam}
+            onClick={() => {
+              if (!resolvedOrgParam) return;
+              const fromParam = resource?.id ? `&fromResource=${encodeURIComponent(resource.id)}` : "";
+              const search = `?org=${resolvedOrgParam}${fromParam}`;
+              
+                // mark recent navigation from a detail page so listing can treat URL params as transient
+                sessionStorage.setItem('sg:lastFromDetail', JSON.stringify({ id: resource?.id, ts: Date.now() }));
+             
+              navigate({ pathname: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, search }, { state: { fromDetail: true, fromResource: resource?.id } });
+                // stamp the new history entry with a transient marker so popstate handlers can detect it
+                const st = Object.assign({}, window.history.state || {}, { fromDetail: true, fromResource: resource?.id, sgTransient: true });
+                window.history.replaceState(st, '', window.location.href); 
+             
+            }}
+            className={`border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg ${!resolvedOrgParam ? 'opacity-50 cursor-not-allowed' : ''}`}>
             {t("repository.viewAllResources")} ↗
           </button>
         </div>
@@ -422,10 +489,11 @@ function OverviewContent({ overview }) {
   );
 }
 function ReviewsSection({ reviews }) {
+  const { t } = useTranslation();
   return (
     <div className="py-8">
       <h2 className="text-[1.5rem] font-semibold text-[var(--listing-secondary)] mb-6">
-        User Feedback
+        {t('repository.userFeedback')}
       </h2>
       <div className="flex flex-col gap-6">
         {reviews?.map((review, i) => (
@@ -458,10 +526,11 @@ function ReviewsSection({ reviews }) {
 }
 
 function RelatedResources({ related }) {
+  const { t } = useTranslation();
   return (
     <div className="py-8">
       {/* Implement related resources list */}
-      <span>Related resources go here.</span>
+      <span>{t('repository.relatedResourcesPlaceholder')}</span>
     </div>
   );
 }

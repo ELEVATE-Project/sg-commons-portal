@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from "react"
+import { createPortal } from "react-dom"
 import { useTranslation } from "react-i18next"
+import { theme } from "../../../theme"
 import Select, { components } from "react-select"
-import { Search, X } from "lucide-react"
+import { Search, X, Filter } from "lucide-react"
 /** Icons */
 import { FaCircle } from "react-icons/fa6"
 import { IoMicOutline } from "react-icons/io5"
 import { FaRegStopCircle } from "react-icons/fa"
-import { TbSend2 } from "react-icons/tb"
+// removed unused send icon import
 /** Hooks OR Stores */
 import { useSiteDataLocalStore } from "store"
 import { useAudio } from "hooks/useAudio"
@@ -31,6 +33,7 @@ export default function Filters() {
   const dropdown_meta = useRepositoryStore(state => state.masterList)
 
   const resetFilters = useRepositoryStore(state => state.resetFilters)
+  const clearTransientFiltersAtomic = useRepositoryStore(state => state.clearTransientFiltersAtomic)
 
   const setFilters = useRepositoryStore(state => state.setFilters)
   const setGlobalSearch = useRepositoryStore(state => state.setSearch)
@@ -71,113 +74,15 @@ export default function Filters() {
 
   const [shouldScrollToTop, setShouldScrollToTop] = useState(false)
 
-  const [isSticky, setIsSticky] = useState(false)
   const filtersRef = useRef(null)
-  const stickySentinelRef = useRef(null)
-  const placeholderRef = useRef(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const prevOverflowRef = useRef('')
+  const prevPaddingRightRef = useRef('')
+  const [queryMap, setQueryMap] = useState({})
+  const [openMap, setOpenMap] = useState({})
+  const [pendingFilters, setPendingFilters] = useState({})
 
-  useEffect(() => {
-    if (!stickySentinelRef.current || typeof IntersectionObserver === "undefined") {
-      return undefined
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const nextStickyState = !entry.isIntersecting
-        setIsSticky(prev => (prev === nextStickyState ? prev : nextStickyState))
-      },
-      {
-        threshold: 0,
-        rootMargin: "-0.0625rem 0rem 0rem 0rem",
-      }
-    )
-
-    observer.observe(stickySentinelRef.current)
-
-    return () => observer.disconnect()
-  }, [])
-
-  // Fallback: also update sticky state from scroll position to handle layouts
-  useEffect(() => {
-    const sentinel = stickySentinelRef.current
-    const el = sentinel || filtersRef.current
-    if (!el) return
-
-    const handleScroll = () => {
-      const rect = el.getBoundingClientRect()
-      const nextSticky = rect.top <= 0
-      setIsSticky(prev => (prev === nextSticky ? prev : nextSticky))
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    // initial check
-    handleScroll()
-
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  // rAF polling fallback to ensure `isSticky` updates in all environments
-  useEffect(() => {
-    let rafId
-    const check = () => {
-      const sentinel = stickySentinelRef.current
-      const el = sentinel || filtersRef.current
-      if (el) {
-        const rect = el.getBoundingClientRect()
-        const nextSticky = rect.top <= 0
-        setIsSticky(prev => (prev === nextSticky ? prev : nextSticky))
-      }
-      rafId = requestAnimationFrame(check)
-    }
-    rafId = requestAnimationFrame(check)
-    return () => cancelAnimationFrame(rafId)
-  }, [])
-
-  // When isSticky toggles, apply inline fixed positioning to the filters element
-  useEffect(() => {
-    const el = filtersRef.current
-    const placeholder = placeholderRef.current
-    if (!el || !placeholder) return
-
-    if (isSticky) {
-      // measure before changing position
-      const rect = el.getBoundingClientRect()
-      placeholder.style.height = `${rect.height}px`
-      placeholder.style.display = 'block'
-
-      el.style.position = 'fixed'
-      el.style.top = '0rem'
-      el.style.left = `${rect.left}px`
-      el.style.width = `${rect.width}px`
-      el.style.zIndex = '1000'
-      el.style.boxShadow = '0 0 0.25rem rgba(0,0,0,0.2)'
-    } else {
-      placeholder.style.height = '0rem'
-      placeholder.style.display = 'none'
-
-      el.style.position = ''
-      el.style.top = ''
-      el.style.left = ''
-      el.style.width = ''
-      el.style.zIndex = ''
-      el.style.boxShadow = ''
-    }
-
-    return () => {
-      if (el) {
-        el.style.position = ''
-        el.style.top = ''
-        el.style.left = ''
-        el.style.width = ''
-        el.style.zIndex = ''
-        el.style.boxShadow = ''
-      }
-      if (placeholder) {
-        placeholder.style.height = '0rem'
-        placeholder.style.display = 'none'
-      }
-    }
-  }, [isSticky])
+  // sticky behavior removed: filters will remain in normal document flow
 
   useEffect(() => {
     if (!loadingList && shouldScrollToTop) {
@@ -284,28 +189,9 @@ export default function Filters() {
               }
 
               setIsConvertingVoiceToText(true)
-              let transcriptResult = ""
-              let s3Url = await handleS3Upload(audioBlob, `${Date.now()}`, `chatbot/companychat/${sessionId}/`)
-              if (!s3Url || s3Url === "") {
-                transcriptResult = t("asrError")
-              }
-              let storedRoute = bot_routes.search_bot
-
-              transcriptResult = await ai4BharatASRApi(s3Url, languageToUse, storedRoute)
-              if (!transcriptResult || transcriptResult === "") {
-                showNotification({
-                  message: t("asrError"),
-                  type: "error",
-                  options: {
-                    position: "top-center",
-                    autoClose: 6000,
-                    style: { fontWeight: "bold" },
-                  },
-                })
-              } else {
-                const storedRoute = bot_routes.search_bot
-                transcriptResult = await ai4BharatASRApi(s3Url, languageToUse, storedRoute)
-                if (!transcriptResult || transcriptResult === "") {
+              try {
+                const s3Url = await handleS3Upload(audioBlob, `${Date.now()}`, `chatbot/companychat/${sessionId}/`)
+                if (!s3Url || s3Url === "") {
                   showNotification({
                     message: t("asrError"),
                     type: "error",
@@ -316,12 +202,37 @@ export default function Filters() {
                     },
                   })
                 } else {
-                  setSearchInput(transcriptResult)
-                  setGlobalSearch(transcriptResult)
-                  scrollToBrowseResources()
+                  const transcriptResult = await ai4BharatASRApi(s3Url, languageToUse, bot_routes.search_bot)
+                  if (!transcriptResult || transcriptResult === "") {
+                    showNotification({
+                      message: t("asrError"),
+                      type: "error",
+                      options: {
+                        position: "top-center",
+                        autoClose: 6000,
+                        style: { fontWeight: "bold" },
+                      },
+                    })
+                  } else {
+                    setSearchInput(transcriptResult)
+                    setGlobalSearch(transcriptResult)
+                    scrollToBrowseResources()
+                  }
                 }
+              } catch (err) {
+                console.error(err)
+                showNotification({
+                  message: t("asrError"),
+                  type: "error",
+                  options: {
+                    position: "top-center",
+                    autoClose: 6000,
+                    style: { fontWeight: "bold" },
+                  },
+                })
+              } finally {
+                setIsConvertingVoiceToText(false)
               }
-              setIsConvertingVoiceToText(false)
             } else {
               console.warn("No audio chunks were recorded.")
               setIsConvertingVoiceToText(false)
@@ -335,6 +246,106 @@ export default function Filters() {
     } else {
       console.warn("getUserMedia not supported on your browser!")
     }
+  }
+
+  const startSectionRecording = (sectionKey) => {
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+      console.warn("getUserMedia not supported on your browser!")
+      return
+    }
+    // if another recorder is active, stop it first
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop()
+      return
+    }
+    handleOnStopSpeaking()
+    setLocalFilterQuery(sectionKey, "")
+
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(async (stream) => {
+        try {
+          const options = {
+            mimeType: "audio/webm;codecs=opus",
+            audioBitsPerSecond: 16000,
+          }
+          const recorder = new MediaRecorder(stream, options)
+          setMediaRecorder(recorder)
+          const localAudioChunks = []
+
+          recorder.start()
+          setHasStartedRecording(true)
+
+          recorder.ondataavailable = event => {
+            localAudioChunks.push(event.data)
+          }
+
+          recorder.onstop = async () => {
+            setHasStartedRecording(false)
+            setMediaRecorder(null)
+            stream.getTracks().forEach((t) => t.stop())
+            if (localAudioChunks.length > 0) {
+              const audioBlob = new Blob(localAudioChunks, {
+                type: "audio/webm;codecs=opus",
+              })
+              const isSilent = await isSilentAudio(audioBlob, 0.02)
+
+              if (!audioBlob || isSilent) {
+                showNotification({
+                  message: t("asrError"),
+                  type: "error",
+                  options: { position: "top-center", autoClose: 6000, style: { fontWeight: "bold" } },
+                })
+                setIsConvertingVoiceToText(false)
+                return
+              }
+
+              setIsConvertingVoiceToText(true)
+              try {
+                const s3Url = await handleS3Upload(audioBlob, `${Date.now()}`, `chatbot/companychat/${sessionId}/`)
+                if (!s3Url || s3Url === "") {
+                  showNotification({
+                    message: t("asrError"),
+                    type: "error",
+                    options: { position: "top-center", autoClose: 6000, style: { fontWeight: "bold" } },
+                  })
+                } else {
+                  const storedRoute = bot_routes.search_bot
+                  let transcriptResult = await ai4BharatASRApi(s3Url, languageToUse, storedRoute)
+                  if (!transcriptResult || transcriptResult === "") {
+                    showNotification({
+                      message: t("asrError"),
+                      type: "error",
+                      options: { position: "top-center", autoClose: 6000, style: { fontWeight: "bold" } },
+                    })
+                  } else {
+                    setLocalFilterQuery(sectionKey, transcriptResult)
+                  }
+                }
+              } catch (err) {
+                console.error(err)
+                showNotification({
+                  message: t("asrError"),
+                  type: "error",
+                  options: { position: "top-center", autoClose: 6000, style: { fontWeight: "bold" } },
+                })
+              } finally {
+                setIsConvertingVoiceToText(false)
+              }
+            } else {
+              console.warn("No audio chunks were recorded.")
+              setIsConvertingVoiceToText(false)
+            }
+          }
+        } catch (err) {
+          console.error("MediaRecorder not supported:", err)
+          setIsConvertingVoiceToText(false)
+        }
+      })
+      .catch(err => {
+        console.error("Error accessing microphone:", err)
+        setIsConvertingVoiceToText(false)
+      })
   }
   const handleOnInputText = inpText => {
     setSearchInput(inpText) // Update store with current input value
@@ -352,8 +363,8 @@ if (inpText.trim() === "" && search.trim() !== "") {
   useEffect(() => {
     if (hasStartedRecording) {
       const id = setInterval(() => {
-        setSeconds(prev => prev + 1)
-      }, 1000)
+        setSeconds(prev => +(prev + 0.1).toFixed(1))
+      }, 100)
       intervalIdRef.current = id
     } else {
       clearInterval(intervalIdRef.current)
@@ -374,6 +385,31 @@ if (inpText.trim() === "" && search.trim() !== "") {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Prevent background scrolling when drawer is open and avoid layout shift by
+  // preserving scrollbar space via padding-right.
+  useEffect(() => {
+    if (isDrawerOpen) {
+      prevOverflowRef.current = document.body.style.overflow
+      prevPaddingRightRef.current = document.body.style.paddingRight || ''
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth / 16}rem`
+      }
+      document.body.style.overflow = 'hidden'
+      document.body.classList.add('filters-open')
+    } else {
+      document.body.style.overflow = prevOverflowRef.current || ''
+      document.body.style.paddingRight = prevPaddingRightRef.current
+      document.body.classList.remove('filters-open')
+    }
+
+    return () => {
+      document.body.style.overflow = prevOverflowRef.current || ''
+      document.body.style.paddingRight = prevPaddingRightRef.current
+      document.body.classList.remove('filters-open')
+    }
+  }, [isDrawerOpen])
+
   useEffect(() => {
     if (!textAreaRef.current) return
     const textarea = textAreaRef.current
@@ -387,149 +423,203 @@ if (inpText.trim() === "" && search.trim() !== "") {
 
     // If empty or single line (no newline), always set to minHeight to prevent shifting
     if (!textarea.value || !hasNewline) {
-      textarea.style.height = `${minHeight}px`
+      textarea.style.height = `${minHeight / 16}rem`
       textarea.style.overflowY = "hidden"
     } else if (scrollHeight > maxHeight) {
-      textarea.style.height = `${maxHeight}px`
+      textarea.style.height = `${maxHeight / 16}rem`
       textarea.style.overflowY = "auto"
     } else {
-      textarea.style.height = `${scrollHeight}px`
+      textarea.style.height = `${scrollHeight / 16}rem`
       textarea.style.overflowY = "hidden"
     }
   }, [search])
 
   const disableSendButton = search?.trim()?.length === 0 || isConvertingVoiceToText || hasStartedRecording || loadingList
 
-  const searchInput = (
-    <form
-      className="relative flex flex-row items-center justify-center w-full h-full px-3 py-2 rounded-[0.75rem] border border-[var(--listing-border)]"
-      onSubmit={event => {
-        if (!hasStartedListening && !isConvertingVoiceToText && !loadingList) {
-          handleSendMessage(event)
-        }
-      }}
-      autoComplete="off"
-    >
-      <div className="flex items-center justify-center relative h-full pointer-events-none">
-        <Search className="w-4 h-4 text-[var(--listing-subdued-text)]" />
-      </div>
-      <div className="relative w-full flex items-center justify-center">
-        <textarea
-          className={`${isConvertingVoiceToText ? "min-h-[1.8125rem] sm:min-h-0" : ""} pl-3 max-w-[20.6875rem] w-full border-0 focus:outline-none focus:bg-transparent bg-transparent rounded-[0.75rem] text-[0.875rem] font-['Manrope'] text-[var(--listing-muted-text)] placeholder-[var(--listing-subdued-text)] resize-none !overflow-y-auto`}
-          style={{
-            backgroundColor: "transparent",
-            height: "1.8125rem",
-            minHeight: "1.8125rem",
-            maxHeight: "3.125rem",
-            resize: "none",
-          }}
-          onInput={e => {
-            const textarea = e.target
-            const minHeight = 29
-            const maxHeight = 50
-
-            // Reset height to auto to get accurate scrollHeight
-            textarea.style.height = "auto"
-            const scrollHeight = textarea.scrollHeight
-            const hasNewline = textarea.value.includes("\n")
-
-            // If empty or single line (no newline), always set to minHeight to prevent shifting
-            if (!textarea.value || !hasNewline) {
-              textarea.style.height = `${minHeight}px`
-              // textarea.style.overflowY = "hidden"
-            } else if (scrollHeight > maxHeight) {
-              textarea.style.height = `${maxHeight}px`
-              textarea.style.overflowY = "auto"
-            } else {
-              textarea.style.height = `${scrollHeight}px`
-              // textarea.style.overflowY = "hidden"
-            }
-          }}
-          onChange={e => {
-            if (loadingList) return;
-            e.preventDefault()
-            const inpText = e.target.value
-            if (inpText?.length > 250) {
-              e.target.value = inpText.slice(0, 250)
-              if (!isMaxLengthReached) {
-                showNotification({
-                  message: t("maxInputCharacters"),
-                  type: "error",
-                  options: {
-                    position: "top-center",
-                    autoClose: 6000,
-                    style: { fontWeight: "bold" },
-                  },
-                })
-                setIsMaxLengthReached(true)
-              }
-            } else {
-              handleOnInputText(inpText)
-              if (isMaxLengthReached) {
-                setIsMaxLengthReached(false)
-              }
-            }
-          }}
-          placeholder={hasStartedRecording ? t("placeholder1") : isConvertingVoiceToText ? t("placeholder2") : t("search_placeholder")}
-          name="message-box"
-          value={search}
-          autoFocus={false}
-          disabled={hasStartedRecording || isConvertingVoiceToText || loadingList}
-          ref={textAreaRef}
-          onKeyDown={e => {
-            if (e.key === "Enter" && e.shiftKey) {
-              e.preventDefault()
-              e.target.form.requestSubmit()
-            }
-          }}
-        />
-        {hasStartedRecording && (
-          <div className="absolute top-1/2 -translate-y-1/2 right-2 flex items-center space-x-1 text-[var(--listing-danger)] text-sm font-medium pointer-events-none">
-            <FaCircle className="text-[var(--listing-danger)] animate-pulse text-xs" />
-            <span>{formatTime(seconds)}</span>
-          </div>
-        )}
-      </div>
-      <button className={`flex items-center justify-center relative ${hasStartedRecording ? "text-[var(--listing-danger)]" : "text-black"} disabled:text-[var(--listing-disabled-text)] disabled:cursor-not-allowed cursor-pointer`} onClick={hasStartedRecording ? stopRecording : startRecording}>
-        {hasStartedRecording ? <FaRegStopCircle className="w-[1.125rem] h-[1.125rem] md:w-[1.25rem] md:h-[1.25rem] lg:w-[1.5rem] lg:h-[1.5rem]" /> : <IoMicOutline className="w-[1.125rem] h-[1.125rem] md:w-[1.25rem] md:h-[1.25rem] lg:w-[1.5rem] lg:h-[1.5rem]" />}
-      </button>
-      <button type="submit" disabled={hasStartedRecording || isConvertingVoiceToText || loadingList} className={`flex items-center justify-center relative md:pl-[0.375rem] pl-[0.75rem] disabled:cursor-not-allowed disabled:text-[var(--listing-disabled-text)] cursor-pointer ${!disableSendButton ? "text-[var(--listing-info)]" : ""}`}>
-        <TbSend2 className="md:w-[1.125rem] md:h-[1.125rem] lg:w-[1.5rem] lg:h-[1.5rem]" />
-      </button>
-    </form>
-  )
-
   // build filters inner content so we can reuse in-place and in a portal
+  const setLocalFilterQuery = (key, val) => setQueryMap(prev => ({ ...prev, [key]: val }))
+
+  const openDrawer = () => {
+    // create a shallow copy of filters for local editing
+    try {
+      setPendingFilters(JSON.parse(JSON.stringify(filters || {})))
+    } catch (e) {
+      setPendingFilters({ ...filters })
+    }
+    // determine which sections to open based on currently applied filters
+    if (dropdown_meta && dropdown_meta.length) {
+      const isNonEmpty = (v) => {
+        if (v == null) return false
+        if (Array.isArray(v)) return v.length > 0
+        if (typeof v === 'string') return v.trim() !== ''
+        if (typeof v === 'object') return Object.keys(v).length > 0
+        return Boolean(v)
+      }
+
+      const selectedKeys = Object.keys(filters || {}).filter(k => isNonEmpty(filters[k]))
+
+      const map = {}
+      if (selectedKeys.length > 0) {
+        // open only the filter sections that are currently selected
+        dropdown_meta.forEach((d) => {
+          map[d.key] = selectedKeys.includes(d.key)
+        })
+      } else {
+        // default: open the first section
+        dropdown_meta.forEach((d, i) => {
+          map[d.key] = i === 0
+        })
+      }
+      setOpenMap(map)
+    }
+    setIsDrawerOpen(true)
+  }
+
+  const pendingCount = Object.values(pendingFilters || {}).reduce((s, v) => s + (Array.isArray(v) ? v.length : 0), 0)
+
+  useEffect(() => {
+    if (!dropdown_meta || !dropdown_meta.length) return
+
+    // Initialize openMap only once: open selected sections (themes/org) or first by default
+    setOpenMap(prev => {
+      if (Object.keys(prev).length > 0) return prev
+
+      const isNonEmpty = (v) => {
+        if (v == null) return false
+        if (Array.isArray(v)) return v.length > 0
+        if (typeof v === 'string') return v.trim() !== ''
+        if (typeof v === 'object') return Object.keys(v).length > 0
+        return Boolean(v)
+      }
+
+      const selectedKeys = Object.keys(filters || {}).filter(k => isNonEmpty(filters[k]))
+      const map = {}
+      if (selectedKeys.length > 0) {
+        dropdown_meta.forEach(d => { map[d.key] = selectedKeys.includes(d.key) })
+      } else {
+        dropdown_meta.forEach((d, i) => { map[d.key] = i === 0 })
+      }
+      return map
+    })
+  }, [dropdown_meta])
+
   const filtersInner = (
     <>
-      <div className="min-h-[2.5rem] flex items-center pt-2 gap-1 w-full lg:w-[75%] overflow-x-auto flex-shrink-0 lg:flex-wrap">
-        {dropdown_meta?.length
-          ? dropdown_meta?.map(({ label, options, key }, index) => (
-            <React.Fragment key={`label-${label}-${index}`}>
-              <DropdownSelect key={label} label={label} options={options} selected={filters[key] || "Select a " + label} onChange={value => handleChange(key, value)} />
-            </React.Fragment>
-          ))
-          : null}
-
-        {Object.keys(filters).some(key => filters[key]?.length) && (
-          <button className="min-w-[6.25rem] p-2 rounded-[0.75rem] flex items-center gap-2 text-[var(--listing-danger)] bg-[var(--listing-danger-soft)]" onClick={() => {
-            resetFilters()
-            scrollToBrowseResources()
-          }}>
-            <X className="w-4 h-4" /> Clear All
+        <div className="min-h-[40px] self-start flex items-center pt-2 gap-1 w-auto overflow-x-visible flex-shrink-0">
+          <button onClick={openDrawer} aria-label={t('repository.filters.open')} className="relative inline-flex items-center justify-center p-2 rounded-md bg-transparent hover:bg-transparent text-[var(--listing-strong-text)]">
+            <Filter className="w-5 h-5 text-[var(--listing-strong-text)]" />
+            <span className="sr-only">{t('repository.filters')}</span>
+            {Object.values(filters || {}).reduce((s, v) => s + (Array.isArray(v) ? v.length : 0), 0) > 0 && (
+              <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-white bg-[var(--listing-primary)] rounded-full">{Object.values(filters || {}).reduce((s, v) => s + (Array.isArray(v) ? v.length : 0), 0)}</span>
+            )}
           </button>
-        )}
-      </div>
+        </div>
 
-      <div className={`flex justify-end ml-auto relative z-10 w-full lg:w-[25%] overflow-hidden ${
-        isSticky
-          ? "max-h-[3.3125rem] mt-7 lg:mt-0 opacity-100 block"
-          : "max-h-0 mt-0 opacity-0 invisible pointer-events-none hidden"
-      }`} aria-hidden={!isSticky} style={{}}>
-        <div className="flex flex-col items-start w-full h-[3.3125rem]">
-          {searchInput}
+      <div className="flex justify-end ml-auto relative z-10 w-auto lg:w-[25%] overflow-hidden lg:mt-0 opacity-100 block">
+        <div className="flex flex-col items-start w-full">
         </div>
       </div>
+
+      {isDrawerOpen && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[99999]" style={{ ...theme.vars }}>
+          <div className="absolute inset-0 bg-black/40" onClick={() => setIsDrawerOpen(false)} />
+          <aside className="absolute right-0 top-0 h-full w-full md:w-[550px] bg-white shadow-lg p-4 filters-drawer flex flex-col" style={{ zIndex: 99999 }}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">{t('repository.filters.title')}</h3>
+              <button onClick={() => setIsDrawerOpen(false)} className="p-2 rounded hover:bg-gray-100">
+                <X className="w-7 h-7 text-[var(--listing-danger)]" />
+              </button>
+            </div>
+
+            <div className="w-full h-[1px] bg-[var(--listing-border)] mb-4" />
+
+            <div className="flex-1 overflow-auto space-y-6">
+              {/* drawer-level search removed per user request; per-section searches below */}
+
+              {dropdown_meta?.length
+                ? dropdown_meta?.map(({ label, options, key }) => {
+                  const q = (queryMap[key] || "").toLowerCase()
+                  const filtered = options?.filter(o => (o.display || "").toLowerCase().includes(q)) || []
+
+                      const isOpen = !!openMap[key]
+
+                      return (
+                        <div key={key} className="border-b pb-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="block font-medium text-[var(--listing-primary)]">{label}</label>
+                            <button
+                              type="button"
+                              aria-expanded={isOpen}
+                              onClick={() => setOpenMap(prev => ({ ...prev, [key]: !isOpen }))}
+                              className="p-0.5 rounded hover:bg-gray-100 text-xs leading-none"
+                            >
+                              {isOpen ? 'v' : '^'}
+                            </button>
+                          </div>
+
+                          {isOpen ? (
+                            <>
+                              <div className="flex items-center gap-2 mb-2 bg-white rounded-2xl px-3 py-2 shadow-sm w-full">
+                                <Search className="w-5 h-5 text-[var(--listing-primary)] flex-shrink-0" />
+                                <input
+                                  type="text"
+                                  aria-label={`Search ${label}`}
+                                  placeholder={
+                                    hasStartedRecording
+                                      ? t('repository.recording', { seconds: seconds.toFixed(1) })
+                                      : isConvertingVoiceToText
+                                      ? t('repository.convertingVoice')
+                                      : t('repository.searchIn', { section: label })
+                                  }
+                                  className="flex-1 min-w-0 bg-transparent px-2 py-1 outline-none text-[14px] placeholder:text-[var(--listing-muted-text)]"
+                                  value={queryMap[key] || ""}
+                                  onChange={e => setLocalFilterQuery(key, e.target.value)}
+                                />
+                                <button type="button" onClick={hasStartedRecording ? stopRecording : () => startSectionRecording(key)} className="flex h-8 w-8 items-center justify-center rounded-xl transition flex-shrink-0">
+                                  {hasStartedRecording ? (
+                                    <FaRegStopCircle className="w-5 h-5 text-red-500" />
+                                  ) : (
+                                    <IoMicOutline className="w-5 h-5 text-gray-500" />
+                                  )}
+                                </button>
+                              </div>
+                              <DropdownSelect compact label={label} options={filtered} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} />
+                            </>
+                          ) : null}
+                        </div>
+                      )
+                })
+                : null}
+            </div>
+
+            <div className="flex-none border-t bg-white py-3">
+              <div className="max-w-full mx-auto px-0">
+                <div className="flex items-center justify-between">
+                  <button className="px-3 py-2 rounded-[12px] text-[var(--listing-muted-text)] bg-transparent" onClick={async () => {
+                      try {
+                        await clearTransientFiltersAtomic();
+                      } catch (e) { console.error('[Filters] clearTransientFiltersAtomic error', e); }
+                      setPendingFilters({}); setQueryMap({}); setIsDrawerOpen(false); scrollToBrowseResources();
+                    }}>
+                      {t('repository.filters.clearAll')}
+                    </button>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      className={`px-3 py-2 rounded-[12px] bg-[var(--listing-secondary)] text-white ${pendingCount === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      onClick={() => { if (pendingCount === 0) return; setFilters(pendingFilters || {}); setIsDrawerOpen(false); scrollToBrowseResources(); }}
+                      disabled={pendingCount === 0}  
+                    >
+                      {t('repository.filters.apply')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>,
+        document.body
+      )}
     </>
   )
 
@@ -562,20 +652,43 @@ if (inpText.trim() === "" && search.trim() !== "") {
         textarea[name="message-box"]::-webkit-scrollbar-thumb:hover {
           background-color: var(--listing-muted-text);
         }
+        /* Hide visible scrollbars inside the filters drawer but keep scrolling functional */
+        .filters-drawer {
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE 10+ */
+        }
+        .filters-drawer::-webkit-scrollbar {
+          width: 0;
+          height: 0;
+          display: none;
+        }
+        /* Small compact lists should scroll but not show scrollbars */
+        .compact-list {
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE 10+ */
+        }
+        .compact-list::-webkit-scrollbar {
+          width: 0;
+          height: 0;
+          display: none;
+        }
+        /* Make checkboxes and selection accents use secondary color */
+        .filters-drawer input[type="checkbox"], .compact-list input[type="checkbox"] {
+          accent-color: var(--listing-secondary);
+        }
       `}</style>
-      <HiddenRecorder />
+      {!isDrawerOpen && <HiddenRecorder />}
       <Notification />
-      <div ref={stickySentinelRef} className="h-px -mb-px" aria-hidden="true" />
-      <div ref={placeholderRef} style={{height: 0, display: 'none'}} aria-hidden="true" />
 
       <div
         ref={filtersRef}
         id="filters-boundary"
-        className="sticky top-0 z-100 isolate flex flex-col lg:flex-row items-stretch lg:items-center p-3 bg-white max-w-[104.375rem] w-full rounded-[1rem] shadow-[0_0_0.25rem_rgba(0,0,0,0.2)]"
-        style={undefined}
+        className="relative z-10 isolate flex flex-col lg:flex-row items-stretch lg:items-center bg-white w-fit rounded-[1rem] shadow-[0_0_4px_rgba(0,0,0,0.2)]"
       >
         {filtersInner}
       </div>
+
+      {/* Mobile floating Filters button removed to avoid duplicate controls on small screens */}
     </>
   )
 }
@@ -588,21 +701,21 @@ const CheckboxOption = props => {
       <div className="flex items-center px-2 py-1">
         <span
           style={{
-            width: 16,
-            height: 16,
-            minWidth: 16,          // 👈 prevents shrink
-            minHeight: 16,
+            width: '1rem',
+            height: '1rem',
+            minWidth: '1rem',          // 👈 prevents shrink
+            minHeight: '1rem',
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            marginRight: 8,
-            border: "0.0938rem solid",
+            marginRight: '0.5rem',
+            border: "0.09375rem solid",
             borderColor: isSelected
-              ? "var(--listing-secondary)"
-              : "#9CA3AF",
+                ? "var(--listing-secondary)"
+              : "var(--listing-subdued-text)",
             backgroundColor: isSelected
-              ? "var(--listing-secondary)"
-              : "#fff",
+                ? "var(--listing-secondary)"
+              : "var(--listing-white)",
             borderRadius: 3,
             flexShrink: 0,         // 👈 VERY IMPORTANT
           }}
@@ -630,6 +743,7 @@ const CheckboxOption = props => {
 
 
 const MenuList = props => {
+  const { t } = useTranslation();
   const { options, value, onChange } = props.selectProps
 
   const allSelected = value?.length === options?.length
@@ -644,32 +758,32 @@ const MenuList = props => {
 
   return (
     <components.MenuList {...props}>
-      <div
-        className="flex items-center px-3 py-2 border-b border-[var(--listing-border)] bg-[var(--listing-surface)] cursor-pointer"
+        <div
+        className="flex items-center px-3 py-2 border-b border-[var(--listing-border)] bg-transparent cursor-pointer"
         onClick={toggleSelectAll}
       >
         <span
           style={{
-            width: 16,
-            height: 16,
-            minWidth: 16,
-            minHeight: 16,
+            width: '1rem',
+            height: '1rem',
+            minWidth: '1rem',
+            minHeight: '1rem',
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            marginRight: 8,
-            border: "0.0938rem solid",
+            marginRight: '0.5rem',
+            border: "0.09375rem solid",
             borderColor: allSelected
-              ? "var(--listing-secondary)"
-              : "#9CA3AF",
+                ? "var(--listing-secondary)"
+              : "var(--listing-subdued-text)",
             backgroundColor: allSelected
-              ? "var(--listing-secondary, #5832AC)"
-              : "#fff",
+                ? "var(--listing-secondary)"
+              : "var(--listing-white)",
             borderRadius: 3,
             flexShrink: 0,
           }}
-        >
-          {allSelected && (
+      >
+        {allSelected && (
             <svg
               width="10"
               height="10"
@@ -682,7 +796,7 @@ const MenuList = props => {
         </span>
 
         <label className="font-medium text-[var(--listing-strong-text)] cursor-pointer select-none">
-          {allSelected ? "Deselect All" : "Select All"}
+          {allSelected ? t('repository.filters.deselectAll') : t('repository.filters.selectAll')}
         </label>
       </div>
 
@@ -691,18 +805,61 @@ const MenuList = props => {
   )
 }
 
-const DropdownSelect = ({ label, options, selected, onChange }) => {
+const DropdownSelect = ({ label, options = [], selected = [], onChange, compact = false }) => {
+  const { t } = useTranslation();
   const selectedCount = Array.isArray(selected) ? selected.length : 0
+
+  // Normalize options to { value, label }
+  const optionsList = (options || []).map(o => ({ value: o.value, label: o.display || o.label || o.value }))
+
+  if (compact) {
+    const selectedValues = new Set((selected || []).map(s => (typeof s === 'string' ? s : s.value)))
+    const allSelected = optionsList.length > 0 && optionsList.every(o => selectedValues.has(o.value))
+
+    const toggleSelectAll = () => {
+      if (allSelected) onChange([])
+      else onChange(optionsList)
+    }
+
+    const toggleOption = opt => {
+      const isSelected = selectedValues.has(opt.value)
+      let next
+      if (isSelected) {
+        next = (selected || []).filter(s => (typeof s === 'string' ? s : s.value) !== opt.value)
+      } else {
+        next = [...(selected || []), { value: opt.value, label: opt.label }]
+      }
+      onChange(next)
+    }
+
+    return (
+      <div className="relative mr-4 flex-shrink-0 w-full">
+        <div className="border rounded bg-transparent p-2">
+          <div className="max-h-[140px] overflow-auto compact-list">
+            <label key="__select_all__" className="flex items-center gap-2 py-1 cursor-pointer">
+              <input type="checkbox" checked={allSelected} onChange={toggleSelectAll} />
+              <span className="text-sm text-[var(--listing-strong-text)]">{t('repository.filters.selectAll')}</span>
+            </label>
+
+            {optionsList.map(opt => {
+              const isChecked = selectedValues.has(opt.value)
+              return (
+                <label key={opt.value} className="flex items-center gap-2 py-1 cursor-pointer">
+                  <input type="checkbox" checked={isChecked} onChange={() => toggleOption(opt)} />
+                  <span className="text-sm text-[var(--listing-strong-text)]">{opt.label}</span>
+                </label>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="relative mr-4 flex-shrink-0">
-      {selectedCount > 0 && (
-        <div className="absolute -top-1 -right-2 z-10 flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-[var(--listing-secondary)] rounded-full">
-          {selectedCount}
-        </div>
-      )}
       <Select
-        options={options.map(x => ({ value: x.value, label: x.display }))}
+        options={optionsList.map(x => ({ value: x.value, label: x.label }))}
         value={selected}
         onChange={onChange}
         isMulti
@@ -729,8 +886,8 @@ const DropdownSelect = ({ label, options, selected, onChange }) => {
           option: (base, state) => ({
             ...base,
             backgroundColor: state.isSelected
-              ? "var(--listing-secondary, #5832AC)"  // fallback color
-              : "white",
+              ? "var(--listing-secondary)"
+              : "var(--listing-white)",
             color: state.isSelected
               ? "white"
               : "var(--listing-strong-text)",
@@ -740,7 +897,7 @@ const DropdownSelect = ({ label, options, selected, onChange }) => {
           placeholder: base => ({
             ...base,
             color: "var(--listing-muted-text)",
-            gridArea: "1/1/2/3"
+            gridArea: "1/1/2/3",
           }),
 
           menu: base => ({

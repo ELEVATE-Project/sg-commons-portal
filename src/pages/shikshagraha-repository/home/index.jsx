@@ -4,6 +4,7 @@ import BrowseResources from "../listing/BrowseResources.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
 import MitraAiAssistantAside from "../listing/MitraAiAssistantAside.jsx";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore.js";
+import { useSearchParams } from "react-router-dom";
 import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
@@ -20,10 +21,40 @@ export default function RepositoryPage() {
   const fetchMediaList = useRepositoryStore(
   (state) => state.fetchMediaList
 );
+  const resetFilters = useRepositoryStore((state) => state.resetFilters);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // NOTE: Do not auto-clear `org`/`theme` params on initial mount. Listing
+  // (`BrowseResources`) handles mapping URL -> filters and will control when
+  // to clear transient params (on Back / clear actions). This effect was
+  // previously removing URL params on mount which caused filters to disappear
+  // on hard refresh; keep URL params intact so filters persist across refresh.
 
   useEffect(() => {
-  fetchMediaList();
-}, [fetchMediaList]);
+    // Only fetch if we don't already have data to avoid duplicate calls
+    if (!mediaList || mediaList.length === 0) {
+      fetchMediaList();
+    }
+  }, [fetchMediaList, mediaList]);
+
+  // If there are no org/theme params in URL, ensure repository filters are cleared
+  useEffect(() => {
+    const org = searchParams.get("org");
+    const theme = searchParams.get("theme");
+    if (!org && !theme) {
+      try {
+        const forceReset = useRepositoryStore.getState().forceResetFilters;
+        if (forceReset) {
+          forceReset();
+        } else {
+          resetFilters();
+        }
+      } catch {
+        resetFilters();
+      }
+    }
+  }, [searchParams, resetFilters]);
 
 
   useEffect(() => {
@@ -37,13 +68,14 @@ export default function RepositoryPage() {
 
   return (
     <div className="bg-[var(--listing-white)]  relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
+      
       <div className="container max-w-[93.75rem] mx-auto">
-        <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
-          <div className="w-full">
+        <div className="min-h-screen flex flex-col align-items-center gap-4">
+             <div className="w-full">
             <Header />
           </div>
            <div className="">
-          <ExploreByTheme />
+          {/* <ExploreByTheme /> */}
 
           <main className="w-full mx-auto">
             {!!mediaList?.length && (

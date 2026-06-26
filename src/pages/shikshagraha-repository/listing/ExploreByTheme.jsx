@@ -10,6 +10,7 @@ import {
   Heart,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
 import { useTranslation } from "react-i18next";
 
 const themes = [
@@ -58,6 +59,9 @@ const themes = [
 export default function ExploreByTheme() {
   const navigate = useNavigate();
     const { t } = useTranslation();
+  const setFilters = useRepositoryStore((s) => s.setFilters);
+  const fetchMediaList = useRepositoryStore((s) => s.fetchMediaList);
+  const setApplyingUrlFilters = useRepositoryStore((s) => s.setApplyingUrlFilters);
   
   return (
     <section className="w-full mt-8 md:mt-10 px-4 md:px-12 mb-5">
@@ -72,8 +76,18 @@ export default function ExploreByTheme() {
           return (
 <div
   key={theme.title}
-  onClick={() =>
-    navigate(`/resources?theme=${encodeURIComponent(theme.title)}`)
+  onClick={async () => {
+    // Apply the theme filter in-store first (skip immediate fetch), mark applying flag,
+    // then navigate and trigger one immediate fetch so listing shows filtered data on first visit.
+    try {
+      setApplyingUrlFilters(true);
+      setFilters({ tags: [{ value: theme.title, display: theme.title }] }, true, { skipFetch: true });
+      navigate(`/resources?theme=${encodeURIComponent(theme.title)}`);
+      await fetchMediaList({}, true);
+    } finally {
+      setApplyingUrlFilters(false);
+    }
+  }
   }
   className="
     bg-white

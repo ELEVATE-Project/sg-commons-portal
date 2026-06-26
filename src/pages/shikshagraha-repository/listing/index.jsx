@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Filters from "./Filters.jsx";
 import BrowseResources from "./BrowseResources.jsx";
 import Pagination from "./Pagination.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
@@ -8,14 +7,12 @@ import { useRepositoryStore } from "../repository-hooks/useRepositoryStore.js";
 import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
-import { useSearchParams } from "react-router-dom";
 import PageHeader from "../../../components/PageHeader";
 import left1 from "assets/dandelion-left-1.png";
 import right2 from "assets/dandelion-right-2.png";
 
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
-  const [sortBy, setSortBy] = useState("recent");
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
   const { t } = useTranslation()
@@ -31,18 +28,17 @@ export default function RepositoryPage() {
   (state) => state.fetchMediaList
 );
   const itemsPerPage = pagination.limit;
-const [searchParams] = useSearchParams();
-
-const orgId = searchParams.get("org");
-const isMobile = window.innerWidth < 768;
-
-useEffect(() => {
-  window.scrollTo(0, 0);
-}, []);
+  const isMobile = window.innerWidth < 768;
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
-  fetchMediaList();
-}, [fetchMediaList]);
+    // Only fetch if media list is empty to avoid duplicate initial requests
+    if (!mediaList || mediaList.length === 0) {
+      fetchMediaList();
+    }
+  }, [fetchMediaList, mediaList]);
 
 
   useEffect(() => {
@@ -74,7 +70,7 @@ useEffect(() => {
       <div className="container max-w-[93.75rem] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
         <div className="w-full">
-                    <PageHeader />
+                    <PageHeader showSearch />
                   </div>
            <div className="">
 
@@ -95,7 +91,7 @@ useEffect(() => {
             )}
          
            
-            {!isLoading && !!!mediaList?.length && (
+            {!isLoading && !mediaList?.length && (
               <div className="w-full pt-10 mx-auto flex flex-col items-center justify-center">
                 <div className="text-muted">
                   <GrResources size={100} />
