@@ -237,5 +237,23 @@
             "scrollDown": "Scroll down"
         },
         "invalidDownloadURL": "Invalid download URL"
+    },
+    "search":{
+                "searchRotatingTexts": [
+  "content across Commons",
+  "trending resources",
+  "any education resources"
+], 
+"searchBarContent": "AI Search for",
+"recording": "Recording... {{seconds}}s",
+  "convertingVoice": "Converting voice to text...",
+  "clearSearch": "Clear search",
+  "clearIconAlt": "Clear",
+  "searchIconAlt": "Search",
+  "microphoneAlt": "Microphone",
+  "sendIconAlt": "Send",
+  "startVoiceSearch": "Start voice search",
+  "stopVoiceSearch": "Stop voice search",
+  "searchResources": "Search resources"
     }
 }

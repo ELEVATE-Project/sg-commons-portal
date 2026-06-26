@@ -313,6 +313,7 @@ px-1.5 sm:px-2
   sm:whitespace-nowrap
   mr-3
 "
+title={resource.organization}
 >
         {resource.organization}
       </span>
@@ -513,6 +514,7 @@ px-1.5 sm:px-2
                   max-w-[8rem]
                   mr-3
                 "
+                title={resource.organization}
               >
                 {resource.organization}
               </span>
