@@ -622,7 +622,7 @@ const displayedResources = compact
         />
       </div>
 
-      <div className="flex items-center justify-between flex-row-reverse lg:flex-row lg:justify-start lg:gap-6 w-full lg:w-auto">
+      <div className="flex items-center justify-between flex-row-reverse lg:flex-row lg:justify-start lg:gap-2 w-full lg:w-auto">
         <div className="flex items-center gap-1">
           <button
   onClick={() => setViewMode("grid")}

@@ -24,7 +24,7 @@ const PageHeader = ({
       <div
         className={
           showSearch
-            ? "grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr] md:items-center"
+            ? "grid grid-cols-1 gap-4 md:grid-cols-[1fr_minmax(24rem,2fr)_1fr] md:items-center"
             : "flex items-center gap-4"
         }
       >
