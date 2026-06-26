@@ -199,7 +199,7 @@ return (
   >
     <Search
       className="w-[1.6rem] h-[1.6rem] flex-shrink-0"
-      style={{ color: "#8B3BB8" }}
+      style={{ color: "[var(--listing-primary)]" }}
     />
 
     <div className="relative flex-1">
