@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { IoMicOutline } from "react-icons/io5";
 import { FaRegStopCircle } from "react-icons/fa";
-import { TbSend2 } from "react-icons/tb";
+import { LuSend } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { useSiteDataLocalStore } from "store";
 import { useChatStorage } from "hooks/useStorage";
@@ -188,63 +188,98 @@ export default function RepositorySearch({ variant = "hero", className = "" }) {
     mediaRecorder?.stop();
   };
 
-  return (
-    <form
-      onSubmit={handleSendMessage}
-        className={`flex flex-row flex-nowrap items-center bg-white shadow-xl ${
-          isHeader
-          ? "gap-1 rounded-xl px-3 py-2 w-full max-w-[44rem]"
-          : "gap-2 rounded-2xl px-5 py-4 w-full max-w-[760px]"
-      } ${className}`}
-    >
-      <Search
-        className={`${isHeader ? "w-5 h-5" : "w-6 h-6"} flex-shrink-0`}
-        style={{ color: "var(--listing-primary)" }}
-      />
+return (
+  <form
+    onSubmit={handleSendMessage}
+    className={`flex flex-row flex-nowrap items-center bg-white ${
+      isHeader
+        ? "gap-1 rounded-xl px-3 py-4 w-full max-w-[44rem]"
+        : "gap-3 h-[4.1rem] w-full max-w-[43.9rem] rounded-[9px] px-4"
+    } shadow-[0px_4px_12px_rgba(0,0,0,0.08)] ${className}`}
+  >
+    <Search
+      className="w-[1.6rem] h-[1.6rem] flex-shrink-0"
+      style={{ color: "[var(--listing-primary)]" }}
+    />
+
+    <div className="relative flex-1">
+      {!search.trim() && !hasStartedRecording && !isConvertingVoiceToText && (
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center">
+
+          <span
+            className="font-bold text-[var(--listing-text-bold)]"
+            style={{
+              fontFamily: "Manrope",
+              fontSize: "1rem",
+              lineHeight: "1.5rem",
+            }}
+          >
+            AI Search for
+          </span>
+
+          <span
+            className="font-normal text-[var(--listing-text-normal)] ml-1 hidden sm:inline"
+            style={{
+              fontFamily: "Manrope",
+              fontSize: "1rem",
+              lineHeight: "1.5rem",
+            }}
+          >
+            content across Commons
+          </span>
+
+          <span className="ml-1 text-[var(--listing-text-bold)] sm:hidden">...</span>
+
+        </div>
+      )}
 
       <input
         value={search}
-        onChange={(event) => handleOnInputText(event.target.value)}
+        onChange={(e) => handleOnInputText(e.target.value)}
         placeholder={
           hasStartedRecording
             ? `Recording... ${seconds.toFixed(1)}s`
             : isConvertingVoiceToText
             ? "Converting voice to text..."
-            : "AI Search for content across Commons"
+            : ""
         }
-        className={`flex-1 min-w-0 bg-transparent outline-none text-gray-700 placeholder-gray-500 ${
-          isHeader ? "px-2 py-1 text-[0.875rem]" : "px-3 py-2 text-[18px]"
+        className={`w-full bg-transparent outline-none text-[var(--listing-strong-text)] ${
+          isHeader ? "text-[0.8rem]" : "text-[0.9rem]"
         }`}
       />
+    </div>
 
-      <button
-        type="button"
-        onClick={hasStartedRecording ? stopRecording : startRecording}
-        className="flex h-8 w-8 items-center justify-center rounded-xl transition flex-shrink-0"
-        aria-label={hasStartedRecording ? "Stop voice search" : "Start voice search"}
-      >
-        {hasStartedRecording ? (
-          <FaRegStopCircle className="w-5 h-5 text-red-500" />
-        ) : (
-          <IoMicOutline className="w-5 h-5 text-gray-500" />
-        )}
-      </button>
+    <button
+      type="button"
+      onClick={hasStartedRecording ? stopRecording : startRecording}
+      className="flex h-[1.6rem] w-[1.6rem] items-center justify-center flex-shrink-0"
+      aria-label={
+        hasStartedRecording
+          ? "Stop voice search"
+          : "Start voice search"
+      }
+    >
+      {hasStartedRecording ? (
+        <FaRegStopCircle className="w-[1.2rem] h-[1.2rem] text-red-500" />
+      ) : (
+        <IoMicOutline className="w-[1.9rem] h-[1.9rem] text-[var(--listing-black)]" />
+      )}
+    </button>
 
-      <button
-        type="submit"
-        disabled={disableSendButton}
-        className={`flex items-center justify-center rounded-xl transition flex-shrink-0 hover:opacity-90 ${
-          isHeader ? "h-8 w-8" : "h-10 w-10"
-        } ${disableSendButton ? "cursor-not-allowed" : ""}`}
-        style={{
-          backgroundColor: disableSendButton
-            ? "var(--listing-disabled)"
-            : "var(--listing-primary)",
-        }}
-        aria-label="Search resources"
-      >
-        <TbSend2 className={`${isHeader ? "w-4 h-4" : "w-5 h-5"} text-white`} />
-      </button>
-    </form>
-  );
+  <button
+  type="submit"
+  disabled={disableSendButton}
+  className={`flex h-[1.6rem] w-[1.6rem] items-center justify-center flex-shrink-0 ${
+    disableSendButton ? "opacity-50 cursor-not-allowed" : ""
+  }`}
+  aria-label="Search resources"
+>
+  <LuSend
+   size={23}
+  color="var(--listing-black)"
+  strokeWidth={2.23}
+  />
+</button>
+  </form>
+);
 }
