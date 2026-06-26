@@ -60,7 +60,7 @@ module.exports = {
 					xlsxTagText: "#028A4F",
 
 					pptxTagBg: "#E7B39E",
-    				pptxTagText: "#8E2E06",
+					pptxTagText: "#8E2E06",
 
 					defaultTagBg: "#E5E7EB",
 
@@ -89,19 +89,18 @@ module.exports = {
 					backIcon: "#1E1E1E",
 					sidebarIcon: "#555555",
 					tabActiveBg: "#F1E9FF",
-  pageBackground: "#F0F2F5",
-  hadfieldBlue: "1177FF",
-  "extremeBlack": "#101010",
-  "softGray": "#DDDDDD",
-  "lightGray": "#AAAAAA",
-  "electricBlue": "#007BFF",
-  "bluishPurple": "#4A3B94",
-  "magnolia": "#F6F2FE",
-  "darkCharcoal":"#333333",
-  "neutralGray": "#DBDBDB",
-  "mediumDarkGray": "#666666",
-  "slateGray": "#64748b"
-
+					pageBackground: "#F0F2F5",
+					hadfieldBlue: "1177FF",
+					"extremeBlack": "#101010",
+					"softGray": "#DDDDDD",
+					"lightGray": "#AAAAAA",
+					"electricBlue": "#007BFF",
+					"bluishPurple": "#4A3B94",
+					"magnolia": "#F6F2FE",
+					"darkCharcoal": "#333333",
+					"neutralGray": "#DBDBDB",
+					"mediumDarkGray": "#666666",
+					"slateGray": "#64748b"
 				},
 			},
 			fontFamily: {
@@ -110,6 +109,10 @@ module.exports = {
 				inter: ["Inter", "sans-serif"],
 				manrope: ["Manrope", "sans-serif"],
 				montserrat: ["Montserrat", "sans-serif"],
+			},
+			backgroundImage: {
+				heroGradient:
+					"linear-gradient(180deg, #572F90 0%, #8C72B9 58%, #FFFFFF 100%)",
 			},
 		},
 	},

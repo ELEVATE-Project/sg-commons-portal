@@ -224,7 +224,7 @@
             "selectAll": "Select All",
             "deselectAll": "Deselect All"
         },
-        "searchIn": "Search in {{section}}",
+        "searchIn": "Search an {{section}}",
         "recording": "Recording... {{seconds}}s",
         "convertingVoice": "Converting voice...",
         "hero": {

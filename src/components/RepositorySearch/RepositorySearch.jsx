@@ -50,17 +50,26 @@ export default function RepositorySearch({ variant = "hero", className = "" }) {
 });
 
 const [currentTextIndex, setCurrentTextIndex] = useState(0);
-console.log(rotatingTexts);
-console.log(Array.isArray(rotatingTexts));
+const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+
+useEffect(() => {
+  const handleResize = () => setIsMobile(window.innerWidth < 640);
+
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
 useEffect(() => {
   const interval = setInterval(() => {
-    setCurrentTextIndex(
-      (prev) => (prev + 1) % rotatingTexts.length
-    );
+    if (isMobile) {
+      setCurrentTextIndex((prev) => (prev + 1) % (rotatingTexts.length + 1));
+    } else {
+      setCurrentTextIndex((prev) => (prev + 1) % rotatingTexts.length);
+    }
   }, 2000);
 
   return () => clearInterval(interval);
-}, [rotatingTexts]);
+}, [rotatingTexts, isMobile]);
 
   useEffect(() => {
     if (hasStartedRecording) {
@@ -231,33 +240,50 @@ return (
 
     <div className="relative flex-1">
       {!search.trim() && !hasStartedRecording && !isConvertingVoiceToText && (
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center overflow-hidden">
+  {isMobile ? (
+    <span
+      className={`${
+        currentTextIndex === 0
+          ? "font-bold text-[var(--listing-text-bold)]"
+          : "font-normal text-[var(--listing-text-normal)]"
+      } whitespace-nowrap transition-all duration-300`}
+      style={{
+        fontFamily: "Manrope",
+        fontSize: "1rem",
+        lineHeight: "1.5rem",
+      }}
+    >
+      {currentTextIndex === 0
+        ? t("search.searchBarContent")
+        : rotatingTexts[currentTextIndex - 1]}
+    </span>
+  ) : (
+    <>
+      <span
+        className="font-bold text-[var(--listing-text-bold)]"
+        style={{
+          fontFamily: "Manrope",
+          fontSize: "1rem",
+          lineHeight: "1.5rem",
+        }}
+      >
+        {t("search.searchBarContent")}
+      </span>
 
-          <span
-            className="font-bold text-[var(--listing-text-bold)]"
-            style={{
-              fontFamily: "Manrope",
-              fontSize: "1rem",
-              lineHeight: "1.5rem",
-            }}
-          >
-            {t("search.searchBarContent")}
-          </span>
-
-          <span
-            className="font-normal text-[var(--listing-text-normal)] ml-1 hidden sm:inline"
-            style={{
-              fontFamily: "Manrope",
-              fontSize: "1rem",
-              lineHeight: "1.5rem",
-            }}
-          >
-            {rotatingTexts[currentTextIndex]}
-          </span>
-
-          <span className="ml-1 text-[var(--listing-text-bold)] sm:hidden">...</span>
-
-        </div>
+      <span
+        className="font-normal text-[var(--listing-text-normal)] ml-1"
+        style={{
+          fontFamily: "Manrope",
+          fontSize: "1rem",
+          lineHeight: "1.5rem",
+        }}
+      >
+        {rotatingTexts[currentTextIndex]}
+      </span>
+    </>
+  )}
+</div>
       )}
 
       <input
