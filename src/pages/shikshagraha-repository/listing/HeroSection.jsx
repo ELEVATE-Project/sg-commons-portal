@@ -61,11 +61,11 @@ export default function HeroSection() {
           </span>
         </div> */}
         <div className="flex items-center justify-center gap-2 mb-4">
-  <span className="inline-flex items-center px-[10px] py-[4px] rounded-full border border-white/30 bg-[#59544999] text-white text-xs font-normal">
+  <span className="inline-flex items-center px-[10px] py-[4px] rounded-full border border-white/30 bg-[var(--listing-bg-voilet)] text-white text-xs font-normal">
     {t('repository.hero.tags.openAccess')}
   </span>
 
-  <span className="inline-flex items-center px-[10px] py-[4px] rounded-full border border-white/30 bg-[#59544999] text-white text-xs font-normal">
+  <span className="inline-flex items-center px-[10px] py-[4px] rounded-full border border-white/30 bg-[var(--listing-bg-voilet)] text-white text-xs font-normal">
     {t('repository.hero.tags.license')}
   </span>
 </div>
@@ -95,7 +95,7 @@ export default function HeroSection() {
             aria-label={t('repository.hero.scrollDown')}
             className="mt-8 flex flex-col items-center border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
-            <p className="text-[1rem] font-medium text-[#6B6A65]">
+            <p className="text-[1rem] font-medium text-[var(--listing-text-light)]">
               {t('repository.hero.scrollDown')}
             </p>
 

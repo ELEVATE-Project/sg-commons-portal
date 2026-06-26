@@ -69,6 +69,8 @@ export const theme = {
     "--listing-black": "#000000",
     "--listing-text-bold":"#4B5563",
     "--listing-text-normal":"#6B7280",
+    "--listing-text-light":"#71717A",
+    "--listing-bg-voilet":"#59544999",
 
   },
 }

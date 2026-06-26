@@ -243,7 +243,7 @@ return (
             ? "Converting voice to text..."
             : ""
         }
-        className={`w-full bg-transparent outline-none text-[#111827] ${
+        className={`w-full bg-transparent outline-none text-[var(--listing-strong-text)] ${
           isHeader ? "text-[0.8rem]" : "text-[0.9rem]"
         }`}
       />
@@ -262,7 +262,7 @@ return (
       {hasStartedRecording ? (
         <FaRegStopCircle className="w-[1.2rem] h-[1.2rem] text-red-500" />
       ) : (
-        <IoMicOutline className="w-[1.9rem] h-[1.9rem] text-[#000000]" />
+        <IoMicOutline className="w-[1.9rem] h-[1.9rem] text-[var(--listing-black)]" />
       )}
     </button>
 
@@ -276,7 +276,7 @@ return (
 >
   <LuSend
    size={23}
-  color="#000000"
+  color="var(--listing-black)"
   strokeWidth={2.23}
   />
 </button>

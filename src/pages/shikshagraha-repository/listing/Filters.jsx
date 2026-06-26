@@ -515,7 +515,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
           <Filter
             size={25}
             strokeWidth={1.8}
-            className="text-[#71717A]"
+            className="text-[var(--listing-text-light)]"
           />
 
           <span className="sr-only">
@@ -548,7 +548,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
           <div className="absolute inset-0 bg-black/40" onClick={() => setIsDrawerOpen(false)} />
           <aside className="absolute right-0 top-0 h-full w-full md:w-[35.7rem] bg-white shadow-lg p-4 filters-drawer flex flex-col" style={{ zIndex: 99999 }}>
             <div className="flex items-center justify-between pb-2">
-              <h3 className="font-comfortaa text-[1rem] font-bold uppercase leading-none tracking-normal text-[#27272A]">
+              <h3 className="font-comfortaa text-[1rem] font-bold uppercase leading-none tracking-normal text-[var(--listing-body-text)]">
                 {t('repository.filters.title')}
               </h3>
               <button
@@ -556,7 +556,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
                 className="flex items-center justify-center"
                 aria-label="Close filters"
               >
-                <X className="w-8 h-8 text-[#FF0505]" strokeWidth={2} />
+                <X className="w-8 h-8 text-[var(--listing-danger)]" strokeWidth={2} />
               </button>
             </div>
 
@@ -590,9 +590,9 @@ if (inpText.trim() === "" && search.trim() !== "") {
                           {isOpen ? (
                             <>
                               <div className="mb-2 w-full">
-                                <div className="flex items-center h-[3.3rem] w-full border border-[#D1D5DB] bg-white px-3 rounded-[0.6rem]">
+                                <div className="flex items-center h-[3.3rem] w-full border border-[var(--listing-border)] bg-white px-3 rounded-[0.6rem]">
                                   <Search
-                                    className="w-[1.1rem] h-[1.1rem] text-[#9CA3AF] flex-shrink-0"
+                                    className="w-[1.1rem] h-[1.1rem] text-[var(--listing-subdued-text)] flex-shrink-0"
                                   />
 
                                   <input
@@ -609,7 +609,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
                                             section: label,
                                           })
                                     }
-                                    className="flex-1 px-3 bg-transparent outline-none text-[0.9rem] font-normal text-[#4B5563] placeholder:text-[#6B7280]"
+                                    className="flex-1 px-3 bg-transparent outline-none text-[0.9rem] font-normal text-[var(--listing-text-bold)] placeholder:text-[var(--listing-text-normal)]"
                                     value={queryMap[key] || ""}
                                     onChange={(e) =>
                                       setLocalFilterQuery(key, e.target.value)
@@ -628,7 +628,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
                                     {hasStartedRecording ? (
                                       <FaRegStopCircle className="w-[1.1rem] h-[1.1rem] text-red-500" />
                                     ) : (
-                                      <IoMicOutline className="w-[1.1rem] h-[1.1rem] text-[#6B7280]" />
+                                      <IoMicOutline className="w-[1.1rem] h-[1.1rem] text-[var(--listing-text-normal)]" />
                                     )}
                                   </button>
                                 </div>
