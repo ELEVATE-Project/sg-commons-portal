@@ -56,7 +56,7 @@ if (typeof document !== "undefined" && !document.getElementById("scroll-animatio
       style={{
         backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
         backgroundPosition:
-          "left 3.125rem top 4rem, right 1.25rem top 12.5rem, left 1.875rem bottom 11.25rem, right 1.875rem bottom 5rem",
+          "left 3.125rem top 4rem, right 4.25rem top 12.5rem, left 1.875rem bottom 11.25rem, right 1.875rem bottom 1rem",
         backgroundRepeat: "no-repeat",
         backgroundSize: "7.5rem, 7.5rem, 10rem, 10rem",
       }}

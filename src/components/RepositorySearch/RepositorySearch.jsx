@@ -240,7 +240,12 @@ return (
 
     <div className="relative flex-1">
       {!search.trim() && !hasStartedRecording && !isConvertingVoiceToText && (
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center overflow-hidden">
+        <div
+  className="pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center overflow-hidden"
+  style={{
+    paddingRight: isMobile ? "5.5rem" : "0",
+  }}
+>
   {isMobile ? (
     <span
       className={`${

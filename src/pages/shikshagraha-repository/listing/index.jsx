@@ -59,7 +59,7 @@ export default function RepositoryPage() {
     backgroundImage: `url(${left1}), url(${right2})`,
     backgroundPosition: isMobile
       ? "left -2rem top 12rem, right -2rem top 20rem"
-      : "left 2.8rem top 18.5rem, right 1.7rem top 27.8rem",
+      : "left 2.8rem top 18.5rem, right 1.7rem top 31.8rem",
     backgroundRepeat: "no-repeat",
     backgroundSize: isMobile
       ? "5rem, 6rem"

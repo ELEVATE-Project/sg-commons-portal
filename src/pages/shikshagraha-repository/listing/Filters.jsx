@@ -3,10 +3,6 @@ import { createPortal } from "react-dom"
 import { useTranslation } from "react-i18next"
 import { theme } from "../../../theme"
 import Select, { components } from "react-select"
-import { Search, X, Filter } from "lucide-react"
-/** Icons */
-import { FaCircle } from "react-icons/fa6"
-import { IoMicOutline } from "react-icons/io5"
 import { FaRegStopCircle } from "react-icons/fa"
 // removed unused send icon import
 /** Hooks OR Stores */
@@ -22,6 +18,12 @@ import { handleS3Upload } from "../../../services/storage_service"
 import { ai4BharatASRApi } from "api/endpoints/ai"
 import { formatTime, isSilentAudio } from "../../../utils/helpers"
 import { bot_routes } from "configure"
+import CloseIcon from "assets/icons/clear.svg";
+import FilterIcon from "assets/icons/filter.svg";
+import SearchIcon from "assets/icons/search-for-filter.svg";
+import SendIcon from "assets/icons/send.svg";
+import AccordionDownIcon from "assets/icons/accordion-down.svg";
+import AccordionUpIcon from "assets/icons/accordion-up.svg";
 
 export default function Filters() {
   // removed unused `globalSearchValue`
@@ -507,16 +509,25 @@ if (inpText.trim() === "" && search.trim() !== "") {
     <>
 
       <div>
-        <button
-          onClick={openDrawer}
-          aria-label={t('repository.filters.open')}
-          className="relative flex items-center justify-center"
-        >
-          <Filter
-            size={25}
-            strokeWidth={1.8}
-            className="text-[var(--listing-text-light)]"
-          />
+       <button
+  onClick={openDrawer}
+  aria-label={t('repository.filters.open')}
+  className="
+    flex items-center justify-center
+    w-[32px]
+    h-[32px]
+    bg-white
+    border-0
+    outline-none
+    focus:outline-none
+    appearance-none
+  "
+>
+          <img
+  src={FilterIcon}
+  alt="filter"
+  className="w-[25px] h-[25px]"
+/>
 
           <span className="sr-only">
             {t('repository.filters')}
@@ -546,8 +557,8 @@ if (inpText.trim() === "" && search.trim() !== "") {
       {isDrawerOpen && typeof document !== "undefined" && createPortal(
         <div className="fixed inset-0 z-[99999]" style={{ ...theme.vars }}>
           <div className="absolute inset-0 bg-black/40" onClick={() => setIsDrawerOpen(false)} />
-          <aside className="absolute right-0 top-0 h-full w-full md:w-[35.7rem] bg-white shadow-lg p-4 filters-drawer flex flex-col" style={{ zIndex: 99999 }}>
-            <div className="flex items-center justify-between pb-2">
+          <aside className="absolute right-0 top-0 h-full w-full md:w-[33.7rem] bg-white shadow-lg p-2 filters-drawer flex flex-col" style={{ zIndex: 99999 }}>
+            <div className="flex items-center justify-between mt-4 p-3">
               <h3 className="font-comfortaa text-[1rem] font-bold uppercase leading-none tracking-normal text-[var(--listing-body-text)]">
                 {t('repository.filters.title')}
               </h3>
@@ -556,11 +567,15 @@ if (inpText.trim() === "" && search.trim() !== "") {
                 className="flex items-center justify-center"
                 aria-label="Close filters"
               >
-                <X className="w-8 h-8 text-[var(--listing-danger)]" strokeWidth={2} />
+                <img
+  src={CloseIcon}
+  alt="close"
+  className="w-5 h-5"
+/>
               </button>
             </div>
 
-            <div className="w-full h-[0.1rem] bg-[var(--listing-black)] mb-8" />
+            <div className="w-full h-px bg-[var(--listing-black)] mb-8" />
 
             <div className="flex-1 overflow-auto space-y-6 [&::-webkit-scrollbar]:hidden">
               {/* drawer-level search removed per user request; per-section searches below */}
@@ -573,27 +588,33 @@ if (inpText.trim() === "" && search.trim() !== "") {
                       const isOpen = !!openMap[key]
 
                       return (
-                        <div key={key} className="border-b pb-4">
-                          <div className="flex items-center justify-between mb-2">
+                        <div key={key} className="pb-4">
+                          <div className="flex items-center justify-between mb-2 pl-5">
                             {/* <label className="block font-medium text-[var(--listing-primary)]">{label}</label> */}
                             <label className="block font-bold text-[0.8rem] leading-none tracking-normal text-[var(--listing-primary)]" style={{ fontFamily: "Comfortaa" }}>{label}</label>
                             <button
-                              type="button"
-                              aria-expanded={isOpen}
-                              onClick={() => setOpenMap(prev => ({ ...prev, [key]: !isOpen }))}
-                              className="p-0.5 rounded hover:bg-gray-100 text-xs leading-none"
-                            >
-                              {isOpen ? 'v' : '^'}
-                            </button>
+  type="button"
+  aria-expanded={isOpen}
+  onClick={() => setOpenMap(prev => ({ ...prev, [key]: !isOpen }))}
+  className="flex items-center justify-center w-6 h-6 rounded hover:bg-gray-100 mr-9"
+>
+  <img
+    src={isOpen ? AccordionUpIcon : AccordionDownIcon}
+    alt={isOpen ? "Collapse" : "Expand"}
+    className="w-4 h-4"
+  />
+</button>
                           </div>
 
                           {isOpen ? (
                             <>
-                              <div className="mb-2 w-full">
-                                <div className="flex items-center h-[3.3rem] w-full border border-[var(--listing-border)] bg-white px-3 rounded-[0.6rem]">
-                                  <Search
-                                    className="w-[1.1rem] h-[1.1rem] text-[var(--listing-subdued-text)] flex-shrink-0"
-                                  />
+                              <div className="mb-2 w-full px-3">
+                                <div className="flex items-center h-[3rem] w-full border border-[var(--listing-border)] bg-white px-3 pr-10 rounded-[0.6rem]">
+                                 <img
+  src={SearchIcon}
+  alt="search"
+  className="w-[1.2rem] h-[1.2rem] flex-shrink-0"
+/>
 
                                   <input
                                     type="text"
@@ -609,7 +630,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
                                             section: label,
                                           })
                                     }
-                                    className="flex-1 px-3 bg-transparent outline-none text-[0.9rem] font-normal text-[var(--listing-text-bold)] placeholder:text-[var(--listing-text-normal)]"
+                                    className="flex-1 px-3 bg-transparent outline-none text-[0.75rem] font-['Source_Sans_3'] font-medium leading-[1.5rem] placeholder:font-['Source_Sans_3'] placeholder:font-medium placeholder:text-[0.75rem] placeholder:leading-[1.5rem] placeholder:text-repository-body text-[var(--listing-text-bold)] placeholder:text-[var(--listing-text-normal)]"
                                     value={queryMap[key] || ""}
                                     onChange={(e) =>
                                       setLocalFilterQuery(key, e.target.value)
@@ -628,7 +649,11 @@ if (inpText.trim() === "" && search.trim() !== "") {
                                     {hasStartedRecording ? (
                                       <FaRegStopCircle className="w-[1.1rem] h-[1.1rem] text-red-500" />
                                     ) : (
-                                      <IoMicOutline className="w-[1.1rem] h-[1.1rem] text-[var(--listing-text-normal)]" />
+                              <img
+  src={SendIcon}
+  alt="search"
+  className="w-[1.3rem] h-[1.3rem] flex-shrink-0"
+/>
                                     )}
                                   </button>
                                 </div>
@@ -645,23 +670,54 @@ if (inpText.trim() === "" && search.trim() !== "") {
             <div className="flex-none border-t bg-white py-3">
               <div className="max-w-full mx-auto px-0">
                 <div className="flex items-center justify-between">
-                  <button className="px-3 py-2 rounded-[12px] text-[var(--listing-muted-text)] bg-transparent" onClick={async () => {
+                  <button className="px-3 py-2 rounded-[12px] text-repository-cardDescription bg-transparent pl-6 font-['Source_Sans_3'] font-medium text-[16px] leading-[18px] capitalize" onClick={async () => {
+                    setIsDrawerOpen(false);
                       try {
                         await clearTransientFiltersAtomic();
                       } catch (e) { console.error('[Filters] clearTransientFiltersAtomic error', e); }
-                      setPendingFilters({}); setQueryMap({}); setIsDrawerOpen(false); scrollToBrowseResources();
+                      setPendingFilters({}); setQueryMap({}); scrollToBrowseResources();
                     }}>
                       {t('repository.filters.clearAll')}
                     </button>
 
                   <div className="flex items-center gap-2">
                     <button
-                      className={`px-3 py-2 rounded-[12px] bg-[var(--listing-secondary)] text-white ${pendingCount === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      onClick={() => { if (pendingCount === 0) return; setFilters(pendingFilters || {}); setIsDrawerOpen(false); scrollToBrowseResources(); }}
-                      disabled={pendingCount === 0}  
-                    >
-                      {t('repository.filters.apply')}
-                    </button>
+  onClick={() => {
+    if (pendingCount === 0) return
+    setFilters(pendingFilters || {})
+    setIsDrawerOpen(false)
+    scrollToBrowseResources()
+  }}
+  disabled={pendingCount === 0}
+  className={`
+    flex items-center justify-center
+    mx-auto
+    w-[127px]
+    h-[43px]
+    bg-repository-primary
+    rounded-[10px]
+    p-[10px]
+    gap-[10px]
+    flex-none
+    order-1
+    flex-grow-0
+
+    font-['Source_Sans_3']
+    font-medium
+    text-[16px]
+    leading-[18px]
+    text-white
+    capitalize
+
+    transition-all duration-200
+
+    ${pendingCount === 0 ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"}
+  `}
+>
+  <span className="w-[107px] h-[32px] flex items-center justify-center">
+    {t("repository.filters.apply")}
+  </span>
+</button>
                   </div>
                 </div>
               </div>
@@ -883,53 +939,86 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
     }
 
     return (
-      <div className="relative mr-4 w-full flex-shrink-0" >
-        <div className="rounded bg-transparent p-2">
-          <div className=" max-h-[8.8rem]
-    overflow-y-auto
-    [scrollbar-width:none]
-    [&::-webkit-scrollbar]:w-0
-    hover:[scrollbar-width:thin]
-    hover:[&::-webkit-scrollbar]:w-[0.4rem]
-    hover:[&::-webkit-scrollbar-thumb]:bg-gray-400
-    hover:[&::-webkit-scrollbar-thumb]:rounded-full">
+  <div className="relative mr-4 w-full flex-shrink-0">
+    <div className="rounded bg-transparent p-2">
+      <div
+        className="
+          max-h-[8.8rem]
+          pl-5
+          overflow-y-auto
+          [scrollbar-width:none]
+          [&::-webkit-scrollbar]:w-0
+          hover:[scrollbar-width:thin]
+          hover:[&::-webkit-scrollbar]:w-[0.4rem]
+          hover:[&::-webkit-scrollbar-thumb]:bg-gray-400
+          hover:[&::-webkit-scrollbar-thumb]:rounded-full
+        "
+      >
+        {/* Select All */}
+        <label
+          className="
+            flex items-center gap-2 cursor-pointer
+            min-h-[18px] py-1
+          "
+        >
+          <input
+            type="checkbox"
+            checked={allSelected}
+            onChange={toggleSelectAll}
+            className="w-4 h-4 flex-none accent-[var(--listing-black)]"
+          />
+          <span
+            className="
+              text-[14px]
+              leading-[18px]
+              font-medium
+              text-repository-cardDescription
+              font-['Source_Sans_3']
+            "
+          >
+            {t("repository.filters.selectAll")}
+          </span>
+        </label>
+
+        {/* Options */}
+        {optionsList.map(opt => {
+          const isChecked = selectedValues.has(opt.value)
+
+          return (
             <label
-              key="__select_all__"
-              className="flex items-center gap-2 py-1 cursor-pointer"
+              key={opt.value}
+              className="
+                flex items-center gap-2 cursor-pointer
+                min-h-[18px] py-1
+              "
             >
               <input
                 type="checkbox"
-                checked={allSelected}
-                onChange={toggleSelectAll}
+                checked={isChecked}
+                onChange={() => toggleOption(opt)}
+                className="w-4 h-4 flex-none accent-[var(--listing-black)]"
               />
-              <span className="text-sm text-[var(--listing-strong-text)]">
-                {t('repository.filters.selectAll')}
+
+              <span
+                className="
+                  text-[14px]
+                  leading-[18px]
+                  font-medium
+                  text-repository-cardDescription
+                  font-['Source_Sans_3']
+                  truncate
+                "
+                title={opt.label}
+              >
+                {opt.label}
               </span>
             </label>
-
-            {optionsList.map(opt => {
-              const isChecked = selectedValues.has(opt.value)
-
-              return (
-                <label
-                  key={opt.value}
-                  className="flex items-center gap-2 py-1 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => toggleOption(opt)}
-                  />
-                  <span className="text-sm text-[var(--listing-strong-text)]">
-                    {opt.label}
-                  </span>
-                </label>
-              )
-            })}
-          </div>
-        </div>
+          )
+        })}
       </div>
-    )
+    </div>
+  </div>
+)
   }
 
   return (
