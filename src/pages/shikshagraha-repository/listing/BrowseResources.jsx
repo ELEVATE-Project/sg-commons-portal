@@ -550,11 +550,10 @@ const displayedResources = compact
   <button
     type="button"
     onClick={() => {
-      try {
-        safeSetSearchParams(new URLSearchParams(), { replace: true });
-      } catch {}
-      navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
-    }}
+  resetFilters();
+  safeSetSearchParams(new URLSearchParams(), { replace: true });
+  navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
+}}
     className="
       flex sm:hidden
       items-center justify-center gap-1
@@ -600,12 +599,10 @@ const displayedResources = compact
       <button
   type="button"
   onClick={() => {
-    try { safeSetSearchParams(new URLSearchParams(), { replace: true }); } catch (e) {}
-    // Do not call clearTransientFiltersAtomic or fetch here —
-    // the URL change will trigger the BrowseResources tryClear effect
-    // which will clear store filters and perform a single fetch.
-    navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
-  }}
+  resetFilters();
+  safeSetSearchParams(new URLSearchParams(), { replace: true });
+  navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
+}}
   className="
   hidden sm:flex
   items-center justify-center gap-1

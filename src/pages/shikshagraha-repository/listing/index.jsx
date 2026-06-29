@@ -28,7 +28,17 @@ export default function RepositoryPage() {
   (state) => state.fetchMediaList
 );
   const itemsPerPage = pagination.limit;
-  const isMobile = window.innerWidth < 768;
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

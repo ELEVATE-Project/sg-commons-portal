@@ -90,7 +90,7 @@ module.exports = {
 					sidebarIcon: "#555555",
 					tabActiveBg: "#F1E9FF",
 					pageBackground: "#F0F2F5",
-					hadfieldBlue: "1177FF",
+					hadfieldBlue: "#1177FF",
 					"extremeBlack": "#101010",
 					"softGray": "#DDDDDD",
 					"lightGray": "#AAAAAA",

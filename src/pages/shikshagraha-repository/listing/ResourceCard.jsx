@@ -167,7 +167,7 @@ const handleCardKeyDown = (e) => {
         )}
 
         <span className="mt-1 text-[0.6875rem] font-semibold uppercase">
-  {resource?.media_type_display}
+  {resource?.media_type_display || t("repository.file")}
 </span>
       </div>
 
@@ -279,7 +279,7 @@ px-1.5 sm:px-2
   </div>
 
   {/* Right Side */}
-  {resource?.organization && (
+  {resource?.organization && resource?.organization_url && (
     <button
       type="button"
       className="
@@ -485,7 +485,7 @@ title={resource.organization}
             </div>
           </div>
 
-          {resource?.organization && (
+          {resource?.organization && resource?.organization_url && (
             <button
               type="button"
               className="

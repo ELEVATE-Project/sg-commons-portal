@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import RepositorySearch from "../../../components/RepositorySearch/RepositorySearch";
 import left1 from "assets/hero-section-image-1.svg";
@@ -14,27 +14,31 @@ export default function HeroSection() {
   window.scrollBy({ top: 600, left: 0, behavior: "smooth" });
 };
 
-if (typeof document !== "undefined" && !document.getElementById("scroll-animation")) {
-  const style = document.createElement("style");
-  style.id = "scroll-animation";
-  style.innerHTML = `
-    @keyframes scrollDown {
-  0% {
-    transform: translateY(0);
-  }
+useEffect(() => {
+  if (typeof document === "undefined") return;
 
-  50% {
-    transform: translateY(10px);
-  }
+  if (!document.getElementById("scroll-animation")) {
+    const style = document.createElement("style");
+    style.id = "scroll-animation";
+    style.innerHTML = `
+      @keyframes scrollDown {
+        0% {
+          transform: translateY(0);
+        }
 
+        50% {
+          transform: translateY(10px);
+        }
 
-  100% {
-    transform: translateY(0);
+        100% {
+          transform: translateY(0);
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
   }
-}
-  `;
-  document.head.appendChild(style);
-}
+}, []);
 
   return (
     <div
