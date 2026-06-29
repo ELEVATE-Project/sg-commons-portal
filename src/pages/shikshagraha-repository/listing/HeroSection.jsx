@@ -84,11 +84,11 @@ useEffect(() => {
           </span>
         </div> */}
         <div className="flex items-center justify-center gap-2 mb-4 pt-5">
-  <span className="inline-flex items-center px-[10px] py-[4px] rounded-full border border-white/30 bg-[var(--listing-bg-voilet)] text-white text-xs font-normal">
+  <span className="inline-flex items-center px-[0.625rem] py-[0.25rem] rounded-full border border-white/30 bg-[var(--listing-bg-voilet)] text-white text-xs font-normal">
     {t('repository.hero.tags.openAccess')}
   </span>
 
-  <span className="inline-flex items-center px-[10px] py-[4px] rounded-full border border-white/30 bg-[var(--listing-bg-voilet)] text-white text-xs font-normal">
+  <span className="inline-flex items-center px-[0.625rem] py-[0.25rem] rounded-full border border-white/30 bg-[var(--listing-bg-voilet)] text-white text-xs font-normal">
     {t('repository.hero.tags.license')}
   </span>
 </div>

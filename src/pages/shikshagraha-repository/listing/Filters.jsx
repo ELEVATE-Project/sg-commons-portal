@@ -514,8 +514,8 @@ if (inpText.trim() === "" && search.trim() !== "") {
   aria-label={t('repository.filters.open')}
   className="
     flex items-center justify-center
-    w-[32px]
-    h-[32px]
+    w-[2rem]
+    h-[2rem]
     bg-white
     border-0
     outline-none
@@ -526,7 +526,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
           <img
   src={FilterIcon}
   alt="filter"
-  className="w-[25px] h-[25px]"
+  className="w-[1.563rem] h-[1.563rem]"
 />
 
           <span className="sr-only">
@@ -670,7 +670,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
             <div className="flex-none border-t bg-white py-3">
               <div className="max-w-full mx-auto px-0">
                 <div className="flex items-center justify-between">
-                  <button className="px-3 py-2 rounded-[12px] text-repository-cardDescription bg-transparent pl-6 font-['Source_Sans_3'] font-medium text-[16px] leading-[18px] capitalize" onClick={async () => {
+                  <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-['Source_Sans_3'] font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={async () => {
                     setIsDrawerOpen(false);
                       try {
                         await clearTransientFiltersAtomic();
@@ -692,20 +692,20 @@ if (inpText.trim() === "" && search.trim() !== "") {
   className={`
     flex items-center justify-center
     mx-auto
-    w-[127px]
-    h-[43px]
+    w-[7.938rem]
+    h-[2.688rem]
     bg-repository-primary
-    rounded-[10px]
-    p-[10px]
-    gap-[10px]
+    rounded-[0.625rem]
+    p-[0.625rem]
+    gap-[0.625rem]
     flex-none
     order-1
     flex-grow-0
 
     font-['Source_Sans_3']
     font-medium
-    text-[16px]
-    leading-[18px]
+    text-[1rem]
+    leading-[1.125rem]
     text-white
     capitalize
 
@@ -714,7 +714,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
     ${pendingCount === 0 ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"}
   `}
 >
-  <span className="w-[107px] h-[32px] flex items-center justify-center">
+  <span className="w-[6.688rem] h-[2rem] flex items-center justify-center">
     {t("repository.filters.apply")}
   </span>
 </button>
@@ -958,7 +958,7 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
         <label
           className="
             flex items-center gap-2 cursor-pointer
-            min-h-[18px] py-1
+            min-h-[1.125rem] py-1
           "
         >
           <input
@@ -969,8 +969,8 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
           />
           <span
             className="
-              text-[14px]
-              leading-[18px]
+              text-[0.875rem]
+              leading-[1.125rem]
               font-medium
               text-repository-cardDescription
               font-['Source_Sans_3']
@@ -989,7 +989,7 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
               key={opt.value}
               className="
                 flex items-center gap-2 cursor-pointer
-                min-h-[18px] py-1
+                min-h-[1.125rem] py-1
               "
             >
               <input
@@ -1001,8 +1001,8 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
 
               <span
                 className="
-                  text-[14px]
-                  leading-[18px]
+                  text-[0.875rem]
+                  leading-[1.125rem]
                   font-medium
                   text-repository-cardDescription
                   font-['Source_Sans_3']

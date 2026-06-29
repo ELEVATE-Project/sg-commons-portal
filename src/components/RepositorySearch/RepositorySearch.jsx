@@ -227,7 +227,7 @@ return (
     className={`flex flex-row flex-nowrap items-center bg-white ${
       isHeader
         ? "gap-1 rounded-xl px-3 py-4 w-full max-w-[44rem]"
-        : "gap-3 h-[4.1rem] w-full max-w-[43.9rem] rounded-[9px] px-4"
+        : "gap-3 h-[4.1rem] w-full max-w-[43.9rem] rounded-[0.563rem] px-4"
     } shadow-[0px_4px_12px_rgba(0,0,0,0.08)] ${className}`}
   >
 <img
