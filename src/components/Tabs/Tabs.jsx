@@ -20,7 +20,7 @@ const Tabs = ({ tabs = [], defaultActiveTab = 0 }) => {
               key={index}
               onClick={() => setActiveTab(index)}
               className={`
-                px-4 py-3 text-left font-['Urbanist'] font-medium text-xs leading-none whitespace-nowrap
+                px-4 py-3 text-left font-urbanist font-medium text-xs leading-none whitespace-nowrap
                 ${
                   activeTab === index
                     ? "bg-repository-tabActiveBg text-repository-orgText rounded-[0.375rem]"

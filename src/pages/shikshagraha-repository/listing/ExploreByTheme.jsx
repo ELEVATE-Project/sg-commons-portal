@@ -65,7 +65,7 @@ export default function ExploreByTheme() {
   
   return (
     <section className="w-full mt-8 md:mt-10 px-4 md:px-12 mb-5">
-      <h2 className="text-[1.25rem] md:text-[1.375rem] font-['Comfortaa'] font-semibold tracking-[0.0625rem] text-repository-heading capitalize mb-5">
+      <h2 className="text-[1.25rem] md:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading capitalize mb-5">
         {t("repository.exploreByTheme")}
       </h2>
 
@@ -130,7 +130,7 @@ export default function ExploreByTheme() {
 
              <h3
   className="
-    font-['Source_Sans_3']
+    font-sourceSans
     text-[1rem]
     font-bold
     leading-[0.9375rem]

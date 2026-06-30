@@ -494,7 +494,7 @@ const displayedResources = compact
   data-browse-resources
 >
   <div className="flex-1 min-w-0">
-    <h2 className="text-xl sm:text-[1.375rem] font-['Comfortaa'] font-semibold tracking-[0.0625rem] text-repository-heading capitalize break-words">
+    <h2 className="text-xl sm:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading capitalize break-words">
       {selectedSingleLabel
         ? `${selectedSingleLabel.name} Resources`
         : t(title ?? "repository.browseResources")}
@@ -503,7 +503,7 @@ const displayedResources = compact
     {!compact && (
       <p
         className="
-          font-['Source_Sans_3']
+          font-sourceSans
           font-medium
           text-[0.875rem]
           leading-[1.3125rem]
@@ -585,7 +585,7 @@ const displayedResources = compact
     setSortBy(value);
   }}
   renderButton={(selected) => (
-  <span className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem] flex items-center">
+  <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem] flex items-center">
     <span className="font-normal text-repository-textPrimary">
       {t("repository.sortByLabel")}:  
     </span>{" "}
@@ -633,7 +633,7 @@ const displayedResources = compact
   ) : (
     <div className="flex flex-col gap-4 w-full lg:w-auto lg:flex-row lg:items-center lg:flex-nowrap lg:shrink-0">
       <div className="flex flex-wrap items-center justify-between gap-3 w-full lg:flex-nowrap lg:w-auto lg:justify-start lg:gap-6 lg:shrink-0">
-        <div className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem]">
+        <div className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
   <span className="font-bold text-repository-textPrimary">
     {mediaCount}
   </span>{" "}
@@ -649,7 +649,7 @@ const displayedResources = compact
             setSortBy(value);
           }}
  renderButton={(selected) => (
-  <span className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem]">
+  <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
     <span className="font-normal text-repository-textSecondary">
       {t("repository.sortByLabel")}:
     </span>{" "}
@@ -729,7 +729,7 @@ const displayedResources = compact
   renderButton={(selected) => (
     <span
   className="
-    font-['Inter']
+    font-inter
     font-normal
     text-[0.7682rem]
     leading-[1.125rem]

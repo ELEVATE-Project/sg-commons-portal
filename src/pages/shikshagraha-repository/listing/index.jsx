@@ -87,6 +87,7 @@ useEffect(() => {
           {/* <div className="w-full mt-4 md:mt-6 z-50">
             <Filters />
           </div> */}
+
           <main className="w-full mx-auto">
             {!!mediaList?.length && (
 

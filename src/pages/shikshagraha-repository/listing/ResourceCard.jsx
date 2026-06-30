@@ -395,7 +395,7 @@ title={resource.organization}
             className="
               text-[1rem]
               leading-[1.125rem]
-              font-['Comfortaa'] 
+              font-comfortaa 
               font-semibold
               text-repository-title
               line-clamp-3
@@ -409,7 +409,7 @@ title={resource.organization}
       {/* Description */}
       <p
         className="
-        font-['Source_Sans_3']
+        font-sourceSans
           w-full
           text-[0.875rem]
           leading-[1.25rem]
@@ -437,7 +437,7 @@ title={resource.organization}
         rounded-full
         text-[0.875rem]
         leading-[1.25rem]
-        font-['Source_Sans_3']
+        font-sourceSans
         whitespace-nowrap
         ${
           index === 1
@@ -463,7 +463,7 @@ title={resource.organization}
                 className="
                   text-[1.25rem]
                   leading-[1.5rem]
-                  font-['Source_Sans_3']
+                  font-sourceSans
                 "
               >
                 {resource?.view_count ?? 0}k
@@ -477,7 +477,7 @@ title={resource.organization}
                 className="
                   text-[1.25rem]
                   leading-[1.5rem]
-                  font-['Source_Sans_3']
+                  font-sourceSans
                 "
               >
                 {resource?.download_count ?? 0}
@@ -508,7 +508,7 @@ title={resource.organization}
                 className="
                   text-[1.125rem]
                   text-repository-subtitle
-                  font-['Source_Sans_3']
+                  font-sourceSans
                   underline
                   truncate
                   max-w-[8rem]

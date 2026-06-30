@@ -630,15 +630,16 @@ if (inpText.trim() === "" && search.trim() !== "") {
                                             section: label,
                                           })
                                     }
-                                    className="flex-1 px-3 bg-transparent outline-none text-[0.75rem] font-['Source_Sans_3'] font-medium leading-[1.5rem] placeholder:font-['Source_Sans_3'] placeholder:font-medium placeholder:text-[0.75rem] placeholder:leading-[1.5rem] placeholder:text-repository-body text-[var(--listing-text-bold)] placeholder:text-[var(--listing-text-normal)]"
+                                    className="flex-1 px-3 bg-transparent outline-none text-[0.75rem] font-sourceSans font-medium leading-[1.5rem] placeholder:font-sourceSans placeholder:font-medium placeholder:text-[0.75rem] placeholder:leading-[1.5rem] placeholder:text-repository-body text-[var(--listing-text-bold)] placeholder:text-[var(--listing-text-normal)]"
                                     value={queryMap[key] || ""}
                                     onChange={(e) =>
                                       setLocalFilterQuery(key, e.target.value)
                                     }
                                   />
 
-                                  <button
+                                  {/* <button
                                     type="button"
+                                    disabled={true}
                                     onClick={
                                       hasStartedRecording
                                         ? stopRecording
@@ -655,7 +656,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
   className="w-[1.3rem] h-[1.3rem] flex-shrink-0"
 />
                                     )}
-                                  </button>
+                                  </button> */}
                                 </div>
                               </div>
                               <DropdownSelect compact label={label} options={filtered} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} />
@@ -670,7 +671,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
             <div className="flex-none border-t bg-white py-3">
               <div className="max-w-full mx-auto px-0">
                 <div className="flex items-center justify-between">
-                  <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-['Source_Sans_3'] font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={async () => {
+                  <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-sourceSans font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={async () => {
                     setIsDrawerOpen(false);
                       try {
                         await clearTransientFiltersAtomic();
@@ -702,7 +703,7 @@ if (inpText.trim() === "" && search.trim() !== "") {
     order-1
     flex-grow-0
 
-    font-['Source_Sans_3']
+    font-sourceSans
     font-medium
     text-[1rem]
     leading-[1.125rem]
@@ -973,7 +974,7 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
               leading-[1.125rem]
               font-medium
               text-repository-cardDescription
-              font-['Source_Sans_3']
+              font-sourceSans
             "
           >
             {t("repository.filters.selectAll")}
@@ -1005,7 +1006,7 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
                   leading-[1.125rem]
                   font-medium
                   text-repository-cardDescription
-                  font-['Source_Sans_3']
+                  font-sourceSans
                   truncate
                 "
                 title={opt.label}

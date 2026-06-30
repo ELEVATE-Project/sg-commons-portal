@@ -104,11 +104,12 @@ module.exports = {
 				},
 			},
 			fontFamily: {
-				comfortaa: ["Comfortaa", "cursive"],
-				sourceSans: ["Source Sans 3", "sans-serif"],
-				inter: ["Inter", "sans-serif"],
-				manrope: ["Manrope", "sans-serif"],
-				montserrat: ["Montserrat", "sans-serif"],
+				comfortaa: ['"Comfortaa"', "cursive"],
+				sourceSans: ['"Source Sans 3"', "sans-serif"],
+				inter: ['"Inter"', "sans-serif"],
+				manrope: ['"Manrope"', "sans-serif"],
+				montserrat: ['"Montserrat"', "sans-serif"],
+				urbanist: ['"Urbanist"', "sans-serif"],
 			},
 			backgroundImage: {
 				heroGradient:
