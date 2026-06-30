@@ -11,11 +11,13 @@ import XlsxIcon from "assets/icons/xlsx.svg"
 import GoogleDriveIcon from "assets/icons/google_drive.svg"
 import { useNavigate } from "react-router-dom"
 import { openSafeUrl } from "../../../utils/urlUtils"
+import PptxIcon from "assets/icons/pptx.svg"
 
 const MEDIA_FILE_TYPE = {
   PDF: "PDF",
   DOCX: "DOCX",
   XLSX: "XLSX",
+  PPTX: "PPTX",
 }
 
 export const getMediaFileTypeStyles = type => {
@@ -36,6 +38,12 @@ export const getMediaFileTypeStyles = type => {
       return {
         background: "bg-repository-xlsxBg",
         icon: XlsxIcon,
+      }
+
+    case MEDIA_FILE_TYPE.PPTX:
+      return {
+        background: "bg-repository-pptxBg",
+        icon: PptxIcon,
       }
 
     default:
@@ -64,6 +72,12 @@ text: "text-repository-docxTagText",
       return {
         bg: "bg-repository-xlsxTagBg",
 text: "text-repository-xlsxTagText",
+      }
+
+    case MEDIA_FILE_TYPE.PPTX:
+      return {
+        bg: "bg-repository-pptxTagBg",
+        text: "text-repository-pptxTagText",
       }
 
     default:
@@ -120,7 +134,6 @@ const handleCardKeyDown = (e) => {
         px-3
         py-3
         flex
-        items-center
         gap-4
         cursor-pointer
         hover:shadow-sm
@@ -128,12 +141,13 @@ const handleCardKeyDown = (e) => {
       "
     >
       {/* File Type */}
-      <div
+<div>
+        <div
         className={`
           ${background}
           w-[6rem]
           min-w-[6rem]
-          h-[4.25rem]
+          h-[4.5rem]
           rounded-[0.5rem]
           flex
           flex-col
@@ -153,19 +167,38 @@ const handleCardKeyDown = (e) => {
         )}
 
         <span className="mt-1 text-[0.6875rem] font-semibold uppercase">
-          {resource?.media_type_display}
-        </span>
+  {resource?.media_type_display || t("repository.file")}
+</span>
       </div>
+
+      {/* Mobile only */}
+<div className="sm:hidden flex items-center justify-center gap-3 mt-2 text-repository-cardMeta">
+  <div className="flex items-center gap-1">
+    <Eye size={12} />
+    <span className="text-[0.6875rem]">
+      {resource?.view_count ?? 0}k
+    </span>
+  </div>
+
+  <div className="flex items-center gap-1">
+    <Download size={12} />
+    <span className="text-[0.6875rem]">
+      {resource?.download_count ?? 0}
+    </span>
+  </div>
+</div>
+</div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         {/* Title */}
         <h3
           className="
-            text-[1.25rem]
+            text-[0.875rem]
             font-medium
             text-repository-cardTitle
-            truncate
+            line-clamp-2
+    sm:line-clamp-1
           "
         >
           {resource?.title || t("repository.notAvailable")}
@@ -174,87 +207,126 @@ const handleCardKeyDown = (e) => {
         {/* Description */}
         <p
           className="
-            mt-1
-            text-[0.875rem]
+            
+            text-[0.750rem]
             text-repository-cardDescription
-            line-clamp-1
+            line-clamp-2
+            sm:line-clamp-1
           "
         >
           {resource?.description || t("repository.notAvailable")}
         </p>
 
-        {/* Tags */}
-{resource?.tag_names?.length > 0 && (
-  <div className="flex flex-wrap gap-2 mt-2">
-    {resource.tag_names.slice(0, 4).map((tag, index) => (
-      <span
-        key={index}
-        className={`
-          ${tagBg}
-          ${tagText}
-          text-[0.75rem]
-          px-3
-          py-1
-          rounded-full
-          whitespace-nowrap
-        `}
-      >
-        {tag}
-      </span>
-    ))}
-  </div>
-)}
+
 
         {/* Footer */}
-        <div className="flex items-center gap-5 mt-3 text-repository-cardMeta">
-          <div className="flex items-center gap-1">
-            <Eye size={14} />
-            <span className="text-[0.875rem]">
-              {resource?.view_count ?? 0}k
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <Download size={14} />
-            <span className="text-[0.875rem]">
-              {resource?.download_count ?? 0}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Organization */}
-      {resource?.organization && (
-        <button
-          type="button"
-          className="flex items-center gap-3 ml-4 flex-shrink-0"
-          onClick={e => {
-            e.preventDefault()
-            e.stopPropagation()
-
-            if (resource?.organization_url) {
-              openSafeUrl(resource.organization_url)
-            }
-          }}
-        >
+        <div className="flex items-center justify-between mt-2 gap-4 min-w-0">
+  {/* Left Side - Tags */}
+  <div className="flex-1 min-w-0">
+    {resource?.tag_names?.length > 0 && (
+      <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
+        {resource.tag_names.slice(0, 2).map((tag, index) => (
           <span
-            className="
-              text-[0.875rem]
-              text-repository-cardMeta
-              underline
+            key={index}
+            className={`
+              ${tagBg}
+              ${tagText}
+              text-[0.5625rem] sm:text-[0.625rem]
+px-1.5 sm:px-2
+              py-0.5
+              rounded-full
               whitespace-nowrap
-            "
+              ${
+  index === resource.tag_names.slice(0, 2).length - 1
+    ? "truncate min-w-0"
+    : "flex-shrink-0"
+}
+            `}
           >
-            {resource.organization}
+            {tag}
           </span>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+  {/* Right Side - Stats + Organization */}
+<div
+  className="
+    flex
+    items-center
+    justify-end
+    gap-2
+    mt-2
+    text-repository-cardMeta
+  "
+>
+  {/* Left Side */}
+  <div className="hidden sm:flex items-center gap-3 sm:gap-5">
+    <div className="flex items-center gap-1">
+      <Eye size={14} />
+      <span className="text-[0.813rem]">
+        {resource?.view_count ?? 0}k
+      </span>
+    </div>
 
-          <img
-            src={GoogleDriveIcon}
-            alt={t("repository.organization")}
-            className="w-6 h-6 object-contain"
-          />
-        </button>
-      )}
+    <div className="flex items-center gap-1">
+      <Download size={14} />
+      <span className="text-[0.813rem]">
+        {resource?.download_count ?? 0}
+      </span>
+    </div>
+  </div>
+
+  {/* Right Side */}
+  {resource?.organization && resource?.organization_url && (
+    <button
+      type="button"
+      className="
+    flex
+  items-center
+  gap-1
+  min-w-0
+  w-fit
+  sm:w-auto
+  sm:ml-auto
+  truncate
+  "
+      onClick={e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (resource?.organization_url) {
+          openSafeUrl(resource.organization_url);
+        }
+      }}
+    >
+      <span
+ className="
+  flex-1
+  text-[0.813rem]
+  underline
+  break-words
+  sm:flex-none
+  sm:truncate
+  sm:max-w-none
+  sm:whitespace-nowrap
+  mr-3
+"
+title={resource.organization}
+>
+        {resource.organization}
+      </span>
+
+      <img
+        src={GoogleDriveIcon}
+        alt={t("repository.organization")}
+        className="w-5 h-5 object-contain flex-shrink-0"
+      />
+    </button>
+  )}
+</div>
+      </div>
     </div>
   )
 }
@@ -323,7 +395,7 @@ const handleCardKeyDown = (e) => {
             className="
               text-[1rem]
               leading-[1.125rem]
-              font-['Comfortaa'] 
+              font-comfortaa 
               font-semibold
               text-repository-title
               line-clamp-3
@@ -337,7 +409,7 @@ const handleCardKeyDown = (e) => {
       {/* Description */}
       <p
         className="
-        font-['Source_Sans_3']
+        font-sourceSans
           w-full
           text-[0.875rem]
           leading-[1.25rem]
@@ -365,7 +437,7 @@ const handleCardKeyDown = (e) => {
         rounded-full
         text-[0.875rem]
         leading-[1.25rem]
-        font-['Source_Sans_3']
+        font-sourceSans
         whitespace-nowrap
         ${
           index === 1
@@ -391,7 +463,7 @@ const handleCardKeyDown = (e) => {
                 className="
                   text-[1.25rem]
                   leading-[1.5rem]
-                  font-['Source_Sans_3']
+                  font-sourceSans
                 "
               >
                 {resource?.view_count ?? 0}k
@@ -405,7 +477,7 @@ const handleCardKeyDown = (e) => {
                 className="
                   text-[1.25rem]
                   leading-[1.5rem]
-                  font-['Source_Sans_3']
+                  font-sourceSans
                 "
               >
                 {resource?.download_count ?? 0}
@@ -413,7 +485,7 @@ const handleCardKeyDown = (e) => {
             </div>
           </div>
 
-          {resource?.organization && (
+          {resource?.organization && resource?.organization_url && (
             <button
               type="button"
               className="
@@ -436,12 +508,13 @@ const handleCardKeyDown = (e) => {
                 className="
                   text-[1.125rem]
                   text-repository-subtitle
-                  font-['Source_Sans_3']
+                  font-sourceSans
                   underline
                   truncate
-                  max-w-[7.5rem]
+                  max-w-[8rem]
                   mr-3
                 "
+                title={resource.organization}
               >
                 {resource.organization}
               </span>

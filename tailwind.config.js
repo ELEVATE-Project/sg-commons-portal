@@ -46,6 +46,7 @@ module.exports = {
 					pdfBg: "#F70C36",
 					docxBg: "#2563EB",
 					xlsxBg: "#0DB563",
+					pptxBg: "#C2410C",
 					defaultFileBg: "#6B7280",
 
 					// Tag Colors
@@ -57,6 +58,9 @@ module.exports = {
 
 					xlsxTagBg: "#B4EBC6",
 					xlsxTagText: "#028A4F",
+
+					pptxTagBg: "#E7B39E",
+					pptxTagText: "#8E2E06",
 
 					defaultTagBg: "#E5E7EB",
 
@@ -85,27 +89,31 @@ module.exports = {
 					backIcon: "#1E1E1E",
 					sidebarIcon: "#555555",
 					tabActiveBg: "#F1E9FF",
-  pageBackground: "#F0F2F5",
-  hadfieldBlue: "1177FF",
-  "extremeBlack": "#101010",
-  "softGray": "#DDDDDD",
-  "lightGray": "#AAAAAA",
-  "electricBlue": "#007BFF",
-  "bluishPurple": "#4A3B94",
-  "magnolia": "#F6F2FE",
-  "darkCharcoal":"#333333",
-  "neutralGray": "#DBDBDB",
-  "mediumDarkGray": "#666666",
-  "slateGray": "#64748b"
-
+					pageBackground: "#F0F2F5",
+					hadfieldBlue: "#1177FF",
+					"extremeBlack": "#101010",
+					"softGray": "#DDDDDD",
+					"lightGray": "#AAAAAA",
+					"electricBlue": "#007BFF",
+					"bluishPurple": "#4A3B94",
+					"magnolia": "#F6F2FE",
+					"darkCharcoal": "#333333",
+					"neutralGray": "#DBDBDB",
+					"mediumDarkGray": "#666666",
+					"slateGray": "#64748b"
 				},
 			},
 			fontFamily: {
-				comfortaa: ["Comfortaa", "cursive"],
-				sourceSans: ["Source Sans 3", "sans-serif"],
-				inter: ["Inter", "sans-serif"],
-				manrope: ["Manrope", "sans-serif"],
-				montserrat: ["Montserrat", "sans-serif"],
+				comfortaa: ['"Comfortaa"', "cursive"],
+				sourceSans: ['"Source Sans 3"', "sans-serif"],
+				inter: ['"Inter"', "sans-serif"],
+				manrope: ['"Manrope"', "sans-serif"],
+				montserrat: ['"Montserrat"', "sans-serif"],
+				urbanist: ['"Urbanist"', "sans-serif"],
+			},
+			backgroundImage: {
+				heroGradient:
+					"linear-gradient(180deg, #572F90 0%, #8C72B9 58%, #FFFFFF 100%)",
 			},
 		},
 	},

@@ -22,7 +22,7 @@ function FileActionDropdown({ label, icon: Icon, options, onSelect }) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="h-[2.1875rem] flex items-center justify-center gap-[0.5rem] rounded-md border border-repository-cardAccent px-3 bg-repository-cardAccent font-['Manrope'] font-medium text-sm leading-none text-white"
+        className="h-[2.1875rem] flex items-center justify-center gap-[0.5rem] rounded-md border border-repository-cardAccent px-3 bg-repository-cardAccent font-manrope font-medium text-sm leading-none text-white"
       >
         <Icon />
         {label}

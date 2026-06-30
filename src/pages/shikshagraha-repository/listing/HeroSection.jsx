@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import RepositorySearch from "../../../components/RepositorySearch/RepositorySearch";
 import left1 from "assets/hero-section-image-1.svg";
@@ -13,13 +13,36 @@ export default function HeroSection() {
   if (typeof window === "undefined") return;
   window.scrollBy({ top: 600, left: 0, behavior: "smooth" });
 };
+
+useEffect(() => {
+  if (typeof document === "undefined") return;
+
+  if (!document.getElementById("scroll-animation")) {
+    const style = document.createElement("style");
+    style.id = "scroll-animation";
+    style.innerHTML = `
+      @keyframes scrollDown {
+        0% {
+          transform: translateY(0);
+        }
+
+        50% {
+          transform: translateY(10px);
+        }
+
+        100% {
+          transform: translateY(0);
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+}, []);
+
   return (
     <div
-      className="relative w-full overflow-hidden min-h-[78vh] md:min-h-[70vh] flex items-center justify-center"
-      style={{
-  background:
-    "linear-gradient(180deg, #572F90 0%, #8C72B9 58%, #E8E1F1 100%)",
-}}
+      className="relative w-full overflow-hidden min-h-[78vh] md:min-h-[80vh] flex items-center justify-center bg-heroGradient"
     >
       <div
         className="absolute inset-0 z-0 pointer-events-none md:hidden"
@@ -37,7 +60,7 @@ export default function HeroSection() {
       style={{
         backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
         backgroundPosition:
-          "left 3.125rem top 6.875rem, right 1.25rem top 12.5rem, left 1.875rem bottom 11.25rem, right 1.875rem bottom 5rem",
+          "left 3.125rem top 4rem, right 4.25rem top 12.5rem, left 1.875rem bottom 11.25rem, right 1.875rem bottom 1rem",
         backgroundRepeat: "no-repeat",
         backgroundSize: "7.5rem, 7.5rem, 10rem, 10rem",
       }}
@@ -60,12 +83,12 @@ export default function HeroSection() {
             {t('repository.hero.tags.license')}
           </span>
         </div> */}
-        <div className="flex items-center justify-center gap-2 mb-4">
-  <span className="inline-flex items-center px-[10px] py-[4px] rounded-full border border-white/30 bg-[var(--listing-bg-voilet)] text-white text-xs font-normal">
+        <div className="flex items-center justify-center gap-2 mb-4 pt-5">
+  <span className="inline-flex items-center px-[0.625rem] py-[0.25rem] rounded-full border border-white/30 bg-[var(--listing-bg-voilet)] text-white text-xs font-normal">
     {t('repository.hero.tags.openAccess')}
   </span>
 
-  <span className="inline-flex items-center px-[10px] py-[4px] rounded-full border border-white/30 bg-[var(--listing-bg-voilet)] text-white text-xs font-normal">
+  <span className="inline-flex items-center px-[0.625rem] py-[0.25rem] rounded-full border border-white/30 bg-[var(--listing-bg-voilet)] text-white text-xs font-normal">
     {t('repository.hero.tags.license')}
   </span>
 </div>
@@ -86,28 +109,48 @@ export default function HeroSection() {
 </p>    
 
         <RepositorySearch />
-
           {/* Scroll */}
 
-          <button
-            type="button"
-            onClick={handleScrollDown}
-            aria-label={t('repository.hero.scrollDown')}
-            className="mt-8 flex flex-col items-center border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            <p className="text-[1rem] font-medium text-[var(--listing-text-light)]">
-              {t('repository.hero.scrollDown')}
-            </p>
-
-            <img
-              src={scrollDownIcon}
-              alt="Scroll down"
-              className="mt-5 h-[1.25rem] w-[1.25rem] animate-bounce"
-            />
-          </button>
+        
 
       </div>
     </div>
+    {/* Scroll */}
+<button
+  type="button"
+  onClick={handleScrollDown}
+  aria-label={t("repository.hero.scrollDown")}
+  className="
+    absolute
+    bottom-[0.9375rem]
+    left-1/2
+    -translate-x-1/2
+    z-20
+    flex
+    flex-col
+    items-center
+    border-0
+    bg-transparent
+    pb-5
+    focus-visible:outline
+    focus-visible:outline-2
+    focus-visible:outline-offset-2
+    focus-visible:outline-white
+  "
+>
+  <p className="text-[1rem] font-medium text-[var(--listing-text-light)]">
+    {t("repository.hero.scrollDown")}
+  </p>
+
+  <img
+    src={scrollDownIcon}
+    alt="Scroll down"
+    className="mt-5 h-5 w-5"
+    style={{
+      animation: "scrollDown 1.4s steps(1, end) infinite",
+    }}
+  />
+</button>
   </div>
   );
 }

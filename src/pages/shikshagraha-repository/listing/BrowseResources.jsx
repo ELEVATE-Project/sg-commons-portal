@@ -97,7 +97,8 @@ const Dropdown = ({
       )}
       {isOpen && !disabled && (
         <div
-          className={`absolute right-0 z-[9999] mt-2 md:w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${dropdownClassName}`}
+          className={`absolute right-0 left-auto sm:left-auto
+max-w-[90vw] z-[9999] mt-2 md:w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${dropdownClassName}`}
           role="listbox"
         >
           <div className="py-1">
@@ -107,7 +108,7 @@ const Dropdown = ({
               const RenderItem = renderItem;
 
               return (
-                <div key={option.value} className="w-full">
+                <div key={option.value} className="flex-1">
                   <RenderItem
                     option={option}
                     isSelected={String(selectedValue) === String(option.value)}
@@ -150,7 +151,7 @@ const DefaultDropdownItem = ({ option, isSelected, onSelect }) => {
   );
 };
 
-export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false }) {
+export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false, cardsSpacing = false }) {
   const pagination = useRepositoryStore((state) => state.pagination);
   const setPagination = useRepositoryStore((state) => state.setPagination);
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
@@ -471,7 +472,7 @@ const displayedResources = compact
    
   return (
     <div
-  className={`relative overflow-hidden py-12 w-full scroll-mt-24 ${
+  className={`relative overflow-hidden py-5 lg:py-12 w-full scroll-mt-24 ${
     compact ? "" : "min-h-screen"
   }`}
   data-browse-resources
@@ -484,58 +485,99 @@ const displayedResources = compact
     compact ? "" : "min-h-screen"
   }`}
 >
-<div className="w-full lg:w-[92.5%] mx-auto">
+<div className="w-full px-4 sm:px-6 lg:px-0 lg:w-[92.5%] mx-auto">
         {/* ⬇️ EVERYTHING BELOW IS EXACT SAME (no change) */}
 
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-  <div className="w-full mb-3 md:mb-0" data-browse-resources>
-      <h2 className="text-[1.25rem] md:text-[1.375rem] font-['Comfortaa'] font-semibold tracking-[0.0625rem] text-repository-heading capitalize">
-
-      {selectedSingleLabel ? `${selectedSingleLabel.name} Resources` : t(title ?? "repository.browseResources")}
+<div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
+  <div
+  className="flex items-start justify-between gap-4 mb-3 md:mb-0"
+  data-browse-resources
+>
+  <div className="flex-1 min-w-0">
+    <h2 className="text-xl sm:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading capitalize break-words">
+      {selectedSingleLabel
+        ? `${selectedSingleLabel.name} Resources`
+        : t(title ?? "repository.browseResources")}
     </h2>
 
     {!compact && (
       <p
-  className="
-    font-['Source_Sans_3']
-    font-medium
-    text-[0.875rem]
-    leading-[1.3125rem]
-    text-repository-body
-  "
->
-  {t("repository.browseResourcesDescription")}
-</p>
+        className="
+          font-sourceSans
+          font-medium
+          text-[0.875rem]
+          leading-[1.3125rem]
+          text-repository-body
+        "
+      >
+        {t("repository.browseResourcesDescription")}
+      </p>
     )}
-    {/* Conditional single filter label (Organisation or Theme) */}
+
     {selectedSingleLabel && (
       <p className="mt-2 text-sm text-repository-textSecondary flex items-center gap-2">
-        <span>{selectedSingleLabel.type}: {selectedSingleLabel.name}</span>
-        {(selectedSingleLabel.type === "Organisation" || selectedSingleLabel.type === "Theme") && (
-          <button
-            type="button"
-            aria-label={`Clear ${selectedSingleLabel.type.toLowerCase()}`}
-            className="p-1 rounded hover:bg-gray-100"
-            onClick={async () => {
-              const fromResource = searchParams.get("fromResource") || (window.history.state && window.history.state.fromResource);
-              
-              try {
-                const clearAtomic = useRepositoryStore.getState().clearTransientFiltersAtomic;
-                if (clearAtomic) await clearAtomic();
-              } catch (e) {
-                try { await clearTransientFiltersAtomic({ navigateToResourceId: fromResource || undefined }); } catch (er) {}
-              }
-            }}
-          >
-            <X className="w-4 h-4 text-repository-textSecondary" />
-          </button>
-        )}
+        <span>
+          {selectedSingleLabel.type}: {selectedSingleLabel.name}
+        </span>
+
+        <button
+          type="button"
+          aria-label={`Clear ${selectedSingleLabel.type.toLowerCase()}`}
+          className="p-1 rounded hover:bg-gray-100"
+          onClick={async () => {
+            const fromResource =
+              searchParams.get("fromResource") ||
+              (window.history.state && window.history.state.fromResource);
+
+            try {
+              const clearAtomic =
+                useRepositoryStore.getState().clearTransientFiltersAtomic;
+              if (clearAtomic) await clearAtomic();
+            } catch {
+              await clearTransientFiltersAtomic({
+                navigateToResourceId: fromResource || undefined,
+              });
+            }
+          }}
+        >
+          <X className="w-4 h-4 text-repository-textSecondary" />
+        </button>
       </p>
     )}
   </div>
 
+  {compact && (
+  <button
+    type="button"
+    onClick={() => {
+  resetFilters();
+  safeSetSearchParams(new URLSearchParams(), { replace: true });
+  navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
+}}
+    className="
+      flex sm:hidden
+      items-center justify-center gap-1
+      w-[7.5rem]
+      h-[2.25rem]
+      px-1 py-2
+      rounded-[0.5rem]
+      bg-repository-primary
+      hover:opacity-90
+      transition-all
+      flex-shrink-0
+    "
+  >
+    <span className="font-medium text-[0.8125rem] leading-[1.25rem] text-white">
+      {t("repository.browseAll")}
+    </span>
+
+    <ArrowRight className="w-4 h-4 text-white" />
+  </button>
+)}
+</div>
+
   {compact ? (
-    <div className="flex items-center justify-between w-full md:w-auto gap-4">
+    <div className="flex flex-wrap items-center justify-between gap-3 w-full md:w-auto">
       <Dropdown
   options={sortOptions}
   selectedValue={sortBy}
@@ -543,7 +585,7 @@ const displayedResources = compact
     setSortBy(value);
   }}
   renderButton={(selected) => (
-  <span className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem] flex items-center">
+  <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem] flex items-center">
     <span className="font-normal text-repository-textPrimary">
       {t("repository.sortByLabel")}:  
     </span>{" "}
@@ -557,23 +599,22 @@ const displayedResources = compact
       <button
   type="button"
   onClick={() => {
-    try { safeSetSearchParams(new URLSearchParams(), { replace: true }); } catch (e) {}
-    // Do not call clearTransientFiltersAtomic or fetch here —
-    // the URL change will trigger the BrowseResources tryClear effect
-    // which will clear store filters and perform a single fetch.
-    navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
-  }}
+  resetFilters();
+  safeSetSearchParams(new URLSearchParams(), { replace: true });
+  navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
+}}
   className="
-    flex items-center justify-center gap-1
-    w-[7.5rem]
-    h-[2.25rem]
-    px-1 py-2
-    rounded-[0.5rem]
-    bg-repository-primary
-    hover:opacity-90
-    transition-all
-    flex-shrink-0
-  "
+  hidden sm:flex
+  items-center justify-center gap-1
+  w-[7.5rem]
+  h-[2.25rem]
+  px-1 py-2
+  rounded-[0.5rem]
+  bg-repository-primary
+  hover:opacity-90
+  transition-all
+  flex-shrink-0
+"
 >
   <span
     className="
@@ -590,9 +631,9 @@ const displayedResources = compact
 </button>
     </div>
   ) : (
-    <div className="flex flex-col md:flex-row items-center gap-6 w-full">
-      <div className="flex items-center justify-between lg:justify-end w-full lg:gap-6">
-        <div className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem]">
+    <div className="flex flex-col gap-4 w-full lg:w-auto lg:flex-row lg:items-center lg:flex-nowrap lg:shrink-0">
+      <div className="flex flex-wrap items-center justify-between gap-3 w-full lg:flex-nowrap lg:w-auto lg:justify-start lg:gap-6 lg:shrink-0">
+        <div className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
   <span className="font-bold text-repository-textPrimary">
     {mediaCount}
   </span>{" "}
@@ -608,7 +649,7 @@ const displayedResources = compact
             setSortBy(value);
           }}
  renderButton={(selected) => (
-  <span className="whitespace-nowrap font-['Inter'] text-[0.75rem] leading-[1.125rem]">
+  <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
     <span className="font-normal text-repository-textSecondary">
       {t("repository.sortByLabel")}:
     </span>{" "}
@@ -622,8 +663,8 @@ const displayedResources = compact
         />
       </div>
 
-      <div className="flex items-center justify-between flex-row-reverse lg:flex-row lg:justify-start lg:gap-2 w-full lg:w-auto">
-        <div className="flex items-center gap-1">
+<div className="flex items-center justify-between w-full lg:w-auto lg:flex-nowrap lg:justify-end lg:gap-6 lg:shrink-0">
+<div className="flex items-center gap-3 shrink-0">
           <button
   onClick={() => setViewMode("grid")}
   className={`
@@ -673,21 +714,22 @@ const displayedResources = compact
   onSelect={(value) => {
     handleItemsPerPageChange(value);
   }}
-  className="
-    [&>div>button]:w-[5.5rem]
-    [&>div>button]:h-[1.8656rem]
-    [&>div>button]:border
-    [&>div>button]:border-repository-controlBorder
-    [&>div>button]:rounded-[0.5487rem]
-    [&>div>button]:bg-white
-    [&>div>button]:px-3
-    [&>div>button]:justify-between
-  "
+ className="
+  shrink-0
+  [&>div>button]:min-w-[5.5rem]
+  [&>div>button]:w-auto
+  [&>div>button]:justify-between
+  [&>div>button]:border
+  [&>div>button]:border-repository-controlBorder
+  [&>div>button]:rounded-[0.5487rem]
+  [&>div>button]:bg-white
+  [&>div>button]:px-3
+"
   dropdownClassName="w-[5.5rem]"
   renderButton={(selected) => (
     <span
   className="
-    font-['Inter']
+    font-inter
     font-normal
     text-[0.7682rem]
     leading-[1.125rem]
@@ -700,7 +742,9 @@ const displayedResources = compact
 </span>
   )}
 />
-        <Filters />
+        <div className="shrink-0">
+  <Filters />
+</div>
       </div>
     </div>
   )}
@@ -712,7 +756,10 @@ const displayedResources = compact
           />
           <div className="relative z-10">
             <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">
-              <div className={`grid gap-6 w-full ${
+<div
+  className={`grid gap-6 md:gap-x-4 md:gap-y-12 w-full ${
+    cardsSpacing ? "px-2 sm:px-4 md:px-6 lg:px-16" : "px-2 sm:px-0"
+  } ${
     viewMode === "grid"
       ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
       : "grid-cols-1"
@@ -736,9 +783,6 @@ const displayedResources = compact
     )}
   </div>
             </div>
-          </div>
-          <div className="hidden lg:block w-[20%] self-stretch p-4 rounded-xl z-[9999]">
-            <MitraAiAssistantAside />
           </div>
         </div>
 </div>

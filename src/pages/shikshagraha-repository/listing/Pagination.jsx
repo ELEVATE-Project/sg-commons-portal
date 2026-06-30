@@ -27,7 +27,7 @@ function Pagination({
   };
 
   return (
-    <div className="flex justify-center mt-10">
+    <div className="flex justify-center mb-10">
       <ReactPaginate
         forcePage={selectedPage}
         pageCount={pageCount}

@@ -8,6 +8,8 @@ import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
 import PageHeader from "../../../components/PageHeader";
+import left1 from "assets/dandelion-left-1.png";
+import right2 from "assets/dandelion-right-2.png";
 
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
@@ -26,6 +28,20 @@ export default function RepositoryPage() {
   (state) => state.fetchMediaList
 );
   const itemsPerPage = pagination.limit;
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     // Only fetch if media list is empty to avoid duplicate initial requests
@@ -45,10 +61,25 @@ export default function RepositoryPage() {
   }, [mediaList, q, loadingList]);
 
   return (
-    <div className="bg-white relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>
+    <div
+  className="bg-white relative listing-pages overflow-x-hidden overflow-y-visible"
+  style={{
+    ...theme.vars,
+    overflowY: "visible",
+    backgroundImage: `url(${left1}), url(${right2})`,
+    backgroundPosition: isMobile
+      ? "left -2rem top 12rem, right -2rem top 20rem"
+      : "left 2.8rem top 18.5rem, right 1.7rem top 31.8rem",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: isMobile
+      ? "5rem, 6rem"
+      : "8rem, 10rem",
+    backgroundAttachment: "fixed",
+  }}
+>
       <div className="container max-w-[93.75rem] mx-auto">
         <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
-        <div className="w-full">
+        <div className="w-full sm:px-6 lg:px-0 lg:w-[96.3%] mx-auto">
                     <PageHeader showSearch />
                   </div>
            <div className="">
@@ -56,6 +87,7 @@ export default function RepositoryPage() {
           {/* <div className="w-full mt-4 md:mt-6 z-50">
             <Filters />
           </div> */}
+
           <main className="w-full mx-auto">
             {!!mediaList?.length && (
 
@@ -65,6 +97,7 @@ export default function RepositoryPage() {
   compact={false}
   title="repository.browseResources"
   setViewMode={setViewMode}
+  cardsSpacing={true}
               />
             )}
          
