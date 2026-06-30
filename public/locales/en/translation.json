@@ -222,7 +222,8 @@
             "clearAll": "Clear All",
             "apply": "Apply",
             "selectAll": "Select All",
-            "deselectAll": "Deselect All"
+            "deselectAll": "Deselect All",
+            "noOptionsFound": "No options found"
         },
         "searchIn": "Search an {{section}}",
         "recording": "Recording... {{seconds}}s",

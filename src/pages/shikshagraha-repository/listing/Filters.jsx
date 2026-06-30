@@ -955,7 +955,9 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
           hover:[&::-webkit-scrollbar-thumb]:rounded-full
         "
       >
-        {/* Select All */}
+       {optionsList.length > 0 ? (
+    <>
+            {/* Select All */}
         <label
           className="
             flex items-center gap-2 cursor-pointer
@@ -1016,6 +1018,12 @@ const DropdownSelect = ({ label, options = [], selected = [], onChange, compact 
             </label>
           )
         })}
+        </>
+  ) : (
+    <div className="py-4 text-center text-sm text-repository-cardDescription font-sourceSans">
+      {t("repository.filters.noOptionsFound", "No options found")}
+    </div>
+  )}
       </div>
     </div>
   </div>

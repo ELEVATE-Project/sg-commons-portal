@@ -70,6 +70,15 @@
         "googleDrive": "गूगल हाँकना",
         "publishedOn": "प्रकाशित",
         "viewAllResources": "सभी संसाधन देखें",
+        "filters": {
+  "open": "फ़िल्टर खोलें",
+  "title": "फ़िल्टर",
+  "clearAll": "सभी साफ़ करें",
+  "apply": "लागू करें",
+  "selectAll": "सभी चुनें",
+  "deselectAll": "सभी का चयन हटाएँ",
+  "noOptionsFound": "कोई विकल्प नहीं मिला"
+},
         "hero": {
             "tags": {
                 "openAccess": "ओपन-एक्सेस",

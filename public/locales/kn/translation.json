@@ -70,6 +70,15 @@
         "googleDrive": "ಗೂಗಲ್ ಡ್ರೈವ್",
         "publishedOn": "ರಂದು ಪ್ರಕಟಿಸಲಾಗಿದೆ",
         "viewAllResources": "ಎಲ್ಲಾ ಸಂಪನ್ಮೂಲಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
+        "filters": {
+  "open": "ಫಿಲ್ಟರ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ",
+  "title": "ಫಿಲ್ಟರ್‌ಗಳು",
+  "clearAll": "ಎಲ್ಲವನ್ನೂ ತೆರವುಗೊಳಿಸಿ",
+  "apply": "ಅನ್ವಯಿಸಿ",
+  "selectAll": "ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ",
+  "deselectAll": "ಎಲ್ಲ ಆಯ್ಕೆಯನ್ನು ತೆಗೆದುಹಾಕಿ",
+  "noOptionsFound": "ಯಾವುದೇ ಆಯ್ಕೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ"
+},
         "invalidDownloadURL": "ಅಮಾನ್ಯ ಡೌನ್ಲೋಡ್ URL",
         "hero": {
             "tags": {
