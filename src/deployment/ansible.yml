@@ -2,6 +2,7 @@
   vars:
     project_path: /opt/frontend/sg-commons-portal
     root_path: /opt/frontend
+    node_version: "20.20.2"
 
   tasks:
     - name: Slurp host file
@@ -77,7 +78,13 @@
       shell: "npm cache clean --force"
 
     - name: Install dependencies
-      shell: "cd {{ project_path }} && npm i --force"
+      shell: |
+        source ~/.nvm/nvm.sh
+        nvm use {{ node_version }}
+        cd {{ project_path }}
+        npm i --force
+      args:
+        executable: /bin/bash
 
     - name: Set permission for json2env.sh
       shell: "chmod 744 {{ project_path }}/src/scripts/json2env.sh"
@@ -87,9 +94,21 @@
         curl --location --request GET '{{ vaultAddress }}mohiniPortalPM2Config'
         --header 'X-Vault-Token: {{ slurpfile['content'] | b64decode }}' 
         | jq '.data.data' > '{{ project_path }}/pm2.config.json'
-
-    - name: Build mohini app
-      shell: "cd {{ project_path }} && npm run build"
+  
+    - name: Build sg-commons frontend
+      shell: |
+        source ~/.nvm/nvm.sh
+        nvm use {{ node_version }}
+        cd {{ project_path }}
+        npm run build
+      args:
+        executable: /bin/bash
 
     - name: Start pm2
-      shell: "cd {{ project_path }} && pm2 start pm2.config.json"
+      shell: |
+        source ~/.nvm/nvm.sh
+        nvm use {{ node_version }}
+        cd {{ project_path }}
+        pm2 start pm2.config.json
+      args:
+        executable: /bin/bash
