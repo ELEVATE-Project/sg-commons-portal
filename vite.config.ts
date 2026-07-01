@@ -9,6 +9,9 @@ const rootPath = process.env.VITE_ROOT_PATH ? `/${process.env.VITE_ROOT_PATH}` :
 
 export default defineConfig({
   base: rootPath,
+  build: {
+    outDir: "build",
+  },
   server: {
     port: 3000
   },

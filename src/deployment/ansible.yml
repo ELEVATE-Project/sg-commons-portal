@@ -89,7 +89,7 @@
         | jq '.data.data' > '{{ project_path }}/pm2.config.json'
 
     - name: Build mohini app
-      shell: "cd {{ project_path }} && npm run build-prod"
+      shell: "cd {{ project_path }} && npm run build"
 
     - name: Start pm2
       shell: "cd {{ project_path }} && pm2 start pm2.config.json"
