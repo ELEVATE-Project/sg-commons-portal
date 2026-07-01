@@ -1,5 +1,23 @@
 {
   "compilerOptions": {
+    "target": "ES2023",
+    "useDefineForClassFields": true,
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+
+    "jsx": "react-jsx",
+
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    "skipLibCheck": true,
+    "strict": true,
+    "isolatedModules": true,
+    "noEmit": true,
+
     "baseUrl": "src",
     "paths": {
       "store": ["store"],
@@ -11,7 +29,9 @@
       "constants/*": ["constants/*"],
       "services/*": ["services/*"],
       "components/*": ["components/*"],
-      "pages/*": ["pages/*"]
+      "pages/*": ["pages/*"],
+      "assets/*": ["assets/*"]
     }
-  }
+  },
+  "include": ["src"]
 }
