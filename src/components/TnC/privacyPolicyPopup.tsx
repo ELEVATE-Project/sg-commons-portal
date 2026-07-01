@@ -40,11 +40,11 @@ const PrivacyPolicyPopup = ({ tncText, onAccept, onDecline, useStaticText=false,
             </div>
             <div className="tnc-buttons">
     <button
-      className={`tnc-button accept ${!isGuestChat && '!bg-blue-600'}`}
-      onClick={onAccept}
-    >
-      {useStaticText ? 'स्वीकार करें' : t('tncConfirm')}
-    </button>
+  className={`tnc-button accept${!isGuestChat ? ' !bg-blue-600' : ''}`}
+  onClick={onAccept}
+>
+  {useStaticText ? 'स्वीकार करें' : t('tncConfirm')}
+</button>
 
     <button
       className="tnc-button decline"
