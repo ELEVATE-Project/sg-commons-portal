@@ -15,6 +15,7 @@
     "axios": "^1.14.0",
     "axios-retry": "^4.5.0",
     "dompurify": "^3.3.3",
+    "express": "^4.22.2",
     "i18next": "^26.0.1",
     "i18next-http-backend": "^3.0.2",
     "lucide-react": "^1.7.0",
