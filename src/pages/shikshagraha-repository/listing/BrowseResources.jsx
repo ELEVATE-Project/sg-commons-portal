@@ -473,7 +473,7 @@ const displayedResources = compact
   return (
     <div
   className={`relative overflow-hidden py-5 lg:py-12 w-full scroll-mt-24 ${
-    compact ? "" : "min-h-screen"
+    compact || displayedResources.length === 0 ? "" : "min-h-screen"
   }`}
   data-browse-resources
 >
@@ -482,7 +482,7 @@ const displayedResources = compact
       />
       <section
   className={`relative z-10 max-w-[93.75rem] mx-auto ${
-    compact ? "" : "min-h-screen"
+    compact || displayedResources.length === 0 ? "" : "min-h-screen"
   }`}
 >
 <div className="w-full px-4 sm:px-6 lg:px-0 lg:w-[92.5%] mx-auto">

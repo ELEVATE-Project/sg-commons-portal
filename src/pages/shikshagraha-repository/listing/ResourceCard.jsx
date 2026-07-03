@@ -328,10 +328,10 @@ px-1.5 sm:px-2
       }}
     >
       <span
- className="
+ className={`
   flex-1
   text-[0.813rem]
-  underline
+  ${resource?.organization_url ? "underline" : ""}
   break-words
   sm:flex-none
   sm:truncate
@@ -339,7 +339,7 @@ px-1.5 sm:px-2
   sm:whitespace-nowrap
   mr-3
   capitalize
-"
+`}
 title={resource.organization}
 >
         {resource.organization}
@@ -535,16 +535,16 @@ title={resource.organization}
               }}
             >
               <span
-                className="
+                className={`
                   text-[1.125rem]
                   text-repository-subtitle
                   font-sourceSans
-                  underline
+                  ${resource?.organization_url ? "underline" : ""}
                   truncate
                   max-w-[8rem]
                   mr-3
                   capitalize
-                "
+                `}
                 title={resource.organization}
               >
                 {resource.organization}

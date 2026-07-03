@@ -102,7 +102,7 @@ useEffect(() => {
           </div> */}
 
           <main className="w-full mx-auto">
-            {!!mediaList?.length && (
+            {/* {!!mediaList?.length && ( */}
 
  <BrowseResources
                 resources={mediaList}
@@ -112,7 +112,7 @@ useEffect(() => {
   setViewMode={setViewMode}
   cardsSpacing={true}
               />
-            )}
+            {/* )} */}
          
            
             {!isLoading && !mediaList?.length && (
