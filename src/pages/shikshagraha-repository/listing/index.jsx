@@ -70,7 +70,7 @@ useEffect(() => {
         next.set("searchResourceText", trimmedUrlQuery);
         setSearchParams(next, { replace: true });
       }
-    } else if (currentSearch) {
+    } else if (currentSearch || currentSearchInput) {
       setSearch("");
     }
   }, [searchParams, setSearch, setSearchParams]);

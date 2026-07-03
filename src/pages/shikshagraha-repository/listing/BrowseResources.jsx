@@ -327,7 +327,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     const orgValues = Array.isArray(filters?.organizations) ? filters.organizations.map(o => o.value).filter(Boolean) : [];
     const tagValues = Array.isArray(filters?.tags) ? filters.tags.map(t => t.value).filter(Boolean) : [];
 
-    const newOrg = orgValues.length ? orgValues.join(",") : null;
+    const newOrg = orgValues.length ? orgValues.map(value => encodeURIComponent(value)).join(",") : null;
     const newTheme = tagValues.length ? tagValues.map(value => encodeURIComponent(value)).join(",") : null;
 
     // avoid updating if params equal
@@ -749,7 +749,7 @@ const displayedResources = compact
                 {filterGroupChips.map((chip) => (
                   <div
                     key={chip.group}
-                    className="inline-flex h-9 shrink-0 items-center gap-2 rounded-[0.625rem] bg-[#5832AC33] p-2 text-[#5E35B1] opacity-100 transition hover:bg-[#5832AC40] sm:h-10 sm:max-w-none sm:gap-[0.625rem] sm:p-[0.625rem]"
+                    className="inline-flex h-9 shrink-0 items-center gap-2 rounded-[0.625rem] bg-[var(--listing-filter-chip-background)] p-2 text-[var(--listing-filter-chip-text)] opacity-100 transition hover:bg-[var(--listing-filter-chip-background-hover)] sm:h-10 sm:max-w-none sm:gap-[0.625rem] sm:p-[0.625rem]"
                   >
                     <button
                       type="button"
@@ -808,7 +808,7 @@ const displayedResources = compact
                           // ignore
                         }
                       }}
-                      className="ml-1 inline-flex h-5 w-5 shrink-0 items-center justify-center text-[#FF1744] transition hover:opacity-75"
+                      className="ml-1 inline-flex h-5 w-5 shrink-0 items-center justify-center text-[var(--listing-danger)] transition hover:opacity-75"
                     >
                       <X className="h-4 w-4 stroke-[2.5]" />
                     </button>
@@ -821,7 +821,7 @@ const displayedResources = compact
               <button
                 type="button"
                 onClick={handleClearAll}
-                className="ml-auto shrink-0 self-center font-sourceSans text-[0.9644rem] font-normal leading-[1.125rem] tracking-[0.01em] text-right text-[#5832AC] underline decoration-[#5832AC] decoration-1 underline-offset-[0.125rem]"
+                className="ml-auto shrink-0 self-center font-sourceSans text-[0.9644rem] font-normal leading-[1.125rem] tracking-[0.01em] text-right text-[var(--listing-secondary)] underline decoration-[var(--listing-secondary)] decoration-1 underline-offset-[0.125rem]"
               >
                 {t("repository.filters.clearAll")}
               </button>

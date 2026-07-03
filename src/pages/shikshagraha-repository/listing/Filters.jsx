@@ -477,42 +477,6 @@
     // build filters inner content so we can reuse in-place and in a portal
     const setLocalFilterQuery = (key, val) => setQueryMap(prev => ({ ...prev, [key]: val }))
 
-    // const openDrawer = () => {
-    //   // create a shallow copy of filters for local editing
-    //   try {
-    //     setPendingFilters(JSON.parse(JSON.stringify(filters || {})))
-    //   } catch (e) {
-    //     setPendingFilters({ ...filters })
-    //   }
-    //   // determine which sections to open based on currently applied filters
-    //   if (dropdown_meta && dropdown_meta.length) {
-    //     const isNonEmpty = (v) => {
-    //       if (v == null) return false
-    //       if (Array.isArray(v)) return v.length > 0
-    //       if (typeof v === 'string') return v.trim() !== ''
-    //       if (typeof v === 'object') return Object.keys(v).length > 0
-    //       return Boolean(v)
-    //     }
-
-    //     const selectedKeys = Object.keys(filters || {}).filter(k => isNonEmpty(filters[k]))
-
-    //     const map = {}
-    //     if (selectedKeys.length > 0) {
-    //       // open only the filter sections that are currently selected
-    //       dropdown_meta.forEach((d) => {
-    //         map[d.key] = selectedKeys.includes(d.key)
-    //       })
-    //     } else {
-    //       // default: open the first section
-    //       dropdown_meta.forEach((d, i) => {
-    //         map[d.key] = i === 0
-    //       })
-    //     }
-    //     setOpenMap(map)
-    //   }
-    //   setIsDrawerOpen(true)
-    // }
-
     const openDrawer = useCallback(() => {
   // create a shallow copy of filters for local editing
   try {
