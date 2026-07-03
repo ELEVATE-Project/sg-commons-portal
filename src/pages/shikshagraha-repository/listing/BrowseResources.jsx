@@ -455,7 +455,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
 
   const itemsPerPage = pagination.limit;
 const displayedResources = compact
-  ? resources.slice(0, 3)
+  ? resources.slice(0, 6)
   : resources;
   const perPageOptions = [
     { value: 6, label: "6" },
@@ -757,12 +757,14 @@ const displayedResources = compact
           <div className="relative z-10">
             <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">
 <div
-  className={`grid gap-6 md:gap-x-4 md:gap-y-12 w-full ${
-    cardsSpacing ? "px-2 sm:px-4 md:px-6 lg:px-16" : "px-2 sm:px-0"
-  } ${
+  className={`grid w-full
+  ${
     viewMode === "grid"
-      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-      : "grid-cols-1"
+      ? "gap-9 md:gap-x-4 md:gap-y-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+      : "gap-3 grid-cols-1"
+  }
+  ${
+    cardsSpacing ? "px-2 sm:px-4 md:px-6 lg:px-16" : "px-2 sm:px-0"
   }`} aria-busy={!filtersInitialized}>
     {filtersInitialized ? (
       displayedResources.map((resource, index) => (

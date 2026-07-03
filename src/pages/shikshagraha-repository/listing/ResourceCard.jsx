@@ -12,6 +12,9 @@ import GoogleDriveIcon from "assets/icons/google_drive.svg"
 import { useNavigate } from "react-router-dom"
 import { openSafeUrl } from "../../../utils/urlUtils"
 import PptxIcon from "assets/icons/pptx.svg"
+import OneDriveIcon from "assets/icons/one_drive.svg";
+import AwsS3Icon from "assets/icons/aws.svg";
+import LocalUploadIcon from "assets/icons/Shikshagraha.svg";
 
 const MEDIA_FILE_TYPE = {
   PDF: "PDF",
@@ -88,6 +91,25 @@ text: "text-repository-xlsxTagText",
   }
 }
 
+export const getSourceProviderIcon = provider => {
+  switch (provider) {
+    case "GOOGLE_DRIVE":
+      return GoogleDriveIcon;
+
+    case "ONE_DRIVE":
+      return OneDriveIcon;
+
+    case "AWS_S3":
+      return AwsS3Icon;
+
+    case "LOCAL_UPLOAD":
+      return LocalUploadIcon;
+
+    default:
+      return null;
+  }
+};
+
 export default function ResourceCard({ resource, viewMode = "grid" }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -99,6 +121,10 @@ export default function ResourceCard({ resource, viewMode = "grid" }) {
 const { bg: tagBg, text: tagText } = getTagStyles(
   resource?.media_type_display
 )
+
+const sourceProviderIcon = getSourceProviderIcon(
+  resource?.source_provider
+);
 
   const handleCardClick = () => {
     trackResourceView(resource?.id);
@@ -312,17 +338,20 @@ px-1.5 sm:px-2
   sm:max-w-none
   sm:whitespace-nowrap
   mr-3
+  capitalize
 "
 title={resource.organization}
 >
         {resource.organization}
       </span>
 
-      <img
-        src={GoogleDriveIcon}
-        alt={t("repository.organization")}
-        className="w-5 h-5 object-contain flex-shrink-0"
-      />
+{sourceProviderIcon && (
+  <img
+    src={sourceProviderIcon}
+    alt={resource?.source_provider}
+    className="w-5 h-5 object-contain flex-shrink-0"
+  />
+)}
     </button>
   )}
 </div>
@@ -332,6 +361,7 @@ title={resource.organization}
 }
 
   return (
+    <div className="border-b border-gray-100 pb-2 rounded-[0.75rem]">
   <div
     role="button"
     tabIndex={0}
@@ -485,7 +515,7 @@ title={resource.organization}
             </div>
           </div>
 
-          {resource?.organization && resource?.organization_url && (
+          {resource?.organization && (
             <button
               type="button"
               className="
@@ -513,15 +543,16 @@ title={resource.organization}
                   truncate
                   max-w-[8rem]
                   mr-3
+                  capitalize
                 "
                 title={resource.organization}
               >
                 {resource.organization}
               </span>
-
-             <img
-  src={GoogleDriveIcon}
-  alt={t("repository.googleDrive")}
+{sourceProviderIcon && (
+<img
+  src={sourceProviderIcon}
+  alt={resource?.source_provider || t("repository.organization")}
   className="
     h-[1.25rem]
     w-[1.25rem]
@@ -529,11 +560,13 @@ title={resource.organization}
     flex-shrink-0
   "
 />
+)}
             </button>
           )}
         </div>
       </div>
     </div>
+  </div>
   </div>
 )
 }

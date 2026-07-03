@@ -10,12 +10,14 @@ import { theme } from "../../../theme";
 import PageHeader from "../../../components/PageHeader";
 import left1 from "assets/dandelion-left-1.png";
 import right2 from "assets/dandelion-right-2.png";
+import { useSearchParams } from "react-router-dom";
 
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
   const { t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams();
   const isLoading = loadingList || loadingDetail || loadingMaster;
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
@@ -42,6 +44,17 @@ useEffect(() => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+  const page = Number(searchParams.get("page") || 1);
+
+  setPagination({
+    ...pagination,
+    offset: (page - 1) * pagination.limit,
+    limit: pagination.limit,
+  });
+}, []);
+
 
   useEffect(() => {
     // Only fetch if media list is empty to avoid duplicate initial requests
@@ -114,17 +127,22 @@ useEffect(() => {
             )}
             <div className="w-full mt-6 mx-auto">
               <Pagination
-                resourcesPerPage={itemsPerPage}
-                totalResources={mediaCount}
-                selectedPage={Math.floor(pagination.offset / itemsPerPage)}
-                paginate={(page) => {
-                  setPagination({
-                    ...pagination,
-                    offset: (itemsPerPage + (page - 1) * itemsPerPage) || 0,
-                    limit: itemsPerPage,
-                  });
-                }}
-              />
+  resourcesPerPage={itemsPerPage}
+  totalResources={mediaCount}
+  selectedPage={Number(searchParams.get("page") || 1) - 1}
+  paginate={(page) => {
+    setPagination({
+      ...pagination,
+      offset: page * itemsPerPage,
+      limit: itemsPerPage,
+    });
+
+    const params = new URLSearchParams(searchParams);
+    params.set("page", page + 1);
+
+    setSearchParams(params, { replace: true });
+  }}
+/>
             </div>
           </main>
           </div>

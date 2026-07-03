@@ -110,6 +110,7 @@ module.exports = {
 				manrope: ['"Manrope"', "sans-serif"],
 				montserrat: ['"Montserrat"', "sans-serif"],
 				urbanist: ['"Urbanist"', "sans-serif"],
+				dm: ['"DM Sans"', "sans-serif"],
 			},
 			backgroundImage: {
 				heroGradient:
