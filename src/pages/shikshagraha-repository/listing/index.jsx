@@ -51,9 +51,14 @@ useEffect(() => {
     const urlQuery =
       searchParams.get("q") || searchParams.get("searchText") || "";
     const trimmedUrlQuery = urlQuery.trim();
+    const { q: currentSearch, searchInput: currentSearchInput } =
+      useRepositoryStore.getState();
 
     if (trimmedUrlQuery) {
-      if (q !== trimmedUrlQuery || searchInput !== trimmedUrlQuery) {
+      if (
+        currentSearch !== trimmedUrlQuery ||
+        currentSearchInput !== trimmedUrlQuery
+      ) {
         setSearch(trimmedUrlQuery);
       }
 
@@ -63,10 +68,10 @@ useEffect(() => {
         next.set("q", trimmedUrlQuery);
         setSearchParams(next, { replace: true });
       }
-    } else if (q || searchInput) {
+    } else if (currentSearch) {
       setSearch("");
     }
-  }, [q, searchInput, searchParams, setSearch, setSearchParams]);
+  }, [searchParams, setSearch, setSearchParams]);
 
   useEffect(() => {
     // Only fetch if media list is empty to avoid duplicate initial requests
