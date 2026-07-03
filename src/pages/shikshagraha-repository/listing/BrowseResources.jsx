@@ -749,7 +749,7 @@ const displayedResources = compact
                 {filterGroupChips.map((chip) => (
                   <div
                     key={chip.group}
-                    className="inline-flex h-9 shrink-0 items-center gap-2 rounded-[0.625rem] bg-[var(--listing-filter-chip-background)] p-2 text-[var(--listing-filter-chip-text)] opacity-100 transition hover:bg-[var(--listing-filter-chip-background-hover)] sm:h-10 sm:max-w-none sm:gap-[0.625rem] sm:p-[0.625rem]"
+                    className="inline-flex h-9 shrink-0 items-center gap-2 rounded-[0.625rem] bg-[var(--listing-filter-chip-background)] p-2 text-[var(--listing-filter-chip-text)] opacity-100 transition hover:bg-[var(--listing-filter-chip-background-hover)] sm:h-10 sm:max-w-none sm:gap-2.5 sm:p-2.5"
                   >
                     <button
                       type="button"
@@ -821,7 +821,7 @@ const displayedResources = compact
               <button
                 type="button"
                 onClick={handleClearAll}
-                className="ml-auto shrink-0 self-center font-sourceSans text-[0.9644rem] font-normal leading-[1.125rem] tracking-[0.01em] text-right text-[var(--listing-secondary)] underline decoration-[var(--listing-secondary)] decoration-1 underline-offset-[0.125rem]"
+                className="ml-auto shrink-0 self-center font-sourceSans text-[0.9644rem] font-normal leading-[1.125rem] tracking-[0.01em] text-right text-[var(--listing-secondary)] underline decoration-[var(--listing-secondary)] decoration-1 underline-offset-0.5"
               >
                 {t("repository.filters.clearAll")}
               </button>
