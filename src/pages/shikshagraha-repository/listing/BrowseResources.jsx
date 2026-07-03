@@ -161,6 +161,8 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const fetchMasterList = useRepositoryStore((state) => state.fetchMasterList);
   const masterList = useRepositoryStore((state) => state.masterList);
   const fetchMediaList = useRepositoryStore((state) => state.fetchMediaList);
+  const fetchMediaDetail = useRepositoryStore((state) => state.fetchMediaDetail);
+  const selectedMedia = useRepositoryStore((state) => state.selectedMedia);
   const setFilters = useRepositoryStore((state) => state.setFilters);
   const resetFilters = useRepositoryStore((state) => state.resetFilters);
   const setApplyingUrlFilters = useRepositoryStore((state) => state.setApplyingUrlFilters);
@@ -172,8 +174,10 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const [searchParams, setSearchParams] = useSearchParams();
   const orgParam = searchParams.get("org");
   const themeParam = searchParams.get("theme");
+  const fromResourceParam = searchParams.get("fromResource");
   const searchStr = searchParams.toString();
   const suppressTryClearRef = useRef(false);
+  const suppressFromResourceOrgRestoreRef = useRef(false);
   // Atomic routine to clear transient URL params and reset store filters
   const clearTransientFiltersAtomic = useCallback(async (opts = {}) => {
     const { navigateToResourceId } = opts;
@@ -333,7 +337,12 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     if (!shouldUpdateOrg && !shouldUpdateTheme) return;
 
     const next = new URLSearchParams(searchParams.toString());
-    if (newOrg) next.set("org", newOrg); else next.delete("org");
+    if (newOrg) {
+      next.set("org", newOrg);
+    } else {
+      if (currentOrg) suppressFromResourceOrgRestoreRef.current = true;
+      next.delete("org");
+    }
     if (newTheme) next.set("theme", newTheme); else next.delete("theme");
 
     // suppress tryClear briefly while we programmatically update the URL
@@ -341,12 +350,6 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     safeSetSearchParams(next, { replace: true });
     window.setTimeout(() => (suppressTryClearRef.current = false), 150);
   }, [filters, searchStr, applyingUrlFilters]);
-
-  // Existing URL -> filters effect left in place in your repo (do not remove)
-  useEffect(() => {
-    // Keep the existing URL->filter mapping logic here (unchanged).
-    // Your repository already has this effect; keep it as-is.
-  }, [/* dependencies preserved in original file */]);
 
   useEffect(() => {
     if (!filtersInitialized && !loadingList) setFiltersInitialized(true);
@@ -377,6 +380,108 @@ const displayedResources = compact
   };
   
   // (Old org-only effect removed; handled by combined org/theme effect above)
+  useEffect(() => {
+    if (!masterList) {
+      fetchMasterList();
+    }
+  }, [masterList, fetchMasterList]);
+
+  useEffect(() => {
+    if (
+      !fromResourceParam ||
+      orgParam ||
+      !masterList ||
+      suppressFromResourceOrgRestoreRef.current
+    ) return;
+
+    let cancelled = false;
+
+    const resolveOrgFromResource = async () => {
+      const resource =
+        selectedMedia && String(selectedMedia.id) === String(fromResourceParam)
+          ? selectedMedia
+          : await fetchMediaDetail(fromResourceParam);
+
+      if (cancelled || !resource?.organization) return;
+
+      const orgDropdown = masterList.find((d) => d.key === "organizations");
+      const match = orgDropdown?.options?.find(
+        (option) =>
+          String(option.value) === String(resource.organization) ||
+          String(option.display || "").toLowerCase() === String(resource.organization).toLowerCase()
+      );
+      const orgValue = match?.value ?? resource.organization;
+      const next = new URLSearchParams(searchParams.toString());
+      next.set("org", orgValue);
+      try {
+        setSearchParams(next, { replace: true });
+      } catch (e) {}
+    };
+
+    resolveOrgFromResource().catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    fetchMediaDetail,
+    fromResourceParam,
+    masterList,
+    orgParam,
+    searchParams,
+    selectedMedia,
+    setSearchParams,
+  ]);
+
+  useEffect(() => {
+    if (!masterList || (!orgParam && !themeParam)) return;
+
+    const orgDropdown = masterList.find((d) => d.key === "organizations");
+    const tagDropdown = masterList.find((d) => d.key === "tags");
+
+    const toSelectedOptions = (paramValue, options = []) =>
+      String(paramValue || "")
+        .split(",")
+        .map((value) => decodeURIComponent(value.trim()))
+        .filter(Boolean)
+        .map((value) => {
+          const match = options.find(
+            (option) =>
+              String(option.value) === String(value) ||
+              String(option.display || "").toLowerCase() === String(value).toLowerCase()
+          );
+
+          return {
+            value: match?.value ?? value,
+            display: match?.display ?? value,
+          };
+        });
+
+    const nextFilters = {};
+    if (orgParam) {
+      nextFilters.organizations = toSelectedOptions(orgParam, orgDropdown?.options);
+    }
+    if (themeParam) {
+      nextFilters.tags = toSelectedOptions(themeParam, tagDropdown?.options);
+    }
+
+    if (!Object.keys(nextFilters).length) return;
+
+    setApplyingUrlFilters(true);
+    setFilters(nextFilters, true, { skipFetch: true });
+    fetchMediaList({}, true).finally(() => {
+      setApplyingUrlFilters(false);
+      setFiltersInitialized(true);
+    });
+  }, [
+    fetchMasterList,
+    fetchMediaList,
+    masterList,
+    orgParam,
+    setApplyingUrlFilters,
+    setFilters,
+    themeParam,
+  ]);
    
   return (
     <div
@@ -676,17 +781,20 @@ const displayedResources = compact
                         try {
                           setFilters({ [chip.group]: [] }, true);
                           const paramMap = {
-                            organizations: "org",
-                            tags: "theme",
-                            resource_types: "resource_types",
-                            resource_type: "resource_type",
-                            file_types: "file_type",
-                            filetype: "filetype",
-                            media_types: "media_types",
+                            organizations: ["org"],
+                            tags: ["theme"],
+                            resource_types: ["resource_types", "resource_type"],
+                            resource_type: ["resource_type", "resource_types"],
+                            file_types: ["file_type", "filetype"],
+                            filetype: ["filetype", "file_type"],
+                            media_types: ["media_types", "media_type"],
                           };
-                          const param = paramMap[chip.group];
+                          const params = paramMap[chip.group] || [];
                           const next = new URLSearchParams(searchParams.toString());
-                          if (param) next.delete(param);
+                          if (chip.group === "organizations") {
+                            suppressFromResourceOrgRestoreRef.current = true;
+                          }
+                          params.forEach((param) => next.delete(param));
                           try { setSearchParams(next, { replace: true }); } catch (err) { }
                         } catch (err) {
                           // ignore
