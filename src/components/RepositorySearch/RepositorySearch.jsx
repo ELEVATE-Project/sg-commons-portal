@@ -13,6 +13,7 @@ import MicIcon from "assets/icons/mic.svg";
 import SendIcon from "assets/icons/send.svg";
 import ClearIcon from "assets/icons/clear.svg";
 import { useSearchParams } from "react-router-dom";
+import ROUTES from "../../url";
 
 const scrollToBrowseResources = () => {
   const browseSection = document.querySelector("[data-browse-resources]");
@@ -88,7 +89,7 @@ useEffect(() => {
   const syncSearchParam = (value) => {
     if (
       typeof window === "undefined" ||
-      !window.location.pathname.endsWith("/resources")
+      !window.location.pathname.endsWith(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST)
     ) {
       return;
     }
