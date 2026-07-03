@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "../../../components/header/Header.jsx";
 import BrowseResources from "../listing/BrowseResources.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
@@ -15,9 +15,12 @@ export default function RepositoryPage() {
 
   const { t } = useTranslation()
   const isLoading = loadingList || loadingDetail || loadingMaster;
+  const hasClearedInitialSearchRef = useRef(false);
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
   const q = useRepositoryStore((state) => state.q);
+  const searchInput = useRepositoryStore((state) => state.searchInput);
+  const setSearch = useRepositoryStore((state) => state.setSearch);
   const fetchMediaList = useRepositoryStore(
   (state) => state.fetchMediaList
 );
@@ -37,6 +40,16 @@ export default function RepositoryPage() {
       fetchMediaList();
     }
   }, [fetchMediaList, mediaList]);
+
+  useEffect(() => {
+    if (hasClearedInitialSearchRef.current) return;
+    hasClearedInitialSearchRef.current = true;
+
+    const urlSearch = searchParams.get("q") || searchParams.get("searchText");
+    if (!urlSearch && (q || searchInput)) {
+      setSearch("");
+    }
+  }, [q, searchInput, searchParams, setSearch]);
 
   // If there are no org/theme params in URL, ensure repository filters are cleared
   useEffect(() => {
