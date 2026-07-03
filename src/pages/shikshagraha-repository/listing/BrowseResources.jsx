@@ -286,8 +286,12 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
           return item.display || item.label || item.value || "";
         })
         .filter(Boolean);
-      const display = names.length <= 2 ? names.join(", ") : `${names.slice(0, 2).join(", ")}, +${names.length - 2}`;
-      return [{ group, label, display, count: names.length }];
+      const hasOverflow = names.length > 2;
+      const display = hasOverflow ? names.slice(0, 2).join(", ") : names.join(", ");
+      const overflowLabel = hasOverflow ? `+${names.length - 2}` : "";
+      const mobileDisplay = names[0] || "";
+      const mobileOverflowLabel = names.length > 1 ? `+${names.length - 1}` : "";
+      return [{ group, label, display, overflowLabel, mobileDisplay, mobileOverflowLabel, count: names.length }];
     });
   }, [filters]);
 
@@ -418,38 +422,6 @@ const displayedResources = compact
       </p>
     )}
 
-    {selectedSingleLabel && (
-      <p className="mt-2 text-sm text-repository-textSecondary flex items-center gap-2">
-        <span>
-          {selectedSingleLabel.type}: {selectedSingleLabel.name}
-        </span>
-
-        <button
-          type="button"
-          aria-label={`Clear ${selectedSingleLabel.type.toLowerCase()}`}
-          className="p-1 rounded hover:bg-gray-100"
-          onClick={async () => {
-            const fromResource =
-              searchParams.get("fromResource") ||
-              (window.history.state && window.history.state.fromResource);
-
-            try {
-              const clearAtomic =
-                useRepositoryStore.getState().clearTransientFiltersAtomic;
-              if (clearAtomic) await clearAtomic();
-            } catch {
-              await clearTransientFiltersAtomic({
-                navigateToResourceId: fromResource || undefined,
-              });
-            }
-          }}
-        >
-          <X className="w-4 h-4 text-repository-textSecondary" />
-        </button>
-      </p>
-    )}
-
-  
   </div>
 
   {compact && (
@@ -658,13 +630,13 @@ const displayedResources = compact
 </div>
 
           {/* Group chips row (Organization, Theme, etc.) */}
-          <div className="mt-4 mb-8 flex w-full items-center">
+          <div className="mt-6 mb-10 flex w-full items-center gap-3 sm:mt-8 sm:mb-14 sm:gap-4">
             <div className="flex-1 overflow-x-auto">
-              <div className="flex w-max items-center gap-3 pr-4">
+              <div className="flex w-max items-center gap-3 pr-4 sm:gap-6">
                 {filterGroupChips.map((chip) => (
                   <div
                     key={chip.group}
-                    className="inline-flex shrink-0 items-center gap-2 rounded-full bg-violet-50 px-3 py-2 text-sm text-violet-900 transition hover:bg-violet-100"
+                    className="inline-flex h-9 shrink-0 items-center gap-2 rounded-[0.625rem] bg-[#5832AC33] p-2 text-[#5E35B1] opacity-100 transition hover:bg-[#5832AC40] sm:h-10 sm:max-w-none sm:gap-[0.625rem] sm:p-[0.625rem]"
                   >
                     <button
                       type="button"
@@ -673,10 +645,27 @@ const displayedResources = compact
                           new CustomEvent("sg-open-filter-group", { detail: { group: chip.group } })
                         )
                       }
-                      className="flex items-center gap-2"
+                      className="flex min-w-0 items-center gap-1.5"
                     >
-                      <span className="font-semibold">{chip.label}:</span>
-                      <span>{chip.display}</span>
+                      <span className="shrink-0 font-sourceSans text-[0.8125rem] font-bold leading-4 tracking-[0.01em] text-right sm:text-[0.9644rem] sm:leading-[1.125rem]">
+                        {chip.label}:
+                      </span>
+                      <span className="min-w-0 truncate font-sourceSans text-[0.8125rem] font-normal leading-4 tracking-[0.01em] text-right sm:hidden">
+                        {chip.mobileDisplay}
+                      </span>
+                      <span className="hidden min-w-0 truncate font-sourceSans text-[0.9644rem] font-normal leading-[1.125rem] tracking-[0.01em] text-right sm:inline">
+                        {chip.display}
+                      </span>
+                      {chip.mobileOverflowLabel && (
+                        <span className="shrink-0 font-sourceSans text-[0.8125rem] font-normal leading-4 tracking-[0.01em] text-right sm:hidden">
+                          , {chip.mobileOverflowLabel}
+                        </span>
+                      )}
+                      {chip.overflowLabel && (
+                        <span className="hidden shrink-0 font-sourceSans text-[0.9644rem] font-normal leading-[1.125rem] tracking-[0.01em] text-right sm:inline">
+                          , {chip.overflowLabel}
+                        </span>
+                      )}
                     </button>
 
                     <button
@@ -703,25 +692,25 @@ const displayedResources = compact
                           // ignore
                         }
                       }}
-                      className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs text-violet-700 shadow-sm ml-2"
+                      className="ml-1 inline-flex h-5 w-5 shrink-0 items-center justify-center text-[#FF1744] transition hover:opacity-75"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-4 w-4 stroke-[2.5]" />
                     </button>
                   </div>
                 ))}
               </div>
             </div>
 
-  {filterGroupChips.length > 0 && (
-    <button
-      type="button"
-      onClick={handleClearAll}
-      className="ml-4 shrink-0 text-sm text-repository-cardDescription underline"
-    >
-      {t("repository.filters.clearAll")}
-    </button>
-  )}
-</div>
+            {filterGroupChips.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearAll}
+                className="ml-auto shrink-0 self-center font-sourceSans text-[0.9644rem] font-normal leading-[1.125rem] tracking-[0.01em] text-right text-[#5832AC] underline decoration-[#5832AC] decoration-1 underline-offset-[0.125rem]"
+              >
+                {t("repository.filters.clearAll")}
+              </button>
+            )}
+          </div>
 
         <div className="relative overflow-hidden">
           <div
