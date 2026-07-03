@@ -12,7 +12,7 @@ export default function HeroSection() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const handleSearchFromHero = (searchQuery) => {
-    navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?q=${encodeURIComponent(searchQuery)}`);
+    navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?searchResourceText=${encodeURIComponent(searchQuery)}`);
   };
   const handleScrollDown = () => {
   if (typeof window === "undefined") return;

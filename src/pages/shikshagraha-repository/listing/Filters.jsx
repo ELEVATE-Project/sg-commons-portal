@@ -411,7 +411,10 @@
 
     useEffect(() => {
       fetchMasterList()
-      const searched_param = new URLSearchParams(window.location.search)?.get("q")
+      const urlParams = new URLSearchParams(window.location.search)
+      const searched_param =
+        urlParams.get("searchResourceText") ||
+        urlParams.get("searchText")
       setSearchInput(searched_param ?? "")
       setGlobalSearch(searched_param ?? "")
       return () => {
@@ -745,7 +748,7 @@ useEffect(() => {
                                     </button>
                                   </div>
                                 </div>
-                                <DropdownSelect compact label={label} options={filtered} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} />
+                                <DropdownSelect compact sectionKey={key} isFiltered={!!q} label={label} options={filtered} allOptions={options || []} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} />
                               </>
                             ) : null}
                           </div>
@@ -938,14 +941,23 @@ useEffect(() => {
   const MenuList = props => {
     const { t } = useTranslation();
     const { options, value, onChange } = props.selectProps
+    const getOptionValue = item => {
+      if (item == null) return ""
+      if (typeof item === "string" || typeof item === "number") return String(item)
+      return String(item.value ?? item.display ?? item.label ?? "")
+    }
 
-    const allSelected = value?.length === options?.length
+    const selectedValues = new Set((value || []).map(getOptionValue).filter(Boolean))
+    const validOptions = (options || []).filter(option => getOptionValue(option))
+    const allSelected =
+      validOptions.length > 0 &&
+      validOptions.every(option => selectedValues.has(getOptionValue(option)))
 
     const toggleSelectAll = () => {
       if (allSelected) {
         onChange([], { action: "deselect-all" })
       } else {
-        onChange(options, { action: "select-all" })
+        onChange(validOptions, { action: "select-all" })
       }
     }
 
@@ -998,27 +1010,59 @@ useEffect(() => {
     )
   }
 
-  const DropdownSelect = ({ label, options = [], selected = [], onChange, compact = false }) => {
+  const DropdownSelect = ({ label, options = [], allOptions = [], selected = [], onChange, compact = false, sectionKey = "", isFiltered = false }) => {
     const { t } = useTranslation();
     const selectedCount = Array.isArray(selected) ? selected.length : 0
+    const getOptionValue = item => {
+      if (item == null) return ""
+      if (typeof item === "string" || typeof item === "number") return String(item)
+      return String(item.value ?? item.display ?? item.label ?? "").trim()
+    }
+    const getOptionKey = item => getOptionValue(item).toLowerCase()
+    const normalizeOptions = items => {
+      const seen = new Set()
+      return (items || [])
+        .map(o => ({
+          value: getOptionValue(o),
+          label: o.display || o.label || o.value,
+        }))
+        .filter(o => o.value)
+        .filter(o => {
+          const key = getOptionKey(o)
+          if (seen.has(key)) return false
+          seen.add(key)
+          return true
+        })
+    }
 
     // Normalize options to { value, label }
-    const optionsList = (options || []).map(o => ({ value: o.value, label: o.display || o.label || o.value }))
+    const optionsList = normalizeOptions(options)
 
     if (compact) {
-      const selectedValues = new Set((selected || []).map(s => (typeof s === 'string' ? s : s.value)))
-      const allSelected = optionsList.length > 0 && optionsList.every(o => selectedValues.has(o.value))
+      const selectedItems = Array.isArray(selected)
+        ? selected
+        : String(selected || "")
+            .split(",")
+            .map(value => value.trim())
+            .filter(Boolean)
+      const selectedValues = new Set(selectedItems.map(getOptionKey).filter(Boolean))
+      const compareOptionsList =
+        sectionKey === "tags" && !isFiltered ? normalizeOptions(allOptions) : optionsList
+      const allSelectedByValue =
+        compareOptionsList.length > 0 &&
+        compareOptionsList.every(o => selectedValues.has(getOptionKey(o)))
+      const allSelected = allSelectedByValue
 
       const toggleSelectAll = () => {
         if (allSelected) onChange([])
-        else onChange(optionsList)
+        else onChange(compareOptionsList)
       }
 
       const toggleOption = opt => {
-        const isSelected = selectedValues.has(opt.value)
+        const isSelected = selectedValues.has(getOptionKey(opt))
         let next
         if (isSelected) {
-          next = (selected || []).filter(s => (typeof s === 'string' ? s : s.value) !== opt.value)
+          next = (selected || []).filter(s => getOptionKey(s) !== getOptionKey(opt))
         } else {
           next = [...(selected || []), { value: opt.value, label: opt.label }]
         }
@@ -1071,7 +1115,7 @@ useEffect(() => {
 
           {/* Options */}
           {optionsList.map(opt => {
-            const isChecked = selectedValues.has(opt.value)
+            const isChecked = selectedValues.has(getOptionKey(opt))
 
             return (
               <label

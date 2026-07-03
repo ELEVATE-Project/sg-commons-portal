@@ -328,7 +328,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     const tagValues = Array.isArray(filters?.tags) ? filters.tags.map(t => t.value).filter(Boolean) : [];
 
     const newOrg = orgValues.length ? orgValues.join(",") : null;
-    const newTheme = tagValues.length ? tagValues.join(",") : null;
+    const newTheme = tagValues.length ? tagValues.map(value => encodeURIComponent(value)).join(",") : null;
 
     // avoid updating if params equal
     const shouldUpdateOrg = (currentOrg || null) !== (newOrg || null);
@@ -439,10 +439,18 @@ const displayedResources = compact
     const orgDropdown = masterList.find((d) => d.key === "organizations");
     const tagDropdown = masterList.find((d) => d.key === "tags");
 
+    const decodeFilterValue = (value) => {
+      try {
+        return decodeURIComponent(value.trim());
+      } catch {
+        return value.trim();
+      }
+    };
+
     const toSelectedOptions = (paramValue, options = []) =>
       String(paramValue || "")
         .split(",")
-        .map((value) => decodeURIComponent(value.trim()))
+        .map(decodeFilterValue)
         .filter(Boolean)
         .map((value) => {
           const match = options.find(

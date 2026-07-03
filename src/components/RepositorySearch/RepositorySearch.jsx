@@ -97,9 +97,9 @@ useEffect(() => {
     const trimmedValue = value.trim();
 
     if (trimmedValue) {
-      next.set("q", trimmedValue);
+      next.set("searchResourceText", trimmedValue);
     } else {
-      next.delete("q");
+      next.delete("searchResourceText");
     }
 
     next.delete("searchText");

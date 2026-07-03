@@ -45,7 +45,9 @@ export default function RepositoryPage() {
     if (hasClearedInitialSearchRef.current) return;
     hasClearedInitialSearchRef.current = true;
 
-    const urlSearch = searchParams.get("q") || searchParams.get("searchText");
+    const urlSearch =
+      searchParams.get("searchResourceText") ||
+      searchParams.get("searchText");
     if (!urlSearch && (q || searchInput)) {
       setSearch("");
     }

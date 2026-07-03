@@ -49,7 +49,9 @@ useEffect(() => {
 
   useEffect(() => {
     const urlQuery =
-      searchParams.get("q") || searchParams.get("searchText") || "";
+      searchParams.get("searchResourceText") ||
+      searchParams.get("searchText") ||
+      "";
     const trimmedUrlQuery = urlQuery.trim();
     const { q: currentSearch, searchInput: currentSearchInput } =
       useRepositoryStore.getState();
@@ -65,7 +67,7 @@ useEffect(() => {
       if (searchParams.has("searchText")) {
         const next = new URLSearchParams(searchParams.toString());
         next.delete("searchText");
-        next.set("q", trimmedUrlQuery);
+        next.set("searchResourceText", trimmedUrlQuery);
         setSearchParams(next, { replace: true });
       }
     } else if (currentSearch) {
