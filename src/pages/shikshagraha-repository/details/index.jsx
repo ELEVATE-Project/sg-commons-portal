@@ -339,11 +339,14 @@ function ResourceMeta({ resource }) {
         {t("repository.publishedOn")}:
       </span>
 
-      {new Date(resource?.created_at).toLocaleDateString("en-US", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-      })}
+      {resource?.created_at &&
+ !Number.isNaN(new Date(resource.created_at).getTime())
+  ? new Date(resource.created_at).toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    })
+  : "-"}
     </span>
   </div>
 </div>
@@ -354,7 +357,7 @@ function ResourceMeta({ resource }) {
     <Eye size={22} />
 
     <span
-      className="flex items-center w-[2.313rem] h-[2.125rem] font-dm font-normal text-[1.45rem]leading-[2.125rem]"
+      className="flex items-center w-[2.313rem] h-[2.125rem] font-dm font-normal text-[1.45rem] leading-[2.125rem]"
     >
       {resource?.view_count || "0"}
     </span>
@@ -364,7 +367,7 @@ function ResourceMeta({ resource }) {
     <Download size={22} />
 
     <span
-      className="flex items-center w-[2.313rem] h-[2.125rem] font-dm font-normal text-[1.45rem]leading-[2.125rem]"
+      className="flex items-center w-[2.313rem] h-[2.125rem] font-dm font-normal text-[1.45rem] leading-[2.125rem]"
     >
       {resource?.download_count || "0"}
     </span>

@@ -95,6 +95,10 @@ text: "text-repository-xlsxTagText",
 }
 
 export const getSourceProviderIcon = provider => {
+  if (provider == null) {
+    return LocalUploadIcon;
+  }
+
   switch (provider) {
     case "GOOGLE_DRIVE":
       return GoogleDriveIcon;
@@ -109,7 +113,7 @@ export const getSourceProviderIcon = provider => {
       return LocalUploadIcon;
 
     default:
-      return LocalUploadIcon;
+      return null;
   }
 };
 
@@ -351,7 +355,7 @@ title={resource.organization}
 {sourceProviderIcon && (
   <img
     src={sourceProviderIcon}
-    alt={resource?.source_provider}
+    alt={resource?.source_provider || t("repository.organization")}
     className="w-5 h-5 object-contain flex-shrink-0"
   />
 )}
