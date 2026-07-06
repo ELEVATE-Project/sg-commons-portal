@@ -12,6 +12,8 @@ import SearchIcon from "assets/icons/search.svg";
 import MicIcon from "assets/icons/mic.svg";
 import SendIcon from "assets/icons/send.svg";
 import ClearIcon from "assets/icons/clear.svg";
+import { useSearchParams } from "react-router-dom";
+import ROUTES from "../../url";
 
 const scrollToBrowseResources = () => {
   const browseSection = document.querySelector("[data-browse-resources]");
@@ -20,12 +22,13 @@ const scrollToBrowseResources = () => {
   }
 };
 
-export default function RepositorySearch({ variant = "hero", className = "" }) {
+export default function RepositorySearch({ variant = "hero", className = "",onSearch = null  }) {
   const { t } = useTranslation();
   const search = useRepositoryStore((state) => state.searchInput);
   const setGlobalSearch = useRepositoryStore((state) => state.setSearch);
   const setSearchInput = useRepositoryStore((state) => state.setSearchInput);
   const loadingList = useRepositoryStore((state) => state.loadingList);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const languageToUse = useSiteDataLocalStore((state) => state.chatLanguage);
   const sessionId = useChatStorage()((state) => state.sessionId);
@@ -83,12 +86,49 @@ useEffect(() => {
     return () => clearInterval(intervalIdRef.current);
   }, [hasStartedRecording]);
 
+  const syncSearchParam = (value) => {
+    if (
+      typeof window === "undefined" ||
+      !window.location.pathname.endsWith(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST)
+    ) {
+      return;
+    }
+
+    const next = new URLSearchParams(searchParams.toString());
+    const trimmedValue = value.trim();
+
+    if (trimmedValue) {
+      next.set("searchResourceText", trimmedValue);
+    } else {
+      next.delete("searchResourceText");
+    }
+
+    next.delete("searchText");
+
+    if (trimmedValue) {
+      setSearchParams(next, { replace: true });
+    } else {
+      const nextSearch = next.toString();
+      window.history.replaceState(
+        window.history.state,
+        "",
+        `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}`
+      );
+      setSearchParams(next, { replace: true });
+    }
+  };
+
   const submitSearch = (value) => {
     const trimmedSearch = value.trim();
     if (!trimmedSearch || loadingList) return;
 
     setGlobalSearch(trimmedSearch);
-    scrollToBrowseResources();
+    if (onSearch) {
+      onSearch(trimmedSearch);
+    } else {
+      syncSearchParam(trimmedSearch);
+      scrollToBrowseResources();
+    }
   };
 
   const handleSendMessage = (event) => {
@@ -101,6 +141,7 @@ useEffect(() => {
 
     setSearchInput(value);
     if (value.trim() === "") {
+      syncSearchParam("");
       setGlobalSearch("");
     }
   };
@@ -216,7 +257,8 @@ useEffect(() => {
     mediaRecorder?.stop();
   };
 
-  const clearSearch = () => {
+const clearSearch = () => {
+  syncSearchParam("");
   setSearchInput("");
   setGlobalSearch("");
 };

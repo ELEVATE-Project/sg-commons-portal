@@ -80,7 +80,7 @@ export default function ResourceDetailPage() {
             {t("common.loadingText")}
           </div>
         )}
-        <BackButton title={resourceData?.title} />
+        <BackButton title={resourceData?.title} resource={resourceData} />
         <div className="flex gap-8 mt-2">
           {/* <ResourceImages images={resourceData?.images} /> */}
           <ResourceMeta resource={resourceData} />
@@ -97,9 +97,26 @@ export default function ResourceDetailPage() {
 
 // --- Components below --- //
 
-function BackButton({ title }) {
+function BackButton({ title, resource }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const masterList = useRepositoryStore((state) => state.masterList);
+
+  const resolvedOrgParam = (() => {
+    const raw = resource?.organization;
+    if (!raw) return null;
+    try {
+      const orgDropdown = masterList?.find((d) => d.key === "organizations");
+      const match = orgDropdown?.options?.find(
+        (o) => String(o.value) === String(raw) || String((o.display || "")).toLowerCase() === String(raw).toLowerCase()
+      );
+      const val = match ? match.value : raw;
+      return encodeURIComponent(val);
+    } catch (e) {
+      return encodeURIComponent(raw);
+    }
+  })();
+
   return (
     <div className="flex items-center gap-2 text-sm text-repository-textSecondary mb-6">
       <button onClick={async () => {
@@ -108,6 +125,18 @@ function BackButton({ title }) {
           const histState = (window && window.history && window.history.state) || {};
           // If previous page was listing (either via referrer or history.state), navigate to clean listing and clear filters
           if ((ref && ref.includes('/resources')) || histState?.fromDetail || histState?.fromResource) {
+            if (resolvedOrgParam) {
+              const fromParam = resource?.id ? `&fromResource=${encodeURIComponent(resource.id)}` : "";
+              try {
+                sessionStorage.setItem('sg:lastFromDetail', JSON.stringify({ id: resource?.id, ts: Date.now() }));
+              } catch (e) {}
+              navigate(
+                { pathname: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, search: `?org=${resolvedOrgParam}${fromParam}` },
+                { replace: true, state: { fromDetail: true, fromResource: resource?.id } }
+              );
+              return;
+            }
+
             try {
               // clear transient filters before navigating back to listing
               const clearAtomic = useRepositoryStore.getState().clearTransientFiltersAtomic;

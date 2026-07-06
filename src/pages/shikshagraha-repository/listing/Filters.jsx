@@ -1,4 +1,4 @@
-  import React, { useEffect, useState, useRef } from "react"
+  import React, { useEffect, useState, useRef, useCallback } from "react"
   import { createPortal } from "react-dom"
   import { useTranslation } from "react-i18next"
   import { theme } from "../../../theme"
@@ -411,7 +411,10 @@
 
     useEffect(() => {
       fetchMasterList()
-      const searched_param = new URLSearchParams(window.location.search)?.get("q")
+      const urlParams = new URLSearchParams(window.location.search)
+      const searched_param =
+        urlParams.get("searchResourceText") ||
+        urlParams.get("searchText")
       setSearchInput(searched_param ?? "")
       setGlobalSearch(searched_param ?? "")
       return () => {
@@ -474,41 +477,59 @@
     // build filters inner content so we can reuse in-place and in a portal
     const setLocalFilterQuery = (key, val) => setQueryMap(prev => ({ ...prev, [key]: val }))
 
-    const openDrawer = () => {
-      // create a shallow copy of filters for local editing
-      try {
-        setPendingFilters(JSON.parse(JSON.stringify(filters || {})))
-      } catch (e) {
-        setPendingFilters({ ...filters })
-      }
-      // determine which sections to open based on currently applied filters
-      if (dropdown_meta && dropdown_meta.length) {
-        const isNonEmpty = (v) => {
-          if (v == null) return false
-          if (Array.isArray(v)) return v.length > 0
-          if (typeof v === 'string') return v.trim() !== ''
-          if (typeof v === 'object') return Object.keys(v).length > 0
-          return Boolean(v)
-        }
-
-        const selectedKeys = Object.keys(filters || {}).filter(k => isNonEmpty(filters[k]))
-
-        const map = {}
-        if (selectedKeys.length > 0) {
-          // open only the filter sections that are currently selected
-          dropdown_meta.forEach((d) => {
-            map[d.key] = selectedKeys.includes(d.key)
-          })
-        } else {
-          // default: open the first section
-          dropdown_meta.forEach((d, i) => {
-            map[d.key] = i === 0
-          })
-        }
-        setOpenMap(map)
-      }
-      setIsDrawerOpen(true)
+    const openDrawer = useCallback(() => {
+  // create a shallow copy of filters for local editing
+  try {
+    setPendingFilters(JSON.parse(JSON.stringify(filters || {})))
+  } catch (e) {
+    setPendingFilters({ ...filters })
+  }
+  // determine which sections to open based on currently applied filters
+  if (dropdown_meta && dropdown_meta.length) {
+    const isNonEmpty = (v) => {
+      if (v == null) return false
+      if (Array.isArray(v)) return v.length > 0
+      if (typeof v === 'string') return v.trim() !== ''
+      if (typeof v === 'object') return Object.keys(v).length > 0
+      return Boolean(v)
     }
+
+    const selectedKeys = Object.keys(filters || {}).filter(k => isNonEmpty(filters[k]))
+
+    const map = {}
+    if (selectedKeys.length > 0) {
+      // open only the filter sections that are currently selected
+      dropdown_meta.forEach((d) => {
+        map[d.key] = selectedKeys.includes(d.key)
+      })
+    } else {
+      // default: open the first section
+      dropdown_meta.forEach((d, i) => {
+        map[d.key] = i === 0
+      })
+    }
+    setOpenMap(map)
+  }
+  setIsDrawerOpen(true)
+}, [dropdown_meta, filters])
+
+
+useEffect(() => {
+  const handleOpenFilterGroup = (event) => {
+    const group = event?.detail?.group
+    if (!group) return
+
+    if (!isDrawerOpen) {
+      openDrawer()
+    }
+    setOpenMap((prev) => ({ ...prev, [group]: true }))
+  }
+
+  window.addEventListener("sg-open-filter-group", handleOpenFilterGroup)
+  return () => {
+    window.removeEventListener("sg-open-filter-group", handleOpenFilterGroup)
+  }
+}, [isDrawerOpen, openDrawer])
 
     const pendingCount = Object.values(pendingFilters || {}).reduce((s, v) => s + (Array.isArray(v) ? v.length : 0), 0)
 
@@ -691,7 +712,7 @@
                                     </button>
                                   </div>
                                 </div>
-                                <DropdownSelect compact label={label} options={filtered} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} />
+                                <DropdownSelect compact sectionKey={key} isFiltered={!!q} label={label} options={filtered} allOptions={options || []} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} />
                               </>
                             ) : null}
                           </div>
@@ -884,14 +905,23 @@
   const MenuList = props => {
     const { t } = useTranslation();
     const { options, value, onChange } = props.selectProps
+    const getOptionValue = item => {
+      if (item == null) return ""
+      if (typeof item === "string" || typeof item === "number") return String(item)
+      return String(item.value ?? item.display ?? item.label ?? "")
+    }
 
-    const allSelected = value?.length === options?.length
+    const selectedValues = new Set((value || []).map(getOptionValue).filter(Boolean))
+    const validOptions = (options || []).filter(option => getOptionValue(option))
+    const allSelected =
+      validOptions.length > 0 &&
+      validOptions.every(option => selectedValues.has(getOptionValue(option)))
 
     const toggleSelectAll = () => {
       if (allSelected) {
         onChange([], { action: "deselect-all" })
       } else {
-        onChange(options, { action: "select-all" })
+        onChange(validOptions, { action: "select-all" })
       }
     }
 
@@ -944,27 +974,59 @@
     )
   }
 
-  const DropdownSelect = ({ label, options = [], selected = [], onChange, compact = false }) => {
+  const DropdownSelect = ({ label, options = [], allOptions = [], selected = [], onChange, compact = false, sectionKey = "", isFiltered = false }) => {
     const { t } = useTranslation();
     const selectedCount = Array.isArray(selected) ? selected.length : 0
+    const getOptionValue = item => {
+      if (item == null) return ""
+      if (typeof item === "string" || typeof item === "number") return String(item)
+      return String(item.value ?? item.display ?? item.label ?? "").trim()
+    }
+    const getOptionKey = item => getOptionValue(item).toLowerCase()
+    const normalizeOptions = items => {
+      const seen = new Set()
+      return (items || [])
+        .map(o => ({
+          value: getOptionValue(o),
+          label: o.display || o.label || o.value,
+        }))
+        .filter(o => o.value)
+        .filter(o => {
+          const key = getOptionKey(o)
+          if (seen.has(key)) return false
+          seen.add(key)
+          return true
+        })
+    }
 
     // Normalize options to { value, label }
-    const optionsList = (options || []).map(o => ({ value: o.value, label: o.display || o.label || o.value }))
+    const optionsList = normalizeOptions(options)
 
     if (compact) {
-      const selectedValues = new Set((selected || []).map(s => (typeof s === 'string' ? s : s.value)))
-      const allSelected = optionsList.length > 0 && optionsList.every(o => selectedValues.has(o.value))
+      const selectedItems = Array.isArray(selected)
+        ? selected
+        : String(selected || "")
+            .split(",")
+            .map(value => value.trim())
+            .filter(Boolean)
+      const selectedValues = new Set(selectedItems.map(getOptionKey).filter(Boolean))
+      const compareOptionsList =
+        sectionKey === "tags" && !isFiltered ? normalizeOptions(allOptions) : optionsList
+      const allSelectedByValue =
+        compareOptionsList.length > 0 &&
+        compareOptionsList.every(o => selectedValues.has(getOptionKey(o)))
+      const allSelected = allSelectedByValue
 
       const toggleSelectAll = () => {
         if (allSelected) onChange([])
-        else onChange(optionsList)
+        else onChange(compareOptionsList)
       }
 
       const toggleOption = opt => {
-        const isSelected = selectedValues.has(opt.value)
+        const isSelected = selectedValues.has(getOptionKey(opt))
         let next
         if (isSelected) {
-          next = (selected || []).filter(s => (typeof s === 'string' ? s : s.value) !== opt.value)
+          next = (selected || []).filter(s => getOptionKey(s) !== getOptionKey(opt))
         } else {
           next = [...(selected || []), { value: opt.value, label: opt.label }]
         }
@@ -1017,7 +1079,7 @@
 
           {/* Options */}
           {optionsList.map(opt => {
-            const isChecked = selectedValues.has(opt.value)
+            const isChecked = selectedValues.has(getOptionKey(opt))
 
             return (
               <label

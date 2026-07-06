@@ -10,6 +10,7 @@ import { theme } from "../../../theme";
 import PageHeader from "../../../components/PageHeader";
 import left1 from "assets/dandelion-left-1.png";
 import right2 from "assets/dandelion-right-2.png";
+import { useSearchParams } from "react-router-dom";
 
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
@@ -20,6 +21,8 @@ export default function RepositoryPage() {
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
   const q = useRepositoryStore((state) => state.q);
+  const searchInput = useRepositoryStore((state) => state.searchInput);
+  const setSearch = useRepositoryStore((state) => state.setSearch);
 
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
   const pagination = useRepositoryStore((state) => state.pagination);
@@ -29,6 +32,7 @@ export default function RepositoryPage() {
 );
   const itemsPerPage = pagination.limit;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [searchParams, setSearchParams] = useSearchParams();
 
 useEffect(() => {
   const handleResize = () => {
@@ -42,6 +46,34 @@ useEffect(() => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    const urlQuery =
+      searchParams.get("searchResourceText") ||
+      searchParams.get("searchText") ||
+      "";
+    const trimmedUrlQuery = urlQuery.trim();
+    const { q: currentSearch, searchInput: currentSearchInput } =
+      useRepositoryStore.getState();
+
+    if (trimmedUrlQuery) {
+      if (
+        currentSearch !== trimmedUrlQuery ||
+        currentSearchInput !== trimmedUrlQuery
+      ) {
+        setSearch(trimmedUrlQuery);
+      }
+
+      if (searchParams.has("searchText")) {
+        const next = new URLSearchParams(searchParams.toString());
+        next.delete("searchText");
+        next.set("searchResourceText", trimmedUrlQuery);
+        setSearchParams(next, { replace: true });
+      }
+    } else if (currentSearch || currentSearchInput) {
+      setSearch("");
+    }
+  }, [searchParams, setSearch, setSearchParams]);
 
   useEffect(() => {
     // Only fetch if media list is empty to avoid duplicate initial requests

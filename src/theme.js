@@ -71,6 +71,9 @@ export const theme = {
     "--listing-text-normal":"#6B7280",
     "--listing-text-light":"#71717A",
     "--listing-bg-voilet":"#59544999",
+    "--listing-filter-chip-background":"#5832AC33",
+    "--listing-filter-chip-background-hover":"#5832AC40",
+    "--listing-filter-chip-text":"#5E35B1"
 
   },
 }

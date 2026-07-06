@@ -6,9 +6,14 @@ import left2 from "assets/hero-section-image-2.svg";
 import right1 from "assets/hero-section-image-3.svg";
 import right2 from "assets/hero-section-image-4.svg";
 import scrollDownIcon from 'assets/scroll-down.svg';
-
+import { useNavigate } from "react-router-dom";
+import ROUTES from "../../../url";
 export default function HeroSection() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const handleSearchFromHero = (searchQuery) => {
+    navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?searchResourceText=${encodeURIComponent(searchQuery)}`);
+  };
   const handleScrollDown = () => {
   if (typeof window === "undefined") return;
   window.scrollBy({ top: 600, left: 0, behavior: "smooth" });
@@ -108,7 +113,7 @@ useEffect(() => {
   {t('repository.hero.description')}
 </p>    
 
-        <RepositorySearch />
+        <RepositorySearch  onSearch={handleSearchFromHero}/>
           {/* Scroll */}
 
         
