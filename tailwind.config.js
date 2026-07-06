@@ -105,7 +105,8 @@ module.exports = {
 					badgeBorder: "#D7D7D7",
 					downloadBtnBg: "rgba(127,50,137,0.8)",
 					downloadBtnHoverBg: "rgba(127,50,137,0.9)",
-					viewAllText: "#5038E8"
+					viewAllText: "#5038E8",
+					successDark: "#047857",
 				},
 			},
 			fontFamily: {

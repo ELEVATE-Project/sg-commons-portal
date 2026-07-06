@@ -2,8 +2,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Download, Heart, Share2, Star, Eye, ChevronDown } from "lucide-react";
 import left1 from "assets/dandelion-left-1.png";
-import left2 from "assets/dandelion-left-2.png";
-import right1 from "assets/dandelion-right-1.png";
 import right2 from "assets/dandelion-right-2.png";
 import ReviewForm from "./ReviewForm";
 import { useNavigate, useParams } from "react-router-dom";
@@ -293,14 +291,36 @@ function ResourceMeta({ resource }) {
 <div className="flex flex-col lg:flex-row lg:justify-between gap-4">
   {/* Left Section */}
  <div className="flex-1 min-w-0">
-  <div className="flex flex-wrap items-center gap-3 min-w-0">
-    <h1 className="font-['Comfortaa'] font-bold text-[1.45rem] leading-[1.688rem] tracking-[-0.03rem] text-repository-title min-w-0 flex-shrink">
+  <div className="flex flex-wrap items-center gap-6 min-w-0">
+    <h1 className="font-comfortaa font-bold text-[1.45rem] leading-[1.688rem] tracking-[-0.03rem] text-repository-title min-w-0 flex-shrink">
       {resource?.title}
     </h1>
 
-    <span className={`${tagBg} ${tagText} px-2 py-1 rounded font-['DM_Sans'] font-semibold text-[0.665rem] leading-[0.938rem] whitespace-nowrap`}>
-      {fileType}
-    </span>
+<span
+  className={`
+    ${tagBg}
+    ${tagText}
+    inline-flex
+    items-center
+    justify-center
+    box-border
+    px-[0.363rem]
+    py-[0.121rem]
+    min-w-[2.722rem]
+    h-[1.363rem]
+    border
+    border-repository-badgeBorder
+    rounded-[0.242rem]
+    font-dm
+    font-semibold
+    text-[0.665rem]
+    leading-[0.938rem]
+    whitespace-nowrap
+    flex-none
+  `}
+>
+  {fileType}
+</span>
 
     <span
       className="
@@ -315,7 +335,7 @@ function ResourceMeta({ resource }) {
         whitespace-nowrap
       "
     >
-      <span className="text-repository-success font-medium">
+      <span className="flex items-center h-[1.313rem] font-sourceSans font-normal text-[0.919rem] leading-[1.313rem] text-repository-successDark">
         {t("repository.publishedOn")}:
       </span>
 
@@ -329,14 +349,14 @@ function ResourceMeta({ resource }) {
 </div>
 
   {/* Right Section */}
-  <div className="flex items-center gap-4 lg:gap-8 shrink-0">
+  <div className="flex items-center gap-2 lg:gap-0 shrink-0">
   <div className="flex items-center gap-2 text-repository-title">
     <Eye size={22} />
 
     <span
       className="flex items-center w-[2.313rem] h-[2.125rem] font-dm font-normal text-[1.45rem]leading-[2.125rem]"
     >
-      {resource?.views || "0"}
+      {resource?.view_count || "0"}
     </span>
   </div>
 
@@ -346,14 +366,14 @@ function ResourceMeta({ resource }) {
     <span
       className="flex items-center w-[2.313rem] h-[2.125rem] font-dm font-normal text-[1.45rem]leading-[2.125rem]"
     >
-      {resource?.downloads || "0"}
+      {resource?.download_count || "0"}
     </span>
   </div>
 </div>
 </div>
 
         {/* Description */}
-        <p className="font-['Source_Sans_3'] font-normal text-[1.088rem] leading-[1.563rem] text-repository-cardDescription flex items-center mt-2">
+        <p className="font-sourceSans font-normal text-[1.088rem] leading-[1.563rem] text-repository-cardDescription flex items-center mt-2">
           {resource?.description}
         </p>
 
@@ -371,7 +391,7 @@ function ResourceMeta({ resource }) {
   ${tagBg}
   ${tagText}
   rounded-[604.753rem]
-  font-['manrope']
+  font-manrope
   font-medium
   text-[0.847rem]
   leading-[1.125rem]
@@ -386,8 +406,16 @@ function ResourceMeta({ resource }) {
         {/* Buttons */}
         <div className="mt-5 flex justify-between items-center flex-wrap gap-4">
           <div className="flex gap-3">
-            <button
-  onClick={() => {
+<button
+  onClick={async () => {
+    try {
+      if (resource?.id) {
+        await trackResourceDownload(resource.id);
+      }
+    } catch (err) {
+      console.error("Failed to track download", err);
+    }
+
     const success = openSafeUrl(resource?.file);
 
     if (!success) {
@@ -395,28 +423,41 @@ function ResourceMeta({ resource }) {
     }
   }}
   className="
-    bg-repository-downloadBtnBg
-hover:bg-repository-downloadBtnHoverBg
-    text-white
-
-    flex items-center
+    inline-flex
+    items-center
+    justify-center
     gap-[0.38rem]
-
-    px-[0.95rem] py-[0.475rem]
+    box-border
+    w-[9.227rem]
+    h-[2.802rem]
+    pl-[0.95rem]
     pr-[1.138rem]
-
-    h-[2.8rem]
-
+    py-[0.475rem]
+    bg-repository-downloadBtnBg
+    hover:bg-repository-downloadBtnHoverBg
     rounded-[0.38rem]
-
-    font-['manrope']
-    font-medium
-    text-[1.139rem]
-    leading-[1.563rem]
+    text-white
+    transition-colors
+    flex-none
   "
 >
-  <Download size={18} />
-  <span className="flex items-center h-[1.563rem]">
+  <Download className="w-[1.125rem] h-[1.125rem] shrink-0" />
+
+  <span
+    className="
+      flex
+      items-center
+      justify-center
+      w-[5.375rem]
+      h-[1.563rem]
+      font-dm
+      font-medium
+      text-[1.14rem]
+      leading-[1.563rem]
+      text-center
+      text-white
+    "
+  >
     {t("common.download")}
   </span>
 </button>
@@ -426,14 +467,14 @@ hover:bg-repository-downloadBtnHoverBg
                 navigator.clipboard.writeText(window.location.href);
                 toast("Link copied");
               }}
-              className="border border-repository-controlBorder px-4 py-2 rounded-[0.438rem] flex items-center gap-2 font-medium font-['manrope'] text-[1.10rem] text-black"
+              className="border border-repository-controlBorder px-4 py-2 rounded-[0.438rem] flex items-center gap-2 font-medium font-manrope text-[1.10rem] text-black"
             >
               <Share2 size={18} />
               {t("common.share")}
             </button>
           </div>
 
-          <button
+<button
   disabled={!resolvedOrgParam}
   onClick={() => {
     if (!resolvedOrgParam) return;
@@ -465,46 +506,58 @@ hover:bg-repository-downloadBtnHoverBg
     window.history.replaceState(st, "", window.location.href);
   }}
   className={`
-    inline-flex
-    items-center
-    px-[0.625rem]
-    py-[0.5rem]
-    gap-[0.101rem]
-    bg-repository-surface
-    border-[0.188rem]
-    border-repository-iconBg
-    rounded-[0.484rem]
-    transition-colors
-    ${!resolvedOrgParam ? "opacity-50 cursor-not-allowed" : ""}
-  `}
+  inline-flex
+  items-center
+  justify-center
+  box-border
+  w-full
+  sm:w-auto
+  min-h-[3.254rem]
+  px-[0.726rem]
+  py-[0.5rem]
+  gap-[0.25rem]
+  bg-repository-surface
+  border-[0.125rem]
+  border-repository-iconBg
+  rounded-[0.484rem]
+  transition-colors
+  ${!resolvedOrgParam ? "opacity-50 cursor-not-allowed" : ""}
+`}
 >
-  <span className="inline-flex items-center gap-[0.75rem]">
+  <span className="inline-flex items-center flex-wrap sm:flex-nowrap gap-[0.5rem] w-full sm:w-auto">
   {resource?.org_logo && (
-   <span
-  className="
-    inline-flex
-    items-center
-    justify-center
-    border
-    border-repository-badgeBorder
-    rounded-[0.25rem]
-    overflow-hidden
-  "
->
-  <img
-    src={resource.org_logo}
-    alt={resource?.organization || "Organization"}
-    className="block h-[1.25rem] w-[1.25rem] object-cover"
-  />
-</span>
+    <span
+      className="
+        inline-flex
+        items-center
+        justify-center
+        box-border
+        w-[6.307rem]
+        max-w-full
+        h-[1.802rem]
+        p-[0.246rem]
+        border
+        border-repository-badgeBorder
+        rounded-[0.41rem]
+        overflow-hidden
+        shrink-0
+      "
+    >
+      <img
+        src={resource.org_logo}
+        alt={resource?.organization || "Organization"}
+        className="max-w-full h-[1.311rem] object-contain"
+      />
+    </span>
   )}
 
   <span
     className="
       inline-flex
       items-center
-      h-[1rem]
-      font-['manrope']
+      min-w-0
+      sm:w-[8.625rem]
+      font-dm
       font-normal
       text-[1.033rem]
       leading-[0.938rem]
@@ -517,7 +570,7 @@ hover:bg-repository-downloadBtnHoverBg
 
   <img
     src={viewAllIcon}
-    alt=""  
+    alt=""
     aria-hidden="true"
     className="w-[0.625rem] h-[0.625rem] shrink-0"
   />
@@ -641,7 +694,7 @@ function AccordionOverview({ overview }) {
             }
             className="w-full flex items-center justify-between px-6 py-3 text-left"
           >
-            <span className="font-['Comfortaa'] font-medium text-[1rem] leading-[1.9375rem] capitalize text-repository-docxBg flex-1">
+            <span className="font-comfortaa font-medium text-[1rem] leading-[1.9375rem] capitalize text-repository-docxBg flex-1">
               {index + 1}. {key}
             </span>
 

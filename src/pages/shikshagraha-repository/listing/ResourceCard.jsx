@@ -21,10 +21,11 @@ const MEDIA_FILE_TYPE = {
   DOCX: "DOCX",
   XLSX: "XLSX",
   PPTX: "PPTX",
+  CSV: "CSV"
 }
 
 export const getMediaFileTypeStyles = type => {
-  switch (type) {
+  switch (type?.toUpperCase()) {
     case MEDIA_FILE_TYPE.PDF:
       return {
         background: "bg-repository-pdfBg",
@@ -38,6 +39,7 @@ export const getMediaFileTypeStyles = type => {
       }
 
     case MEDIA_FILE_TYPE.XLSX:
+    case MEDIA_FILE_TYPE.CSV:
       return {
         background: "bg-repository-xlsxBg",
         icon: XlsxIcon,
@@ -72,6 +74,7 @@ text: "text-repository-docxTagText",
       }
 
     case MEDIA_FILE_TYPE.XLSX:
+    case MEDIA_FILE_TYPE.CSV:
       return {
         bg: "bg-repository-xlsxTagBg",
 text: "text-repository-xlsxTagText",
