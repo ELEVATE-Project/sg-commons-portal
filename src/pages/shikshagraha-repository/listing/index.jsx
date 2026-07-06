@@ -22,6 +22,8 @@ export default function RepositoryPage() {
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
   const q = useRepositoryStore((state) => state.q);
+  const searchInput = useRepositoryStore((state) => state.searchInput);
+  const setSearch = useRepositoryStore((state) => state.setSearch);
 
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
   const pagination = useRepositoryStore((state) => state.pagination);
@@ -53,7 +55,34 @@ useEffect(() => {
     offset: (page - 1) * pagination.limit,
     limit: pagination.limit,
   });
-}, []);
+
+
+    const urlQuery =
+      searchParams.get("searchResourceText") ||
+      searchParams.get("searchText") ||
+      "";
+    const trimmedUrlQuery = urlQuery.trim();
+    const { q: currentSearch, searchInput: currentSearchInput } =
+      useRepositoryStore.getState();
+
+    if (trimmedUrlQuery) {
+      if (
+        currentSearch !== trimmedUrlQuery ||
+        currentSearchInput !== trimmedUrlQuery
+      ) {
+        setSearch(trimmedUrlQuery);
+      }
+
+      if (searchParams.has("searchText")) {
+        const next = new URLSearchParams(searchParams.toString());
+        next.delete("searchText");
+        next.set("searchResourceText", trimmedUrlQuery);
+        setSearchParams(next, { replace: true });
+      }
+    } else if (currentSearch || currentSearchInput) {
+      setSearch("");
+    }
+  }, [searchParams, setSearch, setSearchParams]);
 
 
   useEffect(() => {

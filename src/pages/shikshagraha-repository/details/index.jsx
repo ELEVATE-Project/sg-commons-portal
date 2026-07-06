@@ -66,10 +66,10 @@ export default function ResourceDetailPage() {
       <div
         className="fixed top-0 left-0 right-0 w-screen h-screen pointer-events-none z-0"
         style={{
-          backgroundImage: `url(${left1}), url(${right1}), url(${left2}), url(${right2})`,
-          backgroundPosition: "left 0rem top 25rem, right 0rem top 31.25rem, left 0rem bottom 0rem, right 0rem bottom 0rem",
+          backgroundImage: `url(${left1}), url(${right2})`,
+          backgroundPosition: "left 4rem top 25rem, right 6rem top 31.25rem",
           backgroundRepeat: "no-repeat",
-          backgroundSize: "10rem, 10rem, 12.5rem, 12.5rem",
+          backgroundSize: "10rem, 15rem",
         }}
       />
       <div
@@ -84,7 +84,7 @@ export default function ResourceDetailPage() {
             {t("common.loadingText")}
           </div>
         )}
-        <BackButton title={resourceData?.title} />
+        <BackButton title={resourceData?.title} resource={resourceData} />
         <div className="px-2 sm:px-6 md:px-10">
         <div className="flex gap-8 mt-2">
           {/* <ResourceImages images={resourceData?.images} /> */}
@@ -105,9 +105,33 @@ export default function ResourceDetailPage() {
 
 // --- Components below --- //
 
-function BackButton({ title }) {
+function BackButton({ title, resource }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const masterList = useRepositoryStore((state) => state.masterList);
+
+  const resolvedOrgParam = (() => {
+    const raw = resource?.organization;
+    if (!raw) return null;
+
+    try {
+      const orgDropdown = masterList?.find(
+        (d) => d.key === "organizations"
+      );
+
+      const match = orgDropdown?.options?.find(
+        (o) =>
+          String(o.value) === String(raw) ||
+          String(o.display || "").toLowerCase() ===
+            String(raw).toLowerCase()
+      );
+
+      const val = match ? match.value : raw;
+      return encodeURIComponent(val);
+    } catch {
+      return encodeURIComponent(raw);
+    }
+  })();
 
   const handleBack = async () => {
     const ref = document.referrer;
@@ -115,45 +139,98 @@ function BackButton({ title }) {
       (window && window.history && window.history.state) || {};
 
     if (
-  (ref && ref.includes("/resources")) ||
-  histState?.fromDetail ||
-  histState?.fromResource
-) {
-  const clearAtomic =
-    useRepositoryStore.getState().clearTransientFiltersAtomic;
+      (ref && ref.includes("/resources")) ||
+      histState?.fromDetail ||
+      histState?.fromResource
+    ) {
+      // If resource belongs to an organization, preserve that filter
+      if (resolvedOrgParam) {
+        const fromParam = resource?.id
+          ? `&fromResource=${encodeURIComponent(resource.id)}`
+          : "";
 
-  navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, {
-    replace: true,
-  });
+        try {
+          sessionStorage.setItem(
+            "sg:lastFromDetail",
+            JSON.stringify({
+              id: resource?.id,
+              ts: Date.now(),
+            })
+          );
+        } catch {}
 
-  if (clearAtomic) {
-    clearAtomic().catch(console.error);
-  }
+        navigate(
+          {
+            pathname: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST,
+            search: `?org=${resolvedOrgParam}${fromParam}`,
+          },
+          {
+            replace: true,
+            state: {
+              fromDetail: true,
+              fromResource: resource?.id,
+            },
+          }
+        );
 
-  return;
-}
+        return;
+      }
+
+      // Default behaviour - clear transient filters
+      try {
+        const clearAtomic =
+          useRepositoryStore.getState().clearTransientFiltersAtomic;
+
+        if (clearAtomic) {
+          await clearAtomic();
+        }
+
+        navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, {
+          replace: true,
+        });
+      } catch (e) {
+        // Fallback
+        const store = useRepositoryStore.getState();
+
+        if (store.forceResetFilters) {
+          store.forceResetFilters({ skipFetch: true });
+        } else {
+          store.resetFilters({ skipFetch: true });
+        }
+
+        navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, {
+          replace: true,
+        });
+
+        if (store.fetchMediaList) {
+          store.fetchMediaList({}, true);
+        }
+      }
+
+      return;
+    }
 
     navigate(-1);
   };
 
   return (
-  <div className="flex items-center gap-2 text-sm text-repository-title mb-6 min-w-0">
-    <button
-      type="button"
-      onClick={handleBack}
-      className="flex items-center gap-2 cursor-pointer"
-    >
-      <ArrowLeft size={16} />
-      <span>{t("common.back")}</span>
-    </button>
+    <div className="flex items-center gap-2 text-sm text-repository-title mb-6 min-w-0">
+      <button
+        type="button"
+        onClick={handleBack}
+        className="flex items-center gap-2 cursor-pointer"
+      >
+        <ArrowLeft size={16} />
+        <span>{t("common.back")}</span>
+      </button>
 
-    <span className="text-repository-controlIcon">/</span>
+      <span className="text-repository-controlIcon">/</span>
 
-    <span className="text-repository-controlIcon flex-1 min-w-0 truncate">
-      {title}
-    </span>
-  </div>
-);
+      <span className="text-repository-controlIcon flex-1 min-w-0 truncate">
+        {title}
+      </span>
+    </div>
+  );
 }
 
 export function ResourceImages({ images }) {
