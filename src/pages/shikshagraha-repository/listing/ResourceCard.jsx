@@ -102,11 +102,11 @@ export const getSourceProviderIcon = provider => {
     case "AWS_S3":
       return AwsS3Icon;
 
-    case "LOCAL_UPLOAD":
+    case "LOCAL":
       return LocalUploadIcon;
 
     default:
-      return null;
+      return LocalUploadIcon;
   }
 };
 
@@ -202,7 +202,7 @@ const handleCardKeyDown = (e) => {
   <div className="flex items-center gap-1">
     <Eye size={12} />
     <span className="text-[0.6875rem]">
-      {resource?.view_count ?? 0}k
+      {resource?.view_count ?? 0}
     </span>
   </div>
 
@@ -292,7 +292,7 @@ px-1.5 sm:px-2
     <div className="flex items-center gap-1">
       <Eye size={14} />
       <span className="text-[0.813rem]">
-        {resource?.view_count ?? 0}k
+        {resource?.view_count ?? 0}
       </span>
     </div>
 
@@ -453,35 +453,31 @@ title={resource.organization}
       {/* Tags + Footer Section */}
       <div className="w-full flex flex-col gap-[0.3125rem] mt-auto">
         {/* Tags */}
-        {resource?.tag_names?.length > 0 && (
-  <div className="pb-[0.75rem] border-b border-repository-subtitle">
+<div className="pb-[0.75rem] border-b border-repository-subtitle min-h-[2.25rem]">
+  {resource?.tag_names?.length > 0 && (
     <div className="flex items-center gap-[0.25rem] overflow-hidden">
-  {resource.tag_names.slice(0, 2).map((tag, index) => (
-    <span
-      key={index}
-      className={`
-        ${tagBg}
-        ${tagText}
-        px-[0.625rem]
-        py-[0.125rem]
-        rounded-full
-        text-[0.875rem]
-        leading-[1.25rem]
-        font-sourceSans
-        whitespace-nowrap
-        ${
-          index === 1
-            ? "max-w-full truncate"
-            : "flex-shrink-0"
-        }
-      `}
-    >
-      {tag}
-    </span>
-  ))}
+      {resource.tag_names.slice(0, 2).map((tag, index) => (
+        <span
+          key={index}
+          className={`
+            ${tagBg}
+            ${tagText}
+            px-[0.625rem]
+            py-[0.125rem]
+            rounded-full
+            text-[0.875rem]
+            leading-[1.25rem]
+            font-sourceSans
+            whitespace-nowrap
+            ${index === 1 ? "max-w-full truncate" : "flex-shrink-0"}
+          `}
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
 </div>
-  </div>
-)}
 
         {/* Footer */}
         <div className="flex items-center justify-between min-h-[1.8125rem]">
@@ -496,7 +492,7 @@ title={resource.organization}
                   font-sourceSans
                 "
               >
-                {resource?.view_count ?? 0}k
+                {resource?.view_count ?? 0}
               </span>
             </div>
 

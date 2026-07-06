@@ -1,10 +1,10 @@
 // ResourceDetailPage.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Download, Heart, Share2, Star, Eye, ChevronDown } from "lucide-react";
-import left1 from "../../../assets/dandelion-left-1.png";
-import left2 from "../../../assets/dandelion-left-2.png";
-import right1 from "../../../assets/dandelion-right-1.png";
-import right2 from "../../../assets/dandelion-right-2.png";
+import left1 from "assets/dandelion-left-1.png";
+import left2 from "assets/dandelion-left-2.png";
+import right1 from "assets/dandelion-right-1.png";
+import right2 from "assets/dandelion-right-2.png";
 import ReviewForm from "./ReviewForm";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
@@ -16,6 +16,9 @@ import { theme } from "../../../theme";
 import { useTranslation } from "react-i18next";
 import { openSafeUrl } from "../../../utils/urlUtils";
 import { sanitizeHtml } from "../../../utils/htmlUtils";
+import viewAllIcon from "assets/icons/viewAllIcon.svg";
+import { getTagStyles } from "../listing/ResourceCard.jsx";
+
 
 export default function ResourceDetailPage() {
   const { t } = useTranslation();
@@ -70,24 +73,29 @@ export default function ResourceDetailPage() {
         }}
       />
       <div
-        className="w-full py-8 relative repository-detail-page overflow-visible z-10 bg-white"
+        className="w-full py-8 relative repository-detail-page overflow-visible z-10"
         ref={containerRef}
         style={{...theme.vars, backgroundImage: "none"}}
       >
-<section className="relative z-10 min-h-screen max-w-[80rem] mx-auto px-8">        <ToastContainer />
+<section className="relative z-10 min-h-screen max-w-[84rem] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+        <ToastContainer />
         {isLoading && (
           <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-black bg-opacity-75 text-white h-screen">
             {t("common.loadingText")}
           </div>
         )}
         <BackButton title={resourceData?.title} />
+        <div className="px-2 sm:px-6 md:px-10">
         <div className="flex gap-8 mt-2">
           {/* <ResourceImages images={resourceData?.images} /> */}
           <ResourceMeta resource={resourceData} />
         </div>
+        </div>
         {/* <Tabs tab={tab} setTab={setTab} />
         <TabContent tab={tab} resource={resourceData} /> */}
+        <div className="mt-8  px-4 lg:px-14">
         <AccordionOverview overview={resourceData?.key_values} />
+        </div>
         </section>
       </div>
       <Footer />
@@ -100,46 +108,52 @@ export default function ResourceDetailPage() {
 function BackButton({ title }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const handleBack = async () => {
+    const ref = document.referrer;
+    const histState =
+      (window && window.history && window.history.state) || {};
+
+    if (
+  (ref && ref.includes("/resources")) ||
+  histState?.fromDetail ||
+  histState?.fromResource
+) {
+  const clearAtomic =
+    useRepositoryStore.getState().clearTransientFiltersAtomic;
+
+  navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, {
+    replace: true,
+  });
+
+  if (clearAtomic) {
+    clearAtomic().catch(console.error);
+  }
+
+  return;
+}
+
+    navigate(-1);
+  };
+
   return (
-    <div className="flex items-center gap-2 text-sm text-repository-textSecondary mb-6">
-      <button onClick={async () => {
-        
-          const ref = document.referrer;
-          const histState = (window && window.history && window.history.state) || {};
-          // If previous page was listing (either via referrer or history.state), navigate to clean listing and clear filters
-          if ((ref && ref.includes('/resources')) || histState?.fromDetail || histState?.fromResource) {
-            try {
-              // clear transient filters before navigating back to listing
-              const clearAtomic = useRepositoryStore.getState().clearTransientFiltersAtomic;
-              if (clearAtomic) await clearAtomic();
-              
-            } catch (e) {
-                const forceReset = useRepositoryStore.getState().forceResetFilters;
-                const fetchMediaList = useRepositoryStore.getState().fetchMediaList;
-                if (forceReset) forceReset({ skipFetch: true });
-                else useRepositoryStore.getState().resetFilters({ skipFetch: true });
-                navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, { replace: true });
-                if (fetchMediaList) fetchMediaList({}, true);
-                return;
-              
-            }
-            navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, { replace: true });
-            return;
-          }
-        navigate(-1);
-      }}>
-        <ArrowLeft size={16} />
-      </button>
-
+  <div className="flex items-center gap-2 text-sm text-repository-title mb-6 min-w-0">
+    <button
+      type="button"
+      onClick={handleBack}
+      className="flex items-center gap-2 cursor-pointer"
+    >
+      <ArrowLeft size={16} />
       <span>{t("common.back")}</span>
+    </button>
 
-      <span>/</span>
+    <span className="text-repository-controlIcon">/</span>
 
-      <span className="text-repository-controlIcon">
-        {title}
-      </span>
-    </div>
-  );
+    <span className="text-repository-controlIcon flex-1 min-w-0 truncate">
+      {title}
+    </span>
+  </div>
+);
 }
 
 export function ResourceImages({ images }) {
@@ -169,6 +183,9 @@ function ResourceMeta({ resource }) {
   const navigate = useNavigate();
   const fileType =
     resource?.media_type_display?.toUpperCase() || "DOCX";
+  const { bg: tagBg, text: tagText } = getTagStyles(
+  resource?.media_type_display
+);
   const masterList = useRepositoryStore((state) => state.masterList);
   const fetchMasterList = useRepositoryStore((state) => state.fetchMasterList);
 
@@ -193,85 +210,146 @@ function ResourceMeta({ resource }) {
 
   return (
     <div className="w-full">
-      <div className="bg-white border border-repository-divider rounded-2xl p-6">
+      <div className="bg-white border border-repository-divider rounded-[0.563rem] p-6">
         {/* Top Row */}
-        <div className="flex flex-col lg:flex-row justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-[2.25rem] font-semibold text-repository-detailTitle leading-tight">
-                {resource?.title}
-              </h1>
+        {/* Top Row */}
+<div className="flex flex-col lg:flex-row lg:justify-between gap-4">
+  {/* Left Section */}
+ <div className="flex-1 min-w-0">
+  <div className="flex flex-wrap items-center gap-3 min-w-0">
+    <h1 className="font-['Comfortaa'] font-bold text-[1.45rem] leading-[1.688rem] tracking-[-0.03rem] text-repository-title min-w-0 flex-shrink">
+      {resource?.title}
+    </h1>
 
-              <span className="bg-repository-fileTypeBadge text-white text-[0.6875rem] px-2 py-1 rounded font-semibold">
-                {fileType}
-              </span>
+    <span className={`${tagBg} ${tagText} px-2 py-1 rounded font-['DM_Sans'] font-semibold text-[0.665rem] leading-[0.938rem] whitespace-nowrap`}>
+      {fileType}
+    </span>
 
-              <span className="border border-repository-controlBorder rounded-md px-3 py-1 text-sm">
-                <span className="text-repository-success font-medium">
-                  {t("repository.publishedOn")}
-                </span>{" "}
-                {new Date(resource?.created_at).toLocaleDateString()}
-              </span>
-            </div>
-          </div>
+    <span
+      className="
+        flex
+        items-center
+        px-[0.919rem]
+        gap-[0.779rem]
+        h-[1.839rem]
+        border-[0.092rem]
+        border-repository-badgeBorder
+        rounded-[0.368rem]
+        whitespace-nowrap
+      "
+    >
+      <span className="text-repository-success font-medium">
+        {t("repository.publishedOn")}:
+      </span>
 
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2 text-repository-strongText">
-              <Eye size={22} />
-              <span className="text-[1.75rem] font-medium">
-                {resource?.views || "0"}
-              </span>
-            </div>
+      {new Date(resource?.created_at).toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      })}
+    </span>
+  </div>
+</div>
 
-            <div className="flex items-center gap-2 text-repository-strongText">
-              <Download size={22} />
-              <span className="text-[1.75rem] font-medium">
-                {resource?.downloads || "0"}
-              </span>
-            </div>
-          </div>
-        </div>
+  {/* Right Section */}
+  <div className="flex items-center gap-4 lg:gap-8 shrink-0">
+  <div className="flex items-center gap-2 text-repository-title">
+    <Eye size={22} />
+
+    <span
+      className="flex items-center w-[2.313rem] h-[2.125rem] font-dm font-normal text-[1.45rem]leading-[2.125rem]"
+    >
+      {resource?.views || "0"}
+    </span>
+  </div>
+
+  <div className="flex items-center gap-2 text-repository-title">
+    <Download size={22} />
+
+    <span
+      className="flex items-center w-[2.313rem] h-[2.125rem] font-dm font-normal text-[1.45rem]leading-[2.125rem]"
+    >
+      {resource?.downloads || "0"}
+    </span>
+  </div>
+</div>
+</div>
 
         {/* Description */}
-        <p className="mt-5 text-repository-textSecondary text-[1.125rem] leading-8">
+        <p className="font-['Source_Sans_3'] font-normal text-[1.088rem] leading-[1.563rem] text-repository-cardDescription flex items-center mt-2">
           {resource?.description}
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mt-5">
-         {resource?.tags?.map((tag, idx) => (
-  <span
-    key={tag.id || idx}
-    className="bg-repository-surfaceSoft text-repository-textSecondary text-sm px-3 py-1 rounded-full"
-  >
-    {tag?.name}
-  </span>
-))}
-        </div>
+<div className="flex flex-wrap gap-2 mt-3">
+  {resource?.tags?.map((tag, idx) => (
+    <span
+      key={tag.id || idx}
+      className={`
+  inline-flex
+  items-center
+  box-border
+  px-[0.605rem]
+  py-[0.121rem]
+  ${tagBg}
+  ${tagText}
+  rounded-[604.753rem]
+  font-['manrope']
+  font-medium
+  text-[0.847rem]
+  leading-[1.125rem]
+  whitespace-nowrap
+`}
+    >
+      {tag?.name}
+    </span>
+  ))}
+</div>
 
         {/* Buttons */}
-        <div className="mt-6 flex justify-between items-center flex-wrap gap-4">
+        <div className="mt-5 flex justify-between items-center flex-wrap gap-4">
           <div className="flex gap-3">
             <button
   onClick={() => {
-    const success = openSafeUrl(resource?.s3_url);
+    const success = openSafeUrl(resource?.file);
 
     if (!success) {
       toast.error(t("repository.invalidDownloadURL"));
     }
   }}
-  className="bg-repository-downloadBtn hover:bg-repository-downloadBtnHover text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium"
+  className="
+    bg-repository-downloadBtnBg
+hover:bg-repository-downloadBtnHoverBg
+    text-white
+
+    flex items-center
+    gap-[0.38rem]
+
+    px-[0.95rem] py-[0.475rem]
+    pr-[1.138rem]
+
+    h-[2.8rem]
+
+    rounded-[0.38rem]
+
+    font-['manrope']
+    font-medium
+    text-[1.139rem]
+    leading-[1.563rem]
+  "
 >
-              <Download size={18} />
-              {t("common.download")}
-            </button>
+  <Download size={18} />
+  <span className="flex items-center h-[1.563rem]">
+    {t("common.download")}
+  </span>
+</button>
 
             <button
               onClick={() => {
                 navigator.clipboard.writeText(window.location.href);
                 toast("Link copied");
               }}
-              className="border border-repository-controlBorder px-6 py-3 rounded-lg flex items-center gap-2"
+              className="border border-repository-controlBorder px-4 py-2 rounded-[0.438rem] flex items-center gap-2 font-medium font-['manrope'] text-[1.10rem] text-black"
             >
               <Share2 size={18} />
               {t("common.share")}
@@ -279,24 +357,95 @@ function ResourceMeta({ resource }) {
           </div>
 
           <button
-            disabled={!resolvedOrgParam}
-            onClick={() => {
-              if (!resolvedOrgParam) return;
-              const fromParam = resource?.id ? `&fromResource=${encodeURIComponent(resource.id)}` : "";
-              const search = `?org=${resolvedOrgParam}${fromParam}`;
-              
-                // mark recent navigation from a detail page so listing can treat URL params as transient
-                sessionStorage.setItem('sg:lastFromDetail', JSON.stringify({ id: resource?.id, ts: Date.now() }));
-             
-              navigate({ pathname: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, search }, { state: { fromDetail: true, fromResource: resource?.id } });
-                // stamp the new history entry with a transient marker so popstate handlers can detect it
-                const st = Object.assign({}, window.history.state || {}, { fromDetail: true, fromResource: resource?.id, sgTransient: true });
-                window.history.replaceState(st, '', window.location.href); 
-             
-            }}
-            className={`border border-repository-orgBorder text-repository-orgText px-6 py-3 rounded-lg ${!resolvedOrgParam ? 'opacity-50 cursor-not-allowed' : ''}`}>
-            {t("repository.viewAllResources")} ↗
-          </button>
+  disabled={!resolvedOrgParam}
+  onClick={() => {
+    if (!resolvedOrgParam) return;
+
+    const fromParam = resource?.id
+      ? `&fromResource=${encodeURIComponent(resource.id)}`
+      : "";
+    const search = `?org=${resolvedOrgParam}${fromParam}`;
+
+    sessionStorage.setItem(
+      "sg:lastFromDetail",
+      JSON.stringify({ id: resource?.id, ts: Date.now() })
+    );
+
+    navigate(
+      {
+        pathname: ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST,
+        search,
+      },
+      { state: { fromDetail: true, fromResource: resource?.id } }
+    );
+
+    const st = Object.assign({}, window.history.state || {}, {
+      fromDetail: true,
+      fromResource: resource?.id,
+      sgTransient: true,
+    });
+
+    window.history.replaceState(st, "", window.location.href);
+  }}
+  className={`
+    inline-flex
+    items-center
+    px-[0.625rem]
+    py-[0.5rem]
+    gap-[0.101rem]
+    bg-repository-surface
+    border-[0.188rem]
+    border-repository-iconBg
+    rounded-[0.484rem]
+    transition-colors
+    ${!resolvedOrgParam ? "opacity-50 cursor-not-allowed" : ""}
+  `}
+>
+  <span className="inline-flex items-center gap-[0.75rem]">
+  {resource?.org_logo && (
+   <span
+  className="
+    inline-flex
+    items-center
+    justify-center
+    border
+    border-repository-badgeBorder
+    rounded-[0.25rem]
+    overflow-hidden
+  "
+>
+  <img
+    src={resource.org_logo}
+    alt={resource?.organization || "Organization"}
+    className="block h-[1.25rem] w-[1.25rem] object-cover"
+  />
+</span>
+  )}
+
+  <span
+    className="
+      inline-flex
+      items-center
+      h-[1rem]
+      font-['manrope']
+      font-normal
+      text-[1.033rem]
+      leading-[0.938rem]
+      text-repository-viewAllText
+      whitespace-nowrap
+    "
+  >
+    {t("repository.viewAllResources")}
+  </span>
+
+  <img
+    src={viewAllIcon}
+    alt=""  
+    aria-hidden="true"
+    className="w-[0.625rem] h-[0.625rem] shrink-0"
+  />
+</span>
+</button>
         </div>
       </div>
     </div>
@@ -407,15 +556,15 @@ function AccordionOverview({ overview }) {
       {overview?.map(({ key, value }, index) => (
         <div
           key={index}
-          className="border border-repository-divider rounded-xl overflow-hidden bg-white"
+          className="border border-repository-divider rounded-[0.438rem] overflow-hidden bg-white"
         >
           <button
             onClick={() =>
               setOpenIndex(openIndex === index ? null : index)
             }
-            className="w-full flex items-center justify-between px-6 py-5 text-left"
+            className="w-full flex items-center justify-between px-6 py-3 text-left"
           >
-            <span className="text-repository-accordionTitle text-lg font-medium">
+            <span className="font-['Comfortaa'] font-medium text-[1rem] leading-[1.9375rem] capitalize text-repository-docxBg flex-1">
               {index + 1}. {key}
             </span>
 
