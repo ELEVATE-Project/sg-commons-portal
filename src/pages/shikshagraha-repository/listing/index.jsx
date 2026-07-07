@@ -12,11 +12,14 @@ import left1 from "assets/dandelion-left-1.png";
 import right2 from "assets/dandelion-right-2.png";
 import { useLocation, useNavigationType, useSearchParams } from "react-router-dom";
 
+const LISTING_RESOURCE_LIMIT = 6;
+
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
   const { t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams();
   const isLoading = loadingList || loadingDetail || loadingMaster;
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
@@ -34,12 +37,15 @@ export default function RepositoryPage() {
 );
   const itemsPerPage = pagination.limit;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const navigationType = useNavigationType();
   const hasRestoredScrollRef = useRef(false);
+  const hasInitializedPageSizeRef = useRef(false);
+  const previousResultSetKeyRef = useRef(null);
   const skipNextUrlSearchSyncRef = useRef(false);
   const skipNextSnapshotStampRef = useRef(false);
+  const pageParam = searchParams.get("page") || "1";
+  const searchParamsString = searchParams.toString();
   const hasRepositoryUrlFilters =
     searchParams.has("org") ||
     searchParams.has("theme") ||
@@ -85,6 +91,65 @@ useEffect(() => {
   }, [filters, q, searchInput, pagination, sortBy]);
 
   useEffect(() => {
+    const rawPage = Number(pageParam);
+    const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+    const targetLimit = hasInitializedPageSizeRef.current
+      ? pagination.limit
+      : LISTING_RESOURCE_LIMIT;
+    const nextOffset = (page - 1) * targetLimit;
+
+    hasInitializedPageSizeRef.current = true;
+
+    if (pagination.limit === targetLimit && pagination.offset === nextOffset) {
+      return;
+    }
+
+    setPagination({
+      offset: nextOffset,
+      limit: targetLimit,
+    });
+  }, [pageParam, pagination.limit, pagination.offset, setPagination]);
+
+  useEffect(() => {
+    const resultSetKey = JSON.stringify({ filters, q });
+
+    if (previousResultSetKeyRef.current === null) {
+      previousResultSetKeyRef.current = resultSetKey;
+      return;
+    }
+
+    if (previousResultSetKeyRef.current === resultSetKey) return;
+
+    previousResultSetKeyRef.current = resultSetKey;
+
+    if (pageParam !== "1") {
+      const next = new URLSearchParams(searchParamsString);
+      const trimmedSearch = q.trim();
+      if (trimmedSearch) {
+        next.set("searchResourceText", trimmedSearch);
+      } else {
+        next.delete("searchResourceText");
+      }
+      next.delete("searchText");
+      next.set("page", "1");
+      setSearchParams(next, { replace: true });
+    }
+
+    if (pagination.offset !== 0) {
+      setPagination({ offset: 0, limit: pagination.limit });
+    }
+  }, [
+    filters,
+    pageParam,
+    pagination.limit,
+    pagination.offset,
+    q,
+    searchParamsString,
+    setPagination,
+    setSearchParams,
+  ]);
+
+  useEffect(() => {
     if (hasRestoredScrollRef.current) return;
     if (!mediaList) return;
 
@@ -102,9 +167,10 @@ useEffect(() => {
       return;
     }
 
+    const currentParams = new URLSearchParams(location.search);
     const urlQuery =
-      searchParams.get("searchResourceText") ||
-      searchParams.get("searchText") ||
+      currentParams.get("searchResourceText") ||
+      currentParams.get("searchText") ||
       "";
     const trimmedUrlQuery = urlQuery.trim();
     const restoredRepositoryEntry =
@@ -125,8 +191,8 @@ useEffect(() => {
         setSearch(trimmedUrlQuery);
       }
 
-      if (searchParams.has("searchText")) {
-        const next = new URLSearchParams(searchParams.toString());
+      if (currentParams.has("searchText")) {
+        const next = new URLSearchParams(currentParams.toString());
         next.delete("searchText");
         next.set("searchResourceText", trimmedUrlQuery);
         setSearchParams(next, { replace: true });
@@ -134,7 +200,8 @@ useEffect(() => {
     } else if (currentSearch || currentSearchInput) {
       setSearch("");
     }
-  }, [location.state, navigationType, searchParams, setSearch, setSearchParams]);
+  }, [location.search, location.state, navigationType, setSearch, setSearchParams]);
+
 
   useEffect(() => {
     // Only fetch if media list is empty to avoid duplicate initial requests
@@ -207,17 +274,16 @@ useEffect(() => {
             )}
             <div className="w-full mt-6 mx-auto">
               <Pagination
-                resourcesPerPage={itemsPerPage}
-                totalResources={mediaCount}
-                selectedPage={Math.floor(pagination.offset / itemsPerPage)}
-                paginate={(page) => {
-                  setPagination({
-                    ...pagination,
-                    offset: (itemsPerPage + (page - 1) * itemsPerPage) || 0,
-                    limit: itemsPerPage,
-                  });
-                }}
-              />
+  resourcesPerPage={itemsPerPage}
+  totalResources={mediaCount}
+  selectedPage={Number(searchParams.get("page") || 1) - 1}
+  paginate={(page) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", page + 1);
+
+    setSearchParams(params, { replace: true });
+  }}
+/>
             </div>
           </main>
           </div>
