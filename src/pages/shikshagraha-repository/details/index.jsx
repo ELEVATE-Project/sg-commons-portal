@@ -137,7 +137,7 @@ function BackButton({ title, resource }) {
       (window && window.history && window.history.state) || {};
 
     if (
-      (ref && ref.includes("/resources")) ||
+      (ref && ref.includes(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST)) ||
       histState?.fromDetail ||
       histState?.fromResource
     ) {
@@ -147,7 +147,6 @@ function BackButton({ title, resource }) {
           ? `&fromResource=${encodeURIComponent(resource.id)}`
           : "";
 
-        try {
           sessionStorage.setItem(
             "sg:lastFromDetail",
             JSON.stringify({
@@ -155,7 +154,6 @@ function BackButton({ title, resource }) {
               ts: Date.now(),
             })
           );
-        } catch {}
 
         navigate(
           {
