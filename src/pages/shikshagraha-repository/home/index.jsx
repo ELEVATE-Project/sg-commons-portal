@@ -10,8 +10,6 @@ import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
 import ExploreByTheme from "../listing/ExploreByTheme";
 
-const HOME_RESOURCE_LIMIT = 6;
-
 export default function RepositoryPage() {
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
@@ -24,7 +22,6 @@ export default function RepositoryPage() {
   const q = useRepositoryStore((state) => state.q);
   const searchInput = useRepositoryStore((state) => state.searchInput);
   const setSearch = useRepositoryStore((state) => state.setSearch);
-  const setPagination = useRepositoryStore((state) => state.setPagination);
   const resetFilters = useRepositoryStore((state) => state.resetFilters);
 
   const [searchParams] = useSearchParams();
@@ -34,10 +31,6 @@ export default function RepositoryPage() {
   // to clear transient params (on Back / clear actions). This effect was
   // previously removing URL params on mount which caused filters to disappear
   // on hard refresh; keep URL params intact so filters persist across refresh.
-
-  useEffect(() => {
-    setPagination({ limit: HOME_RESOURCE_LIMIT, offset: 0 });
-  }, [setPagination]);
 
   useEffect(() => {
     if (hasClearedInitialSearchRef.current) return;
