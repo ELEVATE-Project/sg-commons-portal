@@ -34,8 +34,7 @@
     // get master list
     const dropdown_meta = useRepositoryStore(state => state.masterList)
 
-    const resetFilters = useRepositoryStore(state => state.resetFilters)
-    const clearTransientFiltersAtomic = useRepositoryStore(state => state.clearTransientFiltersAtomic)
+    const replaceRepositoryQueryState = useRepositoryStore(state => state.replaceRepositoryQueryState)
 
     const setFilters = useRepositoryStore(state => state.setFilters)
     const setGlobalSearch = useRepositoryStore(state => state.setSearch)
@@ -727,8 +726,9 @@ useEffect(() => {
                     <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-sourceSans font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={async () => {
                       setIsDrawerOpen(false);
                         try {
-                          await clearTransientFiltersAtomic();
-                        } catch (e) { console.error('[Filters] clearTransientFiltersAtomic error', e); }
+                          window.history.replaceState({}, "", window.location.pathname);
+                          await replaceRepositoryQueryState();
+                        } catch (e) { console.error('[Filters] clear filters error', e); }
                         setPendingFilters({}); setQueryMap({}); scrollToBrowseResources();
                       }}>
                         {t('repository.filters.clearAll')}

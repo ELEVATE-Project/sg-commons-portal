@@ -10,6 +10,7 @@ import DocxIcon from "assets/icons/docx.svg"
 import XlsxIcon from "assets/icons/xlsx.svg"
 import GoogleDriveIcon from "assets/icons/google_drive.svg"
 import { useNavigate } from "react-router-dom"
+import { useRepositoryStore } from "../repository-hooks/useRepositoryStore"
 import { openSafeUrl } from "../../../utils/urlUtils"
 import PptxIcon from "assets/icons/pptx.svg"
 
@@ -91,6 +92,7 @@ text: "text-repository-xlsxTagText",
 export default function ResourceCard({ resource, viewMode = "grid" }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const setRepositoryScrollY = useRepositoryStore((state) => state.setRepositoryScrollY)
 
   const { background,icon, Icon: FileIcon } = getMediaFileTypeStyles(
   resource?.media_type_display
@@ -102,11 +104,19 @@ const { bg: tagBg, text: tagText } = getTagStyles(
 
   const handleCardClick = () => {
     trackResourceView(resource?.id);
-    // mark recent navigation from listing to detail so listing can treat return as transient
-    sessionStorage.setItem && sessionStorage.setItem('sg:lastFromDetail', JSON.stringify({ id: resource?.id, ts: Date.now() }));
-    const prevState = window.history.state || {};
-    const newPrevState = Object.assign({}, prevState, { fromDetail: true, fromResource: resource?.id });
-    window.history.replaceState(newPrevState, '', window.location.href);
+    setRepositoryScrollY(window.scrollY || 0);
+    const snapshot = useRepositoryStore.getState().getRepositoryQuerySnapshot();
+    const historyState = window.history.state || {};
+    const nextRouterState = {
+      ...(historyState.usr || {}),
+      repositorySnapshot: snapshot,
+    };
+
+    window.history.replaceState(
+      { ...historyState, usr: nextRouterState },
+      "",
+      window.location.href
+    );
 
     navigate(`/resources/${resource?.id}`);
   };

@@ -20,6 +20,12 @@ const _inFlightQueryMap = {};
 const _recentQueryCache = {};
 const _inFlightDetailMap = {};
 
+const DEFAULT_PAGINATION = {
+  limit: 6,
+  offset: 0,
+};
+const DEFAULT_SORT_BY = "-created_at";
+
 export const useRepositoryStore = create((set, get) => ({
   // State
   mediaList: [],
@@ -31,15 +37,12 @@ export const useRepositoryStore = create((set, get) => ({
   loadingList: false,
   loadingDetail: false,
   loadingMaster: false,
-  applyingUrlFilters: false,
   filters: {}, // current filters object (media_type, priority, tag, etc.)
   q: "",
   searchInput: "", // current value in search textarea (not submitted yet)
-  pagination: {
-    limit: 6,
-    offset: 0,
-  },
-  sortBy: "-created_at",
+  pagination: DEFAULT_PAGINATION,
+  sortBy: DEFAULT_SORT_BY,
+  repositoryScrollY: 0,
 
   // Actions
   /**
@@ -63,7 +66,7 @@ export const useRepositoryStore = create((set, get) => ({
           const { filters, pagination, sortBy, q } = get();
           const transformedFilters = get().getTransformedFilters(filters);
           const queryParams = {
-            q: q || null,
+            searchInput: q || null,
             ...transformedFilters,
             ...pagination,
             ordering: sortBy,
@@ -174,8 +177,6 @@ export const useRepositoryStore = create((set, get) => ({
       });
     }
   },
-
-  setApplyingUrlFilters: (v) => set({ applyingUrlFilters: !!v }),
 
   /**
    * Fetch single media details by ID
@@ -367,11 +368,6 @@ export const useRepositoryStore = create((set, get) => ({
    */
   resetFilters: (options = {}) => {
     
-    // avoid clearing filters while we're in the middle of applying URL-driven filters
-    if (get().applyingUrlFilters) {
-      
-      return;
-    }
     const current = get().filters || {};
     const noFilters = Object.keys(current).length === 0 || Object.values(current).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
     if (noFilters) {
@@ -381,63 +377,52 @@ export const useRepositoryStore = create((set, get) => ({
     set((state) => ({ filters: {}, pagination: { ...state.pagination, offset: 0 } }));
     if (!options.skipFetch) get().fetchMediaList();
   },
-  // Forcefully reset filters bypassing `applyingUrlFilters` guard. Use only
-  // when we want to sync the store to the URL (e.g., on popstate/back).
   forceResetFilters: (options = {}) => {
     
     set((state) => ({ filters: {}, pagination: { ...state.pagination, offset: 0 } }));
     if (!options.skipFetch) get().fetchMediaList();
   },
 
-  /**
-   * Atomically clear transient URL params and reset store filters, then fetch unfiltered list.
-   * Use when we want to ensure URL and store are in sync and listing shows unfiltered results.
-   */
-  clearTransientFiltersAtomic: async () => {
+  replaceRepositoryQueryState: (nextState = {}, options = {}) => {
+    const nextPagination = {
+      ...DEFAULT_PAGINATION,
+      ...(nextState.pagination || {}),
+    };
 
-    try {
-      // Debug: log when transient clear is invoked so we can trace unexpected clears
-      get().setApplyingUrlFilters(true);
-    } catch (e) {}
-    try {
-      try { sessionStorage.removeItem('sg:lastFromDetail'); } catch (e) {}
-      try { window.history.replaceState({}, '', window.location.pathname); } catch (e) {}
-      
-      // force reset filters and reset pagination
-      const forceReset = get().forceResetFilters;
-      if (forceReset) {
-        
-        forceReset({ skipFetch: true });
-      } else {
-        
-        get().resetFilters({ skipFetch: true });
-      }
-      // ensure page offset reset
-      set((state) => ({ pagination: { ...state.pagination, offset: 0 } }));
-      // clear any submitted search text so the store and URL remain consistent
-      try {
-        set({ q: "", searchInput: "" });
-        
-      } catch (err) {
-        
-      }
-      // fetch unfiltered list - pass a unique param to avoid recent-cache / in-flight dedupe
-      const fetch = get().fetchMediaList;
-      if (fetch) {
-        const forceKey = Date.now();
-        
-        await fetch({ _forceRefresh: forceKey }, true);
-        
-      } else {
-        
-      }
-    } catch (err) {
-      console.error('[repo] clearTransientFiltersAtomic error', err);
-    } finally {
-      try { get().setApplyingUrlFilters(false); } catch (e) {}
-      
+    set({
+      filters: nextState.filters || {},
+      q: nextState.q || "",
+      searchInput:
+        nextState.searchInput != null ? nextState.searchInput : nextState.q || "",
+      pagination: nextPagination,
+      sortBy: nextState.sortBy || DEFAULT_SORT_BY,
+      repositoryScrollY: nextState.repositoryScrollY || 0,
+    });
+
+    if (!options.skipFetch) {
+      return get().fetchMediaList({}, true);
     }
+
+    return Promise.resolve();
   },
+
+  getRepositoryQuerySnapshot: () => {
+    const { filters, q, searchInput, pagination, sortBy, repositoryScrollY } = get();
+
+    return {
+      filters,
+      q,
+      searchInput,
+      pagination,
+      sortBy,
+      repositoryScrollY,
+    };
+  },
+
+  setRepositoryScrollY: (scrollY = 0) => {
+    set({ repositoryScrollY: Number(scrollY) || 0 });
+  },
+
   /**
    * Update search input value (textarea value, not submitted yet)
    * @param {string} newSearchInput - Current textarea value

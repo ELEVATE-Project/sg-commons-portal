@@ -160,13 +160,10 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const searchInput = useRepositoryStore((state) => state.searchInput);
   const fetchMasterList = useRepositoryStore((state) => state.fetchMasterList);
   const masterList = useRepositoryStore((state) => state.masterList);
-  const fetchMediaList = useRepositoryStore((state) => state.fetchMediaList);
   const fetchMediaDetail = useRepositoryStore((state) => state.fetchMediaDetail);
   const selectedMedia = useRepositoryStore((state) => state.selectedMedia);
   const setFilters = useRepositoryStore((state) => state.setFilters);
-  const resetFilters = useRepositoryStore((state) => state.resetFilters);
-  const setApplyingUrlFilters = useRepositoryStore((state) => state.setApplyingUrlFilters);
-  const applyingUrlFilters = useRepositoryStore((state) => state.applyingUrlFilters);
+  const replaceRepositoryQueryState = useRepositoryStore((state) => state.replaceRepositoryQueryState);
   const loadingList = useRepositoryStore((state) => state.loadingList);
   const isSearchActive = searchInput && searchInput.trim().length > 0;
   const navigate = useNavigate();
@@ -175,48 +172,6 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const orgParam = searchParams.get("org");
   const themeParam = searchParams.get("theme");
   const fromResourceParam = searchParams.get("fromResource");
-  const searchStr = searchParams.toString();
-  const suppressTryClearRef = useRef(false);
-  const suppressFromResourceOrgRestoreRef = useRef(false);
-  // Atomic routine to clear transient URL params and reset store filters
-  const clearTransientFiltersAtomic = useCallback(async (opts = {}) => {
-    const { navigateToResourceId } = opts;
-    try {
-      // mark we're applying URL-driven changes to silence effects
-      try { useRepositoryStore.getState().setApplyingUrlFilters(true); } catch (e) {}
-      suppressTryClearRef.current = true;
-
-      // remove transient params from URL
-      const next = new URLSearchParams(window.location.search || "");
-      ["org", "theme", "resource_type", "resource_types", "media_type", "media_types", "file_type", "filetype", "tags", "fromResource"].forEach((k) => next.delete(k));
-      safeSetSearchParams(next, { replace: true });
-      // replace history entry so Back won't restore filtered entry
-      try { window.history.replaceState({}, '', window.location.pathname + (next.toString() ? `?${next.toString()}` : '')); } catch (e) {}
-
-      // force-reset store (bypass applyingUrlFilters guard) and then either navigate or fetch
-      const forceReset = useRepositoryStore.getState().forceResetFilters;
-      const fetch = useRepositoryStore.getState().fetchMediaList;
-      if (forceReset) forceReset({ skipFetch: true }); else useRepositoryStore.getState().resetFilters({ skipFetch: true });
-
-      if (navigateToResourceId) {
-        navigate(`/resources/${navigateToResourceId}`, { replace: true });
-        // ensure flags are cleared
-        suppressTryClearRef.current = false;
-        try { useRepositoryStore.getState().setApplyingUrlFilters(false); } catch (e) {}
-        return;
-      }
-
-      if (fetch) {
-        await fetch({}, true);
-      }
-    } catch (err) {
-      // ignore
-    } finally {
-      suppressTryClearRef.current = false;
-      try { setFiltersInitialized(true); } catch (e) {}
-      try { useRepositoryStore.getState().setApplyingUrlFilters(false); } catch (e) {}
-    }
-  }, [navigate]);
   const safeSetSearchParams = (next, opts = { replace: true }) => {
     try {
       setSearchParams(next, opts);
@@ -305,51 +260,10 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
 
   const handleClearAll = async () => {
     try {
-      if (clearTransientFiltersAtomic) {
-        await clearTransientFiltersAtomic();
-      } else {
-        // fallback: reset store filters and clear url params
-        resetFilters({ skipFetch: true });
-        try { window.history.replaceState({}, "", window.location.pathname); } catch (e) {}
-      }
+      safeSetSearchParams(new URLSearchParams(), { replace: true });
+      await replaceRepositoryQueryState();
     } catch (e) {}
   };
-
-  // Sync filters -> URL (org, theme). Use replace to avoid polluting history.
-  useEffect(() => {
-    if (!setSearchParams) return;
-    if (applyingUrlFilters) return; // don't sync while we're programmatically applying URL filters
-    
-
-    const currentOrg = searchParams.get("org");
-    const currentTheme = searchParams.get("theme");
-
-    const orgValues = Array.isArray(filters?.organizations) ? filters.organizations.map(o => o.value).filter(Boolean) : [];
-    const tagValues = Array.isArray(filters?.tags) ? filters.tags.map(t => t.value).filter(Boolean) : [];
-
-    const newOrg = orgValues.length ? orgValues.map(value => encodeURIComponent(value)).join(",") : null;
-    const newTheme = tagValues.length ? tagValues.map(value => encodeURIComponent(value)).join(",") : null;
-
-    // avoid updating if params equal
-    const shouldUpdateOrg = (currentOrg || null) !== (newOrg || null);
-    const shouldUpdateTheme = (currentTheme || null) !== (newTheme || null);
-
-    if (!shouldUpdateOrg && !shouldUpdateTheme) return;
-
-    const next = new URLSearchParams(searchParams.toString());
-    if (newOrg) {
-      next.set("org", newOrg);
-    } else {
-      if (currentOrg) suppressFromResourceOrgRestoreRef.current = true;
-      next.delete("org");
-    }
-    if (newTheme) next.set("theme", newTheme); else next.delete("theme");
-
-    // suppress tryClear briefly while we programmatically update the URL
-    suppressTryClearRef.current = true;
-    safeSetSearchParams(next, { replace: true });
-    window.setTimeout(() => (suppressTryClearRef.current = false), 150);
-  }, [filters, searchStr, applyingUrlFilters]);
 
   useEffect(() => {
     if (!filtersInitialized && !loadingList) setFiltersInitialized(true);
@@ -390,8 +304,7 @@ const displayedResources = compact
     if (
       !fromResourceParam ||
       orgParam ||
-      !masterList ||
-      suppressFromResourceOrgRestoreRef.current
+      !masterList
     ) return;
 
     let cancelled = false;
@@ -475,19 +388,13 @@ const displayedResources = compact
 
     if (!Object.keys(nextFilters).length) return;
 
-    setApplyingUrlFilters(true);
-    setFilters(nextFilters, true, { skipFetch: true });
-    fetchMediaList({}, true).finally(() => {
-      setApplyingUrlFilters(false);
+    replaceRepositoryQueryState({ filters: nextFilters }).finally(() => {
       setFiltersInitialized(true);
     });
   }, [
-    fetchMasterList,
-    fetchMediaList,
     masterList,
     orgParam,
-    setApplyingUrlFilters,
-    setFilters,
+    replaceRepositoryQueryState,
     themeParam,
   ]);
    
@@ -541,7 +448,7 @@ const displayedResources = compact
   <button
     type="button"
     onClick={() => {
-  resetFilters();
+  replaceRepositoryQueryState({ repositoryScrollY: 0 });
   safeSetSearchParams(new URLSearchParams(), { replace: true });
   navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
 }}
@@ -591,7 +498,7 @@ const displayedResources = compact
       <button
   type="button"
   onClick={() => {
-  resetFilters();
+  replaceRepositoryQueryState({ repositoryScrollY: 0 });
   safeSetSearchParams(new URLSearchParams(), { replace: true });
   navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
 }}
@@ -799,9 +706,6 @@ const displayedResources = compact
                           };
                           const params = paramMap[chip.group] || [];
                           const next = new URLSearchParams(searchParams.toString());
-                          if (chip.group === "organizations") {
-                            suppressFromResourceOrgRestoreRef.current = true;
-                          }
                           params.forEach((param) => next.delete(param));
                           try { setSearchParams(next, { replace: true }); } catch (err) { }
                         } catch (err) {

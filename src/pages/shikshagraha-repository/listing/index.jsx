@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import BrowseResources from "./BrowseResources.jsx";
 import Pagination from "./Pagination.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
@@ -10,7 +10,7 @@ import { theme } from "../../../theme";
 import PageHeader from "../../../components/PageHeader";
 import left1 from "assets/dandelion-left-1.png";
 import right2 from "assets/dandelion-right-2.png";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useNavigationType, useSearchParams } from "react-router-dom";
 
 export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState("grid");
@@ -25,14 +25,25 @@ export default function RepositoryPage() {
   const setSearch = useRepositoryStore((state) => state.setSearch);
 
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
+  const filters = useRepositoryStore((state) => state.filters);
   const pagination = useRepositoryStore((state) => state.pagination);
   const setPagination = useRepositoryStore((state) => state.setPagination);
+  const sortBy = useRepositoryStore((state) => state.sortBy);
   const fetchMediaList = useRepositoryStore(
   (state) => state.fetchMediaList
 );
   const itemsPerPage = pagination.limit;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const navigationType = useNavigationType();
+  const hasRestoredScrollRef = useRef(false);
+  const skipNextUrlSearchSyncRef = useRef(false);
+  const skipNextSnapshotStampRef = useRef(false);
+  const hasRepositoryUrlFilters =
+    searchParams.has("org") ||
+    searchParams.has("theme") ||
+    searchParams.has("fromResource");
 
 useEffect(() => {
   const handleResize = () => {
@@ -43,16 +54,66 @@ useEffect(() => {
 
   return () => window.removeEventListener("resize", handleResize);
 }, []);
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   useEffect(() => {
+    const snapshot = location.state?.repositorySnapshot;
+    if (navigationType !== "POP" || !snapshot) return;
+
+    skipNextUrlSearchSyncRef.current = true;
+    skipNextSnapshotStampRef.current = true;
+    useRepositoryStore.getState().replaceRepositoryQueryState(snapshot);
+  }, [location.key, location.state, navigationType]);
+
+  useEffect(() => {
+    if (skipNextSnapshotStampRef.current) {
+      skipNextSnapshotStampRef.current = false;
+      return;
+    }
+
+    const snapshot = useRepositoryStore.getState().getRepositoryQuerySnapshot();
+    const historyState = window.history.state || {};
+    const nextRouterState = {
+      ...(historyState.usr || {}),
+      repositorySnapshot: snapshot,
+    };
+
+    window.history.replaceState(
+      { ...historyState, usr: nextRouterState },
+      "",
+      window.location.href
+    );
+  }, [filters, q, searchInput, pagination, sortBy]);
+
+  useEffect(() => {
+    if (hasRestoredScrollRef.current) return;
+    if (!mediaList) return;
+
+    hasRestoredScrollRef.current = true;
+    const scrollY = useRepositoryStore.getState().repositoryScrollY || 0;
+    window.requestAnimationFrame(() => {
+      window.scrollTo(0, scrollY);
+      useRepositoryStore.getState().setRepositoryScrollY(0);
+    });
+  }, [mediaList]);
+
+  useEffect(() => {
+    if (skipNextUrlSearchSyncRef.current) {
+      skipNextUrlSearchSyncRef.current = false;
+      return;
+    }
+
     const urlQuery =
       searchParams.get("searchResourceText") ||
       searchParams.get("searchText") ||
       "";
     const trimmedUrlQuery = urlQuery.trim();
+    const restoredRepositoryEntry =
+      navigationType === "POP" && location.state?.repositorySnapshot;
+
+    if (!trimmedUrlQuery && restoredRepositoryEntry) {
+      return;
+    }
+
     const { q: currentSearch, searchInput: currentSearchInput } =
       useRepositoryStore.getState();
 
@@ -73,7 +134,7 @@ useEffect(() => {
     } else if (currentSearch || currentSearchInput) {
       setSearch("");
     }
-  }, [searchParams, setSearch, setSearchParams]);
+  }, [location.state, navigationType, searchParams, setSearch, setSearchParams]);
 
   useEffect(() => {
     // Only fetch if media list is empty to avoid duplicate initial requests
@@ -121,7 +182,7 @@ useEffect(() => {
           </div> */}
 
           <main className="w-full mx-auto">
-            {!!mediaList?.length && (
+            {(!!mediaList?.length || hasRepositoryUrlFilters) && (
 
  <BrowseResources
                 resources={mediaList}
