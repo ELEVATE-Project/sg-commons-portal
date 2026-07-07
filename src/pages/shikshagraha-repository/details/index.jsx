@@ -182,11 +182,16 @@ function BackButton({ title, resource }) {
 
       // Default behaviour - clear transient filters
       try {
-        const clearAtomic =
-          useRepositoryStore.getState().clearTransientFiltersAtomic;
+        const store = useRepositoryStore.getState();
 
-        if (clearAtomic) {
-          await clearAtomic();
+        if (store.forceResetFilters) {
+          store.forceResetFilters({ skipFetch: true });
+        } else {
+          store.resetFilters({ skipFetch: true });
+        }
+
+        if (store.fetchMediaList) {
+          await store.fetchMediaList({}, true);
         }
 
         navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST, {

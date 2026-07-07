@@ -42,6 +42,7 @@ export default function RepositoryPage() {
   const previousResultSetKeyRef = useRef(null);
   const skipNextUrlSearchSyncRef = useRef(false);
   const skipNextSnapshotStampRef = useRef(false);
+  const skipNextResultSetResetRef = useRef(false);
   const pageParam = searchParams.get("page") || "1";
   const searchParamsString = searchParams.toString();
   const hasRepositoryUrlFilters =
@@ -66,6 +67,7 @@ useEffect(() => {
     // Restoring from detail should keep the exact search/filter/page snapshot.
     skipNextUrlSearchSyncRef.current = true;
     skipNextSnapshotStampRef.current = true;
+    skipNextResultSetResetRef.current = true;
     useRepositoryStore.getState().replaceRepositoryQueryState(snapshot);
   }, [location.key, location.state, navigationType]);
 
@@ -111,6 +113,12 @@ useEffect(() => {
 
   useEffect(() => {
     const resultSetKey = JSON.stringify({ filters, q });
+
+    if (skipNextResultSetResetRef.current) {
+      skipNextResultSetResetRef.current = false;
+      previousResultSetKeyRef.current = resultSetKey;
+      return;
+    }
 
     // New searches or filters start from page 1; ordinary page clicks do not.
     if (previousResultSetKeyRef.current === null) {

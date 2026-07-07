@@ -24,6 +24,7 @@
   import MicIcon from "assets/icons/mic.svg";
   import AccordionDownIcon from "assets/icons/accordion-down.svg";
   import AccordionUpIcon from "assets/icons/accordion-up.svg";
+  import { useSearchParams } from "react-router-dom"
 
   export default function Filters() {
     // removed unused `globalSearchValue`
@@ -61,6 +62,7 @@
     const { HiddenRecorder } = useVoiceRecord()
 
     const { t } = useTranslation()
+    const [searchParams, setSearchParams] = useSearchParams()
 
     const { audioRef } = useAudio()
 
@@ -101,14 +103,9 @@
     }
 
     function resetPageParam() {
-      const params = new URLSearchParams(window.location.search)
+      const params = new URLSearchParams(searchParams.toString())
       params.set("page", "1")
-      const nextSearch = params.toString()
-      window.history.replaceState(
-        window.history.state,
-        "",
-        `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}`
-      )
+      setSearchParams(params, { replace: true })
     }
 
     function handleSendMessage(event) {
@@ -739,12 +736,12 @@ useEffect(() => {
               <div className="flex-none border-t bg-white py-3">
                 <div className="max-w-full mx-auto px-0">
                   <div className="flex items-center justify-between">
-                    <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-sourceSans font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={async () => {
-                      setIsDrawerOpen(false);
-                        try {
-                          window.history.replaceState({}, "", window.location.pathname);
-                          await replaceRepositoryQueryState();
-                        } catch (e) { console.error('[Filters] clear filters error', e); }
+	                    <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-sourceSans font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={async () => {
+	                      setIsDrawerOpen(false);
+	                        try {
+	                          setSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
+	                          await replaceRepositoryQueryState();
+	                        } catch (e) { console.error('[Filters] clear filters error', e); }
                         setPendingFilters({}); setQueryMap({}); scrollToBrowseResources();
                       }}>
                         {t('repository.filters.clearAll')}
