@@ -696,7 +696,7 @@ const displayedResources = compact
                         try {
                           setFilters({ [chip.group]: [] }, true);
                           const paramMap = {
-                            organizations: ["org"],
+                            organizations: ["org", "fromResource"],
                             tags: ["theme"],
                             resource_types: ["resource_types", "resource_type"],
                             resource_type: ["resource_type", "resource_types"],
