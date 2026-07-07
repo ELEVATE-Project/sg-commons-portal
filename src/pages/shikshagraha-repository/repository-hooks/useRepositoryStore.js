@@ -25,6 +25,9 @@ const DEFAULT_PAGINATION = {
   offset: 0,
 };
 const DEFAULT_SORT_BY = "-created_at";
+// API can return staging slugs; repository filters should use the public slug.
+const normalizeOrganizationSlug = (slug = "") =>
+  String(slug).replace(/staging$/i, "");
 
 export const useRepositoryStore = create((set, get) => ({
   // State
@@ -66,7 +69,7 @@ export const useRepositoryStore = create((set, get) => ({
           const { filters, pagination, sortBy, q } = get();
           const transformedFilters = get().getTransformedFilters(filters);
           const queryParams = {
-            searchInput: q || null,
+            q: q || null,
             ...transformedFilters,
             ...pagination,
             ordering: sortBy,
@@ -250,7 +253,11 @@ export const useRepositoryStore = create((set, get) => ({
         {
           key: "organizations",
           label: "Organization",
-          options: master?.organizations?.map((x) => ({ value: x?.slug, display: x?.name })),
+          options: master?.organizations?.map((x) => ({
+            value: normalizeOrganizationSlug(x?.slug),
+            rawValue: x?.slug,
+            display: x?.name,
+          })),
         },
         {
           key: "tags",

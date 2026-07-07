@@ -37,6 +37,7 @@
     const replaceRepositoryQueryState = useRepositoryStore(state => state.replaceRepositoryQueryState)
 
     const setFilters = useRepositoryStore(state => state.setFilters)
+    const setPagination = useRepositoryStore(state => state.setPagination)
     const setGlobalSearch = useRepositoryStore(state => state.setSearch)
     const setSearchInput = useRepositoryStore(state => state.setSearchInput)
     const search = useRepositoryStore(state => state.searchInput)
@@ -99,6 +100,17 @@
       }
     }
 
+    function resetPageParam() {
+      const params = new URLSearchParams(window.location.search)
+      params.set("page", "1")
+      const nextSearch = params.toString()
+      window.history.replaceState(
+        window.history.state,
+        "",
+        `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}`
+      )
+    }
+
     function handleSendMessage(event) {
       if (event) {
         event.preventDefault()
@@ -115,12 +127,16 @@
       if (!search.trim()) return
 
       if (!!search && search?.length > 0) {
+        resetPageParam()
+        setPagination({ offset: 0 })
         setGlobalSearch(search)
         scrollToBrowseResources()
       }
     }
 
     const handleChange = (key, value) => {
+      resetPageParam()
+      setPagination({ offset: 0 })
       setFilters({ [key]: value }, true)
       scrollToBrowseResources()
     }
@@ -738,6 +754,8 @@ useEffect(() => {
                       <button
     onClick={() => {
       if (pendingCount === 0) return
+      resetPageParam()
+      setPagination({ offset: 0 })
       setFilters(pendingFilters || {})
       setIsDrawerOpen(false)
       scrollToBrowseResources()

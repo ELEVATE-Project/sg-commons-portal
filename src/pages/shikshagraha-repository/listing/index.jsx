@@ -20,9 +20,10 @@ export default function RepositoryPage() {
 
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams();
-  const isLoading = loadingList || loadingDetail || loadingMaster;
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
+  const showBlockingLoader =
+    loadingList || loadingDetail || loadingMaster;
   const q = useRepositoryStore((state) => state.q);
   const searchInput = useRepositoryStore((state) => state.searchInput);
   const setSearch = useRepositoryStore((state) => state.setSearch);
@@ -32,9 +33,6 @@ export default function RepositoryPage() {
   const pagination = useRepositoryStore((state) => state.pagination);
   const setPagination = useRepositoryStore((state) => state.setPagination);
   const sortBy = useRepositoryStore((state) => state.sortBy);
-  const fetchMediaList = useRepositoryStore(
-  (state) => state.fetchMediaList
-);
   const itemsPerPage = pagination.limit;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const location = useLocation();
@@ -65,6 +63,7 @@ useEffect(() => {
     const snapshot = location.state?.repositorySnapshot;
     if (navigationType !== "POP" || !snapshot) return;
 
+    // Restoring from detail should keep the exact search/filter/page snapshot.
     skipNextUrlSearchSyncRef.current = true;
     skipNextSnapshotStampRef.current = true;
     useRepositoryStore.getState().replaceRepositoryQueryState(snapshot);
@@ -113,6 +112,7 @@ useEffect(() => {
   useEffect(() => {
     const resultSetKey = JSON.stringify({ filters, q });
 
+    // New searches or filters start from page 1; ordinary page clicks do not.
     if (previousResultSetKeyRef.current === null) {
       previousResultSetKeyRef.current = resultSetKey;
       return;
@@ -167,6 +167,7 @@ useEffect(() => {
       return;
     }
 
+    // Only URL changes should drive search state, otherwise local submit/clear races.
     const currentParams = new URLSearchParams(location.search);
     const urlQuery =
       currentParams.get("searchResourceText") ||
@@ -201,15 +202,6 @@ useEffect(() => {
       setSearch("");
     }
   }, [location.search, location.state, navigationType, setSearch, setSearchParams]);
-
-
-  useEffect(() => {
-    // Only fetch if media list is empty to avoid duplicate initial requests
-    if (!mediaList || mediaList.length === 0) {
-      fetchMediaList();
-    }
-  }, [fetchMediaList, mediaList]);
-
 
   useEffect(() => {
     if (!!mediaList?.length && q && !loadingList) {
@@ -262,7 +254,7 @@ useEffect(() => {
             )}
          
            
-            {!isLoading && !mediaList?.length && (
+            {!showBlockingLoader && !mediaList?.length && (
               <div className="w-full pt-10 mx-auto flex flex-col items-center justify-center">
                 <div className="text-muted">
                   <GrResources size={100} />
@@ -289,7 +281,7 @@ useEffect(() => {
           </div>
         </div>
       </div>
-      {isLoading && (
+      {showBlockingLoader && (
         <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-black bg-opacity-75 text-white h-screen">
           {t("common.loadingText")}
         </div>

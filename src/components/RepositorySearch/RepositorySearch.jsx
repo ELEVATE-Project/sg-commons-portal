@@ -104,6 +104,7 @@ useEffect(() => {
     }
 
     next.delete("searchText");
+    next.set("page", "1");
 
     if (trimmedValue) {
       setSearchParams(next, { replace: true });
@@ -122,11 +123,11 @@ useEffect(() => {
     const trimmedSearch = value.trim();
     if (!trimmedSearch || loadingList) return;
 
-    setGlobalSearch(trimmedSearch);
     if (onSearch) {
       onSearch(trimmedSearch);
     } else {
       syncSearchParam(trimmedSearch);
+      setGlobalSearch(trimmedSearch);
       scrollToBrowseResources();
     }
   };

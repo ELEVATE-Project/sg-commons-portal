@@ -179,8 +179,16 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       // ignore
     }
   };
+  const resetPageParam = (params) => {
+    // Filter changes intentionally restart browsing from the first page.
+    const next = new URLSearchParams(params.toString());
+    next.set("page", "1");
+    return next;
+  };
   const filters = useRepositoryStore((state) => state.filters);
   const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || themeParam));
+  // Prevent URL filter sync from rerunning on page-only query changes.
+  const previousUrlFilterKeyRef = useRef(null);
 
   // NOTE: defensive reset removed — resetting filters here caused races
   // with URL-driven filter application and produced flicker. Rely on
@@ -196,7 +204,11 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       let name = selected.display || selected.value || "";
       try {
         const orgDropdown = masterList?.find(d => d.key === 'organizations');
-        const match = orgDropdown?.options?.find(o => String(o.value) === String(selected.value));
+        const match = orgDropdown?.options?.find(
+          (o) =>
+            String(o.value) === String(selected.value) ||
+            String(o.rawValue) === String(selected.value)
+        );
         if (match && match.display) name = match.display;
       } catch (e) {
         // ignore
@@ -260,7 +272,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
 
   const handleClearAll = async () => {
     try {
-      safeSetSearchParams(new URLSearchParams(), { replace: true });
+      safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
       await replaceRepositoryQueryState();
     } catch (e) {}
   };
@@ -321,11 +333,13 @@ const displayedResources = compact
       const match = orgDropdown?.options?.find(
         (option) =>
           String(option.value) === String(resource.organization) ||
+          String(option.rawValue) === String(resource.organization) ||
           String(option.display || "").toLowerCase() === String(resource.organization).toLowerCase()
       );
       const orgValue = match?.value ?? resource.organization;
       const next = new URLSearchParams(searchParams.toString());
       next.set("org", orgValue);
+      next.set("page", "1");
       try {
         setSearchParams(next, { replace: true });
       } catch (e) {}
@@ -347,7 +361,16 @@ const displayedResources = compact
   ]);
 
   useEffect(() => {
-    if (!masterList || (!orgParam && !themeParam)) return;
+    if (!orgParam && !themeParam) {
+      previousUrlFilterKeyRef.current = null;
+      return;
+    }
+    if (!masterList) return;
+
+    const urlFilterKey = JSON.stringify({ orgParam, themeParam });
+    // Same org/theme with a new page param is pagination, not a new filter.
+    if (previousUrlFilterKeyRef.current === urlFilterKey) return;
+    previousUrlFilterKeyRef.current = urlFilterKey;
 
     const orgDropdown = masterList.find((d) => d.key === "organizations");
     const tagDropdown = masterList.find((d) => d.key === "tags");
@@ -369,6 +392,7 @@ const displayedResources = compact
           const match = options.find(
             (option) =>
               String(option.value) === String(value) ||
+              String(option.rawValue) === String(value) ||
               String(option.display || "").toLowerCase() === String(value).toLowerCase()
           );
 
@@ -388,13 +412,26 @@ const displayedResources = compact
 
     if (!Object.keys(nextFilters).length) return;
 
-    replaceRepositoryQueryState({ filters: nextFilters }).finally(() => {
+    const currentPage = searchParams.get("page") || "1";
+    if (currentPage !== "1") {
+      const next = new URLSearchParams(searchParams.toString());
+      next.set("page", "1");
+      setSearchParams(next, { replace: true });
+    }
+
+    replaceRepositoryQueryState({
+      filters: nextFilters,
+      pagination: { limit: pagination.limit, offset: 0 },
+    }).finally(() => {
       setFiltersInitialized(true);
     });
   }, [
     masterList,
     orgParam,
+    pagination.limit,
     replaceRepositoryQueryState,
+    searchParams,
+    setSearchParams,
     themeParam,
   ]);
    
@@ -449,7 +486,7 @@ const displayedResources = compact
     type="button"
     onClick={() => {
   replaceRepositoryQueryState({ repositoryScrollY: 0 });
-  safeSetSearchParams(new URLSearchParams(), { replace: true });
+  safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
   navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
 }}
     className="
@@ -499,7 +536,7 @@ const displayedResources = compact
   type="button"
   onClick={() => {
   replaceRepositoryQueryState({ repositoryScrollY: 0 });
-  safeSetSearchParams(new URLSearchParams(), { replace: true });
+  safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
   navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
 }}
   className="
@@ -707,6 +744,7 @@ const displayedResources = compact
                           const params = paramMap[chip.group] || [];
                           const next = new URLSearchParams(searchParams.toString());
                           params.forEach((param) => next.delete(param));
+                          next.set("page", "1");
                           try { setSearchParams(next, { replace: true }); } catch (err) { }
                         } catch (err) {
                           // ignore

@@ -151,7 +151,10 @@ const sourceProviderIcon = getSourceProviderIcon(
       window.location.href
     );
 
-    navigate(`/resources/${resource?.id}`);
+    // Let the detail Back button return to this exact list entry and page.
+    navigate(`/resources/${resource?.id}`, {
+      state: { fromRepositoryList: true },
+    });
   };
 
 const handleCardKeyDown = (e) => {

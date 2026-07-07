@@ -4,7 +4,7 @@ import { ArrowLeft, Download, Heart, Share2, Star, Eye, ChevronDown } from "luci
 import left1 from "assets/dandelion-left-1.png";
 import right2 from "assets/dandelion-right-2.png";
 import ReviewForm from "./ReviewForm";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
 import { toast, ToastContainer } from "react-toastify";
 import Footer from "../../../components/footer/Footer";
@@ -105,6 +105,7 @@ export default function ResourceDetailPage() {
 
 function BackButton({ title, resource }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const masterList = useRepositoryStore((state) => state.masterList);
 
@@ -120,6 +121,7 @@ function BackButton({ title, resource }) {
       const match = orgDropdown?.options?.find(
         (o) =>
           String(o.value) === String(raw) ||
+          String(o.rawValue) === String(raw) ||
           String(o.display || "").toLowerCase() ===
             String(raw).toLowerCase()
       );
@@ -135,6 +137,12 @@ function BackButton({ title, resource }) {
     const ref = document.referrer;
     const histState =
       (window && window.history && window.history.state) || {};
+
+    // Card navigation should go back to the preserved search/filter/page entry.
+    if (location.state?.fromRepositoryList && window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
 
     if (
       (ref && ref.includes(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST)) ||
@@ -277,7 +285,10 @@ function ResourceMeta({ resource }) {
     try {
       const orgDropdown = masterList?.find((d) => d.key === "organizations");
       const match = orgDropdown?.options?.find(
-        (o) => String(o.value) === String(raw) || String((o.display || "")).toLowerCase() === String(raw).toLowerCase()
+        (o) =>
+          String(o.value) === String(raw) ||
+          String(o.rawValue) === String(raw) ||
+          String((o.display || "")).toLowerCase() === String(raw).toLowerCase()
       );
       const val = match ? match.value : raw;
       return encodeURIComponent(val);
