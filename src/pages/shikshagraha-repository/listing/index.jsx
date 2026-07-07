@@ -17,6 +17,7 @@ export default function RepositoryPage() {
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
   const { t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams();
   const isLoading = loadingList || loadingDetail || loadingMaster;
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
@@ -32,7 +33,6 @@ export default function RepositoryPage() {
 );
   const itemsPerPage = pagination.limit;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [searchParams, setSearchParams] = useSearchParams();
 
 useEffect(() => {
   const handleResize = () => {
@@ -48,6 +48,15 @@ useEffect(() => {
   }, []);
 
   useEffect(() => {
+  const page = Number(searchParams.get("page") || 1);
+
+  setPagination({
+    ...pagination,
+    offset: (page - 1) * pagination.limit,
+    limit: pagination.limit,
+  });
+
+
     const urlQuery =
       searchParams.get("searchResourceText") ||
       searchParams.get("searchText") ||
@@ -74,6 +83,7 @@ useEffect(() => {
       setSearch("");
     }
   }, [searchParams, setSearch, setSearchParams]);
+
 
   useEffect(() => {
     // Only fetch if media list is empty to avoid duplicate initial requests
@@ -121,7 +131,7 @@ useEffect(() => {
           </div> */}
 
           <main className="w-full mx-auto">
-            {!!mediaList?.length && (
+            {/* {!!mediaList?.length && ( */}
 
  <BrowseResources
                 resources={mediaList}
@@ -131,7 +141,7 @@ useEffect(() => {
   setViewMode={setViewMode}
   cardsSpacing={true}
               />
-            )}
+            {/* )} */}
          
            
             {!isLoading && !mediaList?.length && (
@@ -146,17 +156,22 @@ useEffect(() => {
             )}
             <div className="w-full mt-6 mx-auto">
               <Pagination
-                resourcesPerPage={itemsPerPage}
-                totalResources={mediaCount}
-                selectedPage={Math.floor(pagination.offset / itemsPerPage)}
-                paginate={(page) => {
-                  setPagination({
-                    ...pagination,
-                    offset: (itemsPerPage + (page - 1) * itemsPerPage) || 0,
-                    limit: itemsPerPage,
-                  });
-                }}
-              />
+  resourcesPerPage={itemsPerPage}
+  totalResources={mediaCount}
+  selectedPage={Number(searchParams.get("page") || 1) - 1}
+  paginate={(page) => {
+    setPagination({
+      ...pagination,
+      offset: page * itemsPerPage,
+      limit: itemsPerPage,
+    });
+
+    const params = new URLSearchParams(searchParams);
+    params.set("page", page + 1);
+
+    setSearchParams(params, { replace: true });
+  }}
+/>
             </div>
           </main>
           </div>

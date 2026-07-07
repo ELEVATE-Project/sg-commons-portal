@@ -12,16 +12,20 @@ import GoogleDriveIcon from "assets/icons/google_drive.svg"
 import { useNavigate } from "react-router-dom"
 import { openSafeUrl } from "../../../utils/urlUtils"
 import PptxIcon from "assets/icons/pptx.svg"
+import OneDriveIcon from "assets/icons/one_drive.svg";
+import AwsS3Icon from "assets/icons/aws.svg";
+import LocalUploadIcon from "assets/icons/Shikshagraha.svg";
 
 const MEDIA_FILE_TYPE = {
   PDF: "PDF",
   DOCX: "DOCX",
   XLSX: "XLSX",
   PPTX: "PPTX",
+  CSV: "CSV"
 }
 
 export const getMediaFileTypeStyles = type => {
-  switch (type) {
+  switch (type?.toUpperCase()) {
     case MEDIA_FILE_TYPE.PDF:
       return {
         background: "bg-repository-pdfBg",
@@ -35,6 +39,7 @@ export const getMediaFileTypeStyles = type => {
       }
 
     case MEDIA_FILE_TYPE.XLSX:
+    case MEDIA_FILE_TYPE.CSV:
       return {
         background: "bg-repository-xlsxBg",
         icon: XlsxIcon,
@@ -69,6 +74,7 @@ text: "text-repository-docxTagText",
       }
 
     case MEDIA_FILE_TYPE.XLSX:
+    case MEDIA_FILE_TYPE.CSV:
       return {
         bg: "bg-repository-xlsxTagBg",
 text: "text-repository-xlsxTagText",
@@ -88,6 +94,29 @@ text: "text-repository-xlsxTagText",
   }
 }
 
+export const getSourceProviderIcon = provider => {
+  if (provider == null) {
+    return LocalUploadIcon;
+  }
+
+  switch (provider) {
+    case "GOOGLE_DRIVE":
+      return GoogleDriveIcon;
+
+    case "ONE_DRIVE":
+      return OneDriveIcon;
+
+    case "AWS_S3":
+      return AwsS3Icon;
+
+    case "LOCAL":
+      return LocalUploadIcon;
+
+    default:
+      return null;
+  }
+};
+
 export default function ResourceCard({ resource, viewMode = "grid" }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -99,6 +128,10 @@ export default function ResourceCard({ resource, viewMode = "grid" }) {
 const { bg: tagBg, text: tagText } = getTagStyles(
   resource?.media_type_display
 )
+
+const sourceProviderIcon = getSourceProviderIcon(
+  resource?.source_provider
+);
 
   const handleCardClick = () => {
     trackResourceView(resource?.id);
@@ -176,7 +209,7 @@ const handleCardKeyDown = (e) => {
   <div className="flex items-center gap-1">
     <Eye size={12} />
     <span className="text-[0.6875rem]">
-      {resource?.view_count ?? 0}k
+      {resource?.view_count ?? 0}
     </span>
   </div>
 
@@ -266,7 +299,7 @@ px-1.5 sm:px-2
     <div className="flex items-center gap-1">
       <Eye size={14} />
       <span className="text-[0.813rem]">
-        {resource?.view_count ?? 0}k
+        {resource?.view_count ?? 0}
       </span>
     </div>
 
@@ -302,27 +335,30 @@ px-1.5 sm:px-2
       }}
     >
       <span
- className="
+ className={`
   flex-1
   text-[0.813rem]
-  underline
+  ${resource?.organization_url ? "underline" : ""}
   break-words
   sm:flex-none
   sm:truncate
   sm:max-w-none
   sm:whitespace-nowrap
   mr-3
-"
+  capitalize
+`}
 title={resource.organization}
 >
         {resource.organization}
       </span>
 
-      <img
-        src={GoogleDriveIcon}
-        alt={t("repository.organization")}
-        className="w-5 h-5 object-contain flex-shrink-0"
-      />
+{sourceProviderIcon && (
+  <img
+    src={sourceProviderIcon}
+    alt={resource?.source_provider || t("repository.organization")}
+    className="w-5 h-5 object-contain flex-shrink-0"
+  />
+)}
     </button>
   )}
 </div>
@@ -332,6 +368,7 @@ title={resource.organization}
 }
 
   return (
+    <div className="border-b border-gray-100 pb-2 rounded-[0.75rem]">
   <div
     role="button"
     tabIndex={0}
@@ -423,35 +460,31 @@ title={resource.organization}
       {/* Tags + Footer Section */}
       <div className="w-full flex flex-col gap-[0.3125rem] mt-auto">
         {/* Tags */}
-        {resource?.tag_names?.length > 0 && (
-  <div className="pb-[0.75rem] border-b border-repository-subtitle">
+<div className="pb-[0.75rem] border-b border-repository-subtitle min-h-[2.25rem]">
+  {resource?.tag_names?.length > 0 && (
     <div className="flex items-center gap-[0.25rem] overflow-hidden">
-  {resource.tag_names.slice(0, 2).map((tag, index) => (
-    <span
-      key={index}
-      className={`
-        ${tagBg}
-        ${tagText}
-        px-[0.625rem]
-        py-[0.125rem]
-        rounded-full
-        text-[0.875rem]
-        leading-[1.25rem]
-        font-sourceSans
-        whitespace-nowrap
-        ${
-          index === 1
-            ? "max-w-full truncate"
-            : "flex-shrink-0"
-        }
-      `}
-    >
-      {tag}
-    </span>
-  ))}
+      {resource.tag_names.slice(0, 2).map((tag, index) => (
+        <span
+          key={index}
+          className={`
+            ${tagBg}
+            ${tagText}
+            px-[0.625rem]
+            py-[0.125rem]
+            rounded-full
+            text-[0.875rem]
+            leading-[1.25rem]
+            font-sourceSans
+            whitespace-nowrap
+            ${index === 1 ? "max-w-full truncate" : "flex-shrink-0"}
+          `}
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
 </div>
-  </div>
-)}
 
         {/* Footer */}
         <div className="flex items-center justify-between min-h-[1.8125rem]">
@@ -466,7 +499,7 @@ title={resource.organization}
                   font-sourceSans
                 "
               >
-                {resource?.view_count ?? 0}k
+                {resource?.view_count ?? 0}
               </span>
             </div>
 
@@ -485,7 +518,7 @@ title={resource.organization}
             </div>
           </div>
 
-          {resource?.organization && resource?.organization_url && (
+          {resource?.organization && (
             <button
               type="button"
               className="
@@ -505,23 +538,24 @@ title={resource.organization}
               }}
             >
               <span
-                className="
+                className={`
                   text-[1.125rem]
                   text-repository-subtitle
                   font-sourceSans
-                  underline
+                  ${resource?.organization_url ? "underline" : ""}
                   truncate
                   max-w-[8rem]
                   mr-3
-                "
+                  capitalize
+                `}
                 title={resource.organization}
               >
                 {resource.organization}
               </span>
-
-             <img
-  src={GoogleDriveIcon}
-  alt={t("repository.googleDrive")}
+{sourceProviderIcon && (
+<img
+  src={sourceProviderIcon}
+  alt={resource?.source_provider || t("repository.organization")}
   className="
     h-[1.25rem]
     w-[1.25rem]
@@ -529,11 +563,13 @@ title={resource.organization}
     flex-shrink-0
   "
 />
+)}
             </button>
           )}
         </div>
       </div>
     </div>
+  </div>
   </div>
 )
 }
