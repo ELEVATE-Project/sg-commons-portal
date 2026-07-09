@@ -48,6 +48,7 @@ export default function RepositoryPage() {
   const skipNextSnapshotStampRef = useRef(false);
   const skipNextResultSetResetRef = useRef(false);
   const pageParam = searchParams.get("page") || "1";
+  const limitParam = Number(searchParams.get("limit"));
   const searchParamsString = searchParams.toString();
   const hasRepositoryUrlFilters =
     searchParams.has("org") ||
@@ -98,9 +99,10 @@ useEffect(() => {
   useEffect(() => {
     const rawPage = Number(pageParam);
     const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
-    const targetLimit = hasInitializedPageSizeRef.current
-      ? pagination.limit
-      : LISTING_RESOURCE_LIMIT;
+    const targetLimit =
+  Number.isFinite(limitParam) && limitParam > 0
+    ? limitParam
+    : LISTING_RESOURCE_LIMIT;
     const nextOffset = (page - 1) * targetLimit;
 
     hasInitializedPageSizeRef.current = true;
@@ -113,7 +115,7 @@ useEffect(() => {
       offset: nextOffset,
       limit: targetLimit,
     });
-  }, [pageParam, pagination.limit, pagination.offset, setPagination]);
+  }, [pageParam, limitParam, pagination.offset, setPagination]);
 
   useEffect(() => {
     const resultSetKey = JSON.stringify({ filters, q });
@@ -271,17 +273,15 @@ if (urlView !== viewMode) {
           </div> */}
 
           <main className="w-full mx-auto">
-            {(!!mediaList?.length || hasRepositoryUrlFilters) && (
 
  <BrowseResources
-                resources={mediaList}
+                resources={loadingList ? [] : mediaList}
   viewMode={viewMode}
   compact={false}
   title="repository.browseResources"
   setViewMode={setViewMode}
   cardsSpacing={true}
               />
-            )}
          
            
             {!showBlockingLoader && !mediaList?.length && (

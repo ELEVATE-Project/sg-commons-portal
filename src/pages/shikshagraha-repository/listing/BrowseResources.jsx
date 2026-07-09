@@ -172,6 +172,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const orgParam = searchParams.get("org");
   const themeParam = searchParams.get("theme");
   const fromResourceParam = searchParams.get("fromResource");
+  const hasResults = resources?.length > 0;
   const safeSetSearchParams = (next, opts = { replace: true }) => {
     try {
       setSearchParams(next, opts);
@@ -302,8 +303,13 @@ const displayedResources = compact
   ];
 
   const handleItemsPerPageChange = (value) => {
-    setPagination({ limit: Number(value) });
-  };
+  const next = new URLSearchParams(searchParams);
+
+  next.set("page", "1");
+  next.set("limit", value);
+
+  setSearchParams(next, { replace: true });
+};
   
   // (Old org-only effect removed; handled by combined org/theme effect above)
   useEffect(() => {
@@ -485,7 +491,7 @@ const displayedResources = compact
   <button
     type="button"
     onClick={() => {
-  replaceRepositoryQueryState({ repositoryScrollY: 0 });
+  replaceRepositoryQueryState({ repositoryScrollY: 0, sortBy });
   safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
   navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
 }}
@@ -535,7 +541,7 @@ const displayedResources = compact
       <button
   type="button"
   onClick={() => {
-  replaceRepositoryQueryState({ repositoryScrollY: 0 });
+  replaceRepositoryQueryState({ repositoryScrollY: 0, sortBy });
   safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
   navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
 }}
@@ -594,14 +600,19 @@ const displayedResources = compact
     </span>
   </span>
 )}
-          disabled={isSearchActive}
-          tooltipText={`${t("sortDisabledTooltipText")}`}
+          disabled={isSearchActive || !hasResults}
+  tooltipText={
+    !hasResults
+      ? t("noResourceFoundTitle")
+      : t("sortDisabledTooltipText")
+  }
         />
       </div>
 
 <div className="flex items-center justify-between w-full lg:w-auto lg:flex-nowrap lg:justify-end lg:gap-6 lg:shrink-0">
 <div className="flex items-center gap-3 shrink-0">
           <button
+          disabled={!hasResults}
   onClick={() => setViewMode("grid")}
   className={`
     flex items-center justify-center
@@ -615,6 +626,7 @@ const displayedResources = compact
         ? "bg-repository-primary border-repository-primary text-white"
         : "bg-white border-repository-controlBorder text-repository-controlIcon"
     }
+    ${!hasResults ? "opacity-50 cursor-not-allowed" : ""}
   `}
 >
   <Grid
@@ -623,6 +635,7 @@ const displayedResources = compact
 </button>
       <button
   type="button"
+  disabled={!hasResults}
   onClick={() => setViewMode("list")}
   className={`
     flex items-center justify-center
@@ -636,6 +649,7 @@ const displayedResources = compact
         ? "bg-repository-primary border-repository-primary text-white"
         : "bg-white border-repository-controlBorder text-repository-controlIcon"
     }
+    ${!hasResults ? "opacity-50 cursor-not-allowed" : ""}
   `}
 >
   <List
@@ -646,6 +660,7 @@ const displayedResources = compact
 
        <Dropdown
   options={perPageOptions}
+  disabled={!hasResults}
   selectedValue={itemsPerPage}
   onSelect={(value) => {
     handleItemsPerPageChange(value);
