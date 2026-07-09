@@ -601,11 +601,6 @@ const displayedResources = compact
   </span>
 )}
           disabled={isSearchActive || !hasResults}
-  tooltipText={
-    !hasResults
-      ? t("noResourceFoundTitle")
-      : t("sortDisabledTooltipText")
-  }
         />
       </div>
 

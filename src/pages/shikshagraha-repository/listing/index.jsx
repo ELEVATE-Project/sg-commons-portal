@@ -20,10 +20,11 @@ export default function RepositoryPage() {
   const [viewMode, setViewMode] = useState(
   searchParams.get("view") || "grid"
 );
-  const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
+  const loadingList = useRepositoryStore((state) => state.loadingList);
+const loadingDetail = useRepositoryStore((state) => state.loadingDetail);
+const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
 
   const { t } = useTranslation()
-  const isLoading = loadingList || loadingDetail || loadingMaster;
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
   const showBlockingLoader =
@@ -181,7 +182,6 @@ useEffect(() => {
 if (urlView !== viewMode) {
   setViewMode(urlView);
 }
-  const page = Number(searchParams.get("page") || 1);
     if (hasRestoredScrollRef.current) return;
     if (!mediaList) return;
 
@@ -250,6 +250,7 @@ if (urlView !== viewMode) {
   style={{
     ...theme.vars,
     overflowY: "visible",
+    overflowAnchor: "none", 
     backgroundImage: `url(${left1}), url(${right2})`,
     backgroundPosition: isMobile
       ? "left -2rem top 12rem, right -2rem top 20rem"
@@ -275,7 +276,7 @@ if (urlView !== viewMode) {
           <main className="w-full mx-auto">
 
  <BrowseResources
-                resources={loadingList ? [] : mediaList}
+                resources={mediaList}
   viewMode={viewMode}
   compact={false}
   title="repository.browseResources"
