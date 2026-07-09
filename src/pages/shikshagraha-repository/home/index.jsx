@@ -14,32 +14,23 @@ export default function RepositoryPage() {
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
   const { t } = useTranslation()
-  const isLoading = loadingList || loadingDetail || loadingMaster;
   const hasClearedInitialSearchRef = useRef(false);
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
+  const showBlockingLoader =
+    loadingList || loadingDetail || loadingMaster;
   const q = useRepositoryStore((state) => state.q);
   const searchInput = useRepositoryStore((state) => state.searchInput);
   const setSearch = useRepositoryStore((state) => state.setSearch);
-  const fetchMediaList = useRepositoryStore(
-  (state) => state.fetchMediaList
-);
   const resetFilters = useRepositoryStore((state) => state.resetFilters);
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   // NOTE: Do not auto-clear `org`/`theme` params on initial mount. Listing
   // (`BrowseResources`) handles mapping URL -> filters and will control when
   // to clear transient params (on Back / clear actions). This effect was
   // previously removing URL params on mount which caused filters to disappear
   // on hard refresh; keep URL params intact so filters persist across refresh.
-
-  useEffect(() => {
-    // Only fetch if we don't already have data to avoid duplicate calls
-    if (!mediaList || mediaList.length === 0) {
-      fetchMediaList();
-    }
-  }, [fetchMediaList, mediaList]);
 
   useEffect(() => {
     if (hasClearedInitialSearchRef.current) return;
@@ -104,7 +95,7 @@ export default function RepositoryPage() {
             )}
          
            
-            {!isLoading && !!!mediaList?.length && (
+            {!showBlockingLoader && !!!mediaList?.length && (
               <div className="w-full pt-10 mx-auto flex flex-col items-center justify-center">
                 <div className="text-muted">
                   <GrResources size={100} />
@@ -118,7 +109,7 @@ export default function RepositoryPage() {
           </div>
         </div>
       </div>
-      {isLoading && (
+      {showBlockingLoader && (
         <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-black bg-opacity-75 text-white h-screen">
           {t("common.loadingText")}
         </div>

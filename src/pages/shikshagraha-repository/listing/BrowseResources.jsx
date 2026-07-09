@@ -160,13 +160,10 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const searchInput = useRepositoryStore((state) => state.searchInput);
   const fetchMasterList = useRepositoryStore((state) => state.fetchMasterList);
   const masterList = useRepositoryStore((state) => state.masterList);
-  const fetchMediaList = useRepositoryStore((state) => state.fetchMediaList);
   const fetchMediaDetail = useRepositoryStore((state) => state.fetchMediaDetail);
   const selectedMedia = useRepositoryStore((state) => state.selectedMedia);
   const setFilters = useRepositoryStore((state) => state.setFilters);
-  const resetFilters = useRepositoryStore((state) => state.resetFilters);
-  const setApplyingUrlFilters = useRepositoryStore((state) => state.setApplyingUrlFilters);
-  const applyingUrlFilters = useRepositoryStore((state) => state.applyingUrlFilters);
+  const replaceRepositoryQueryState = useRepositoryStore((state) => state.replaceRepositoryQueryState);
   const loadingList = useRepositoryStore((state) => state.loadingList);
   const isSearchActive = searchInput && searchInput.trim().length > 0;
   const navigate = useNavigate();
@@ -175,48 +172,6 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const orgParam = searchParams.get("org");
   const themeParam = searchParams.get("theme");
   const fromResourceParam = searchParams.get("fromResource");
-  const searchStr = searchParams.toString();
-  const suppressTryClearRef = useRef(false);
-  const suppressFromResourceOrgRestoreRef = useRef(false);
-  // Atomic routine to clear transient URL params and reset store filters
-  const clearTransientFiltersAtomic = useCallback(async (opts = {}) => {
-    const { navigateToResourceId } = opts;
-    try {
-      // mark we're applying URL-driven changes to silence effects
-      try { useRepositoryStore.getState().setApplyingUrlFilters(true); } catch (e) {}
-      suppressTryClearRef.current = true;
-
-      // remove transient params from URL
-      const next = new URLSearchParams(window.location.search || "");
-      ["org", "theme", "resource_type", "resource_types", "media_type", "media_types", "file_type", "filetype", "tags", "fromResource"].forEach((k) => next.delete(k));
-      safeSetSearchParams(next, { replace: true });
-      // replace history entry so Back won't restore filtered entry
-      try { window.history.replaceState({}, '', window.location.pathname + (next.toString() ? `?${next.toString()}` : '')); } catch (e) {}
-
-      // force-reset store (bypass applyingUrlFilters guard) and then either navigate or fetch
-      const forceReset = useRepositoryStore.getState().forceResetFilters;
-      const fetch = useRepositoryStore.getState().fetchMediaList;
-      if (forceReset) forceReset({ skipFetch: true }); else useRepositoryStore.getState().resetFilters({ skipFetch: true });
-
-      if (navigateToResourceId) {
-        navigate(`/resources/${navigateToResourceId}`, { replace: true });
-        // ensure flags are cleared
-        suppressTryClearRef.current = false;
-        try { useRepositoryStore.getState().setApplyingUrlFilters(false); } catch (e) {}
-        return;
-      }
-
-      if (fetch) {
-        await fetch({}, true);
-      }
-    } catch (err) {
-      // ignore
-    } finally {
-      suppressTryClearRef.current = false;
-      try { setFiltersInitialized(true); } catch (e) {}
-      try { useRepositoryStore.getState().setApplyingUrlFilters(false); } catch (e) {}
-    }
-  }, [navigate]);
   const safeSetSearchParams = (next, opts = { replace: true }) => {
     try {
       setSearchParams(next, opts);
@@ -224,8 +179,16 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       // ignore
     }
   };
+  const resetPageParam = (params) => {
+    // Filter changes intentionally restart browsing from the first page.
+    const next = new URLSearchParams(params.toString());
+    next.set("page", "1");
+    return next;
+  };
   const filters = useRepositoryStore((state) => state.filters);
   const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || themeParam));
+  // Prevent URL filter sync from rerunning on page-only query changes.
+  const previousUrlFilterKeyRef = useRef(null);
 
   // NOTE: defensive reset removed — resetting filters here caused races
   // with URL-driven filter application and produced flicker. Rely on
@@ -241,7 +204,11 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       let name = selected.display || selected.value || "";
       try {
         const orgDropdown = masterList?.find(d => d.key === 'organizations');
-        const match = orgDropdown?.options?.find(o => String(o.value) === String(selected.value));
+        const match = orgDropdown?.options?.find(
+          (o) =>
+            String(o.value) === String(selected.value) ||
+            String(o.rawValue) === String(selected.value)
+        );
         if (match && match.display) name = match.display;
       } catch (e) {
         // ignore
@@ -305,51 +272,10 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
 
   const handleClearAll = async () => {
     try {
-      if (clearTransientFiltersAtomic) {
-        await clearTransientFiltersAtomic();
-      } else {
-        // fallback: reset store filters and clear url params
-        resetFilters({ skipFetch: true });
-        try { window.history.replaceState({}, "", window.location.pathname); } catch (e) {}
-      }
+      safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
+      await replaceRepositoryQueryState();
     } catch (e) {}
   };
-
-  // Sync filters -> URL (org, theme). Use replace to avoid polluting history.
-  useEffect(() => {
-    if (!setSearchParams) return;
-    if (applyingUrlFilters) return; // don't sync while we're programmatically applying URL filters
-    
-
-    const currentOrg = searchParams.get("org");
-    const currentTheme = searchParams.get("theme");
-
-    const orgValues = Array.isArray(filters?.organizations) ? filters.organizations.map(o => o.value).filter(Boolean) : [];
-    const tagValues = Array.isArray(filters?.tags) ? filters.tags.map(t => t.value).filter(Boolean) : [];
-
-    const newOrg = orgValues.length ? orgValues.map(value => encodeURIComponent(value)).join(",") : null;
-    const newTheme = tagValues.length ? tagValues.map(value => encodeURIComponent(value)).join(",") : null;
-
-    // avoid updating if params equal
-    const shouldUpdateOrg = (currentOrg || null) !== (newOrg || null);
-    const shouldUpdateTheme = (currentTheme || null) !== (newTheme || null);
-
-    if (!shouldUpdateOrg && !shouldUpdateTheme) return;
-
-    const next = new URLSearchParams(searchParams.toString());
-    if (newOrg) {
-      next.set("org", newOrg);
-    } else {
-      if (currentOrg) suppressFromResourceOrgRestoreRef.current = true;
-      next.delete("org");
-    }
-    if (newTheme) next.set("theme", newTheme); else next.delete("theme");
-
-    // suppress tryClear briefly while we programmatically update the URL
-    suppressTryClearRef.current = true;
-    safeSetSearchParams(next, { replace: true });
-    window.setTimeout(() => (suppressTryClearRef.current = false), 150);
-  }, [filters, searchStr, applyingUrlFilters]);
 
   useEffect(() => {
     if (!filtersInitialized && !loadingList) setFiltersInitialized(true);
@@ -390,8 +316,7 @@ const displayedResources = compact
     if (
       !fromResourceParam ||
       orgParam ||
-      !masterList ||
-      suppressFromResourceOrgRestoreRef.current
+      !masterList
     ) return;
 
     let cancelled = false;
@@ -408,11 +333,13 @@ const displayedResources = compact
       const match = orgDropdown?.options?.find(
         (option) =>
           String(option.value) === String(resource.organization) ||
+          String(option.rawValue) === String(resource.organization) ||
           String(option.display || "").toLowerCase() === String(resource.organization).toLowerCase()
       );
       const orgValue = match?.value ?? resource.organization;
       const next = new URLSearchParams(searchParams.toString());
       next.set("org", orgValue);
+      next.set("page", "1");
       try {
         setSearchParams(next, { replace: true });
       } catch (e) {}
@@ -434,7 +361,16 @@ const displayedResources = compact
   ]);
 
   useEffect(() => {
-    if (!masterList || (!orgParam && !themeParam)) return;
+    if (!orgParam && !themeParam) {
+      previousUrlFilterKeyRef.current = null;
+      return;
+    }
+    if (!masterList) return;
+
+    const urlFilterKey = JSON.stringify({ orgParam, themeParam });
+    // Same org/theme with a new page param is pagination, not a new filter.
+    if (previousUrlFilterKeyRef.current === urlFilterKey) return;
+    previousUrlFilterKeyRef.current = urlFilterKey;
 
     const orgDropdown = masterList.find((d) => d.key === "organizations");
     const tagDropdown = masterList.find((d) => d.key === "tags");
@@ -456,6 +392,7 @@ const displayedResources = compact
           const match = options.find(
             (option) =>
               String(option.value) === String(value) ||
+              String(option.rawValue) === String(value) ||
               String(option.display || "").toLowerCase() === String(value).toLowerCase()
           );
 
@@ -475,19 +412,26 @@ const displayedResources = compact
 
     if (!Object.keys(nextFilters).length) return;
 
-    setApplyingUrlFilters(true);
-    setFilters(nextFilters, true, { skipFetch: true });
-    fetchMediaList({}, true).finally(() => {
-      setApplyingUrlFilters(false);
+    const currentPage = searchParams.get("page") || "1";
+    if (currentPage !== "1") {
+      const next = new URLSearchParams(searchParams.toString());
+      next.set("page", "1");
+      setSearchParams(next, { replace: true });
+    }
+
+    replaceRepositoryQueryState({
+      filters: nextFilters,
+      pagination: { limit: pagination.limit, offset: 0 },
+    }).finally(() => {
       setFiltersInitialized(true);
     });
   }, [
-    fetchMasterList,
-    fetchMediaList,
     masterList,
     orgParam,
-    setApplyingUrlFilters,
-    setFilters,
+    pagination.limit,
+    replaceRepositoryQueryState,
+    searchParams,
+    setSearchParams,
     themeParam,
   ]);
    
@@ -541,8 +485,8 @@ const displayedResources = compact
   <button
     type="button"
     onClick={() => {
-  resetFilters();
-  safeSetSearchParams(new URLSearchParams(), { replace: true });
+  replaceRepositoryQueryState({ repositoryScrollY: 0 });
+  safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
   navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
 }}
     className="
@@ -591,8 +535,8 @@ const displayedResources = compact
       <button
   type="button"
   onClick={() => {
-  resetFilters();
-  safeSetSearchParams(new URLSearchParams(), { replace: true });
+  replaceRepositoryQueryState({ repositoryScrollY: 0 });
+  safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
   navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
 }}
   className="
@@ -789,7 +733,7 @@ const displayedResources = compact
                         try {
                           setFilters({ [chip.group]: [] }, true);
                           const paramMap = {
-                            organizations: ["org"],
+                            organizations: ["org", "fromResource"],
                             tags: ["theme"],
                             resource_types: ["resource_types", "resource_type"],
                             resource_type: ["resource_type", "resource_types"],
@@ -799,10 +743,8 @@ const displayedResources = compact
                           };
                           const params = paramMap[chip.group] || [];
                           const next = new URLSearchParams(searchParams.toString());
-                          if (chip.group === "organizations") {
-                            suppressFromResourceOrgRestoreRef.current = true;
-                          }
                           params.forEach((param) => next.delete(param));
+                          next.set("page", "1");
                           try { setSearchParams(next, { replace: true }); } catch (err) { }
                         } catch (err) {
                           // ignore

@@ -24,6 +24,7 @@
   import MicIcon from "assets/icons/mic.svg";
   import AccordionDownIcon from "assets/icons/accordion-down.svg";
   import AccordionUpIcon from "assets/icons/accordion-up.svg";
+  import { useSearchParams } from "react-router-dom"
 
   export default function Filters() {
     // removed unused `globalSearchValue`
@@ -34,10 +35,10 @@
     // get master list
     const dropdown_meta = useRepositoryStore(state => state.masterList)
 
-    const resetFilters = useRepositoryStore(state => state.resetFilters)
-    const clearTransientFiltersAtomic = useRepositoryStore(state => state.clearTransientFiltersAtomic)
+    const replaceRepositoryQueryState = useRepositoryStore(state => state.replaceRepositoryQueryState)
 
     const setFilters = useRepositoryStore(state => state.setFilters)
+    const setPagination = useRepositoryStore(state => state.setPagination)
     const setGlobalSearch = useRepositoryStore(state => state.setSearch)
     const setSearchInput = useRepositoryStore(state => state.setSearchInput)
     const search = useRepositoryStore(state => state.searchInput)
@@ -61,6 +62,7 @@
     const { HiddenRecorder } = useVoiceRecord()
 
     const { t } = useTranslation()
+    const [searchParams, setSearchParams] = useSearchParams()
 
     const { audioRef } = useAudio()
 
@@ -100,6 +102,12 @@
       }
     }
 
+    function resetPageParam() {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set("page", "1")
+      setSearchParams(params, { replace: true })
+    }
+
     function handleSendMessage(event) {
       if (event) {
         event.preventDefault()
@@ -116,12 +124,16 @@
       if (!search.trim()) return
 
       if (!!search && search?.length > 0) {
+        resetPageParam()
+        setPagination({ offset: 0 })
         setGlobalSearch(search)
         scrollToBrowseResources()
       }
     }
 
     const handleChange = (key, value) => {
+      resetPageParam()
+      setPagination({ offset: 0 })
       setFilters({ [key]: value }, true)
       scrollToBrowseResources()
     }
@@ -724,11 +736,12 @@ useEffect(() => {
               <div className="flex-none border-t bg-white py-3">
                 <div className="max-w-full mx-auto px-0">
                   <div className="flex items-center justify-between">
-                    <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-sourceSans font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={async () => {
-                      setIsDrawerOpen(false);
-                        try {
-                          await clearTransientFiltersAtomic();
-                        } catch (e) { console.error('[Filters] clearTransientFiltersAtomic error', e); }
+	                    <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-sourceSans font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={async () => {
+	                      setIsDrawerOpen(false);
+	                        try {
+	                          setSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
+	                          await replaceRepositoryQueryState();
+	                        } catch (e) { console.error('[Filters] clear filters error', e); }
                         setPendingFilters({}); setQueryMap({}); scrollToBrowseResources();
                       }}>
                         {t('repository.filters.clearAll')}
@@ -738,6 +751,8 @@ useEffect(() => {
                       <button
     onClick={() => {
       if (pendingCount === 0) return
+      resetPageParam()
+      setPagination({ offset: 0 })
       setFilters(pendingFilters || {})
       setIsDrawerOpen(false)
       scrollToBrowseResources()
