@@ -105,21 +105,12 @@ export const useRepositoryStore = create((set, get) => ({
             let data;
             try {
               data = await listMedia(queryParams);
-              const prevCount = get().mediaCount;
-              const prevList = get().mediaList || [];
-              const prevIds = prevList.map((m) => m?.id).join(",");
-              const newIds = (data.results || []).map((m) => m?.id).join(",");
-              if (prevCount === data.count && prevIds === newIds) {
-                
-              } else {
-                set({
-                  mediaList: [...data.results],
-                  mediaCount: data.count,
-                  mediaNext: data.next,
-                  mediaPrevious: data.previous,
-                });
-                
-              }
+              set({
+  mediaList: [...data.results],
+  mediaCount: data.count,
+  mediaNext: data.next,
+  mediaPrevious: data.previous,
+});
               return data;
             } catch (err) {
               throw err;

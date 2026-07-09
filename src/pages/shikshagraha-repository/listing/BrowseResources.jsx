@@ -234,6 +234,16 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     return null;
   }, [filters, masterList]);
 
+  const hasMultipleFilters = useMemo(() => {
+  if (!filters) return false;
+
+  const totalSelected = Object.values(filters).reduce((count, values) => {
+    return count + (Array.isArray(values) ? values.length : 0);
+  }, 0);
+
+  return totalSelected > 1;
+}, [filters]);
+
   // Labels for group chips
   const filterGroupLabels = {
     organizations: "Organization",
@@ -466,9 +476,11 @@ const displayedResources = compact
 >
   <div className="flex-1 min-w-0">
     <h2 className="text-xl sm:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading capitalize break-words">
-      {selectedSingleLabel
-        ? `${selectedSingleLabel.name} Resources`
-        : t(title ?? "repository.browseResources")}
+      {hasMultipleFilters
+  ? t("repository.browseAllResources")
+  : selectedSingleLabel
+    ? `${selectedSingleLabel.name} Resources`
+    : t(title ?? "repository.browseResources")}
     </h2>
 
     {!compact && (

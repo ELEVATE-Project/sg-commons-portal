@@ -38,16 +38,25 @@ function Pagination({
         previousLabel={null}
         nextLabel={null}
         renderOnZeroPageCount={null}
-        containerClassName="flex items-center gap-6 text-sm font-medium"
-pageClassName=""
+        containerClassName="flex items-center gap-4 text-sm font-medium"
+
+pageClassName="group"
+
 pageLinkClassName="
+  flex
+  items-center
+  justify-center
+  w-7
+  h-7
+  rounded-md
   text-repository-paginationText
-  hover:text-repository-primary
   transition-colors
+  group-hover:bg-gray-200
+  group-hover:text-repository-paginationText
 "
-breakClassName=""
-breakLinkClassName="text-repository-paginationText"
+
 activeClassName=""
+
 activeLinkClassName="
   flex
   items-center
@@ -55,8 +64,10 @@ activeLinkClassName="
   w-7
   h-7
   rounded-md
-  bg-repository-primary
+  !bg-repository-primary
   !text-white
+  hover:!bg-repository-primary
+  hover:!text-white
 "
       />
     </div>
