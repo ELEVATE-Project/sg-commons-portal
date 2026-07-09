@@ -15,11 +15,16 @@ import { useLocation, useNavigationType, useSearchParams } from "react-router-do
 const LISTING_RESOURCE_LIMIT = 6;
 
 export default function RepositoryPage() {
-  const [viewMode, setViewMode] = useState("grid");
-  const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [viewMode, setViewMode] = useState(
+  searchParams.get("view") || "grid"
+);
+  const loadingList = useRepositoryStore((state) => state.loadingList);
+const loadingDetail = useRepositoryStore((state) => state.loadingDetail);
+const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
 
   const { t } = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
   const showBlockingLoader =
@@ -44,6 +49,7 @@ export default function RepositoryPage() {
   const skipNextSnapshotStampRef = useRef(false);
   const skipNextResultSetResetRef = useRef(false);
   const pageParam = searchParams.get("page") || "1";
+  const limitParam = Number(searchParams.get("limit"));
   const searchParamsString = searchParams.toString();
   const hasRepositoryUrlFilters =
     searchParams.has("org") ||
@@ -94,9 +100,10 @@ useEffect(() => {
   useEffect(() => {
     const rawPage = Number(pageParam);
     const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
-    const targetLimit = hasInitializedPageSizeRef.current
-      ? pagination.limit
-      : LISTING_RESOURCE_LIMIT;
+    const targetLimit =
+  Number.isFinite(limitParam) && limitParam > 0
+    ? limitParam
+    : LISTING_RESOURCE_LIMIT;
     const nextOffset = (page - 1) * targetLimit;
 
     hasInitializedPageSizeRef.current = true;
@@ -109,7 +116,7 @@ useEffect(() => {
       offset: nextOffset,
       limit: targetLimit,
     });
-  }, [pageParam, pagination.limit, pagination.offset, setPagination]);
+  }, [pageParam, limitParam, pagination.offset, setPagination]);
 
   useEffect(() => {
     const resultSetKey = JSON.stringify({ filters, q });
@@ -158,6 +165,23 @@ useEffect(() => {
   ]);
 
   useEffect(() => {
+  const params = new URLSearchParams(searchParams);
+
+  if (viewMode === "grid") {
+    params.delete("view");
+  } else {
+    params.set("view", viewMode);
+  }
+
+  setSearchParams(params, { replace: true });
+}, [viewMode]);
+
+  useEffect(() => {
+    const urlView = searchParams.get("view") || "grid";
+
+if (urlView !== viewMode) {
+  setViewMode(urlView);
+}
     if (hasRestoredScrollRef.current) return;
     if (!mediaList) return;
 
@@ -226,6 +250,7 @@ useEffect(() => {
   style={{
     ...theme.vars,
     overflowY: "visible",
+    overflowAnchor: "none", 
     backgroundImage: `url(${left1}), url(${right2})`,
     backgroundPosition: isMobile
       ? "left -2rem top 12rem, right -2rem top 20rem"
@@ -249,7 +274,6 @@ useEffect(() => {
           </div> */}
 
           <main className="w-full mx-auto">
-            {(!!mediaList?.length || hasRepositoryUrlFilters) && (
 
  <BrowseResources
                 resources={mediaList}
@@ -259,7 +283,6 @@ useEffect(() => {
   setViewMode={setViewMode}
   cardsSpacing={true}
               />
-            )}
          
            
             {!showBlockingLoader && !mediaList?.length && (

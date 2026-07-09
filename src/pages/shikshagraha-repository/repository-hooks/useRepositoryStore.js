@@ -90,18 +90,12 @@ export const useRepositoryStore = create((set, get) => ({
             if (cached && (Date.now() - cached.ts) < 500) {
               // apply cached response to state if needed
               const data = cached.data;
-              const prevCount = get().mediaCount;
-              const prevList = get().mediaList || [];
-              const prevIds = prevList.map((m) => m?.id).join(",");
-              const newIds = (data.results || []).map((m) => m?.id).join(",");
-              if (!(prevCount === data.count && prevIds === newIds)) {
-                set({
-                  mediaList: data.results,
-                  mediaCount: data.count,
-                  mediaNext: data.next,
-                  mediaPrevious: data.previous,
-                });
-              }
+              set({
+  mediaList: [...data.results],
+  mediaCount: data.count,
+  mediaNext: data.next,
+  mediaPrevious: data.previous,
+});
               return data;
             }
           } catch (e) {}
@@ -119,7 +113,7 @@ export const useRepositoryStore = create((set, get) => ({
                 
               } else {
                 set({
-                  mediaList: data.results,
+                  mediaList: [...data.results],
                   mediaCount: data.count,
                   mediaNext: data.next,
                   mediaPrevious: data.previous,
@@ -189,11 +183,6 @@ export const useRepositoryStore = create((set, get) => ({
     if (!id) return;
     // return existing in-flight promise for this id if present
     if (_inFlightDetailMap[id]) return _inFlightDetailMap[id];
-
-    const current = get();
-    if (current.selectedMedia && String(current.selectedMedia.id) === String(id)) {
-      return Promise.resolve(current.selectedMedia);
-    }
 
     // create and store in-flight promise
     _inFlightDetailMap[id] = (async () => {
@@ -453,6 +442,11 @@ export const useRepositoryStore = create((set, get) => ({
     }));
     get().fetchMediaList();
   },
+
+  setSelectedMedia: (media) =>
+  set({
+    selectedMedia: media,
+  }),
   /**
    * Set pagination parameters
    * @param {Object} newPagination - e.g. { offset: 20, limit: 10 }

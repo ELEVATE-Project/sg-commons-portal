@@ -30,6 +30,7 @@ export default function ResourceDetailPage() {
   const { loadingDetail } = useRepositoryStore();
   const isLoading = useRepositoryStore((state) => state.loadingDetail);
   const containerRef = useRef(null);
+
   useEffect(() => {
     let mounted = true;
     setHasPageLoaded(false);
@@ -371,7 +372,7 @@ function ResourceMeta({ resource }) {
 </div>
 
   {/* Right Section */}
-  <div className="flex items-center gap-2 lg:gap-0 shrink-0">
+  <div className="flex items-center gap-2 lg:gap-1 shrink-0">
   <div className="flex items-center gap-2 text-repository-title">
     <Eye size={22} />
 
