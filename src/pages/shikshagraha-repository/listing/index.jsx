@@ -13,11 +13,14 @@ import right2 from "assets/dandelion-right-2.png";
 import { useSearchParams } from "react-router-dom";
 
 export default function RepositoryPage() {
-  const [viewMode, setViewMode] = useState("grid");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [viewMode, setViewMode] = useState(
+  searchParams.get("view") || "grid"
+);
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
   const { t } = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams();
   const isLoading = loadingList || loadingDetail || loadingMaster;
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
@@ -43,11 +46,29 @@ useEffect(() => {
 
   return () => window.removeEventListener("resize", handleResize);
 }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
+  const params = new URLSearchParams(searchParams);
+
+  if (viewMode === "grid") {
+    params.delete("view");
+  } else {
+    params.set("view", viewMode);
+  }
+
+  setSearchParams(params, { replace: true });
+}, [viewMode]);
+
+  useEffect(() => {
+    const urlView = searchParams.get("view") || "grid";
+
+if (urlView !== viewMode) {
+  setViewMode(urlView);
+}
   const page = Number(searchParams.get("page") || 1);
 
   setPagination({
