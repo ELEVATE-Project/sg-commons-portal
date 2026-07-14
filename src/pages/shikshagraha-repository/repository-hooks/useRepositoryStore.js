@@ -63,7 +63,10 @@ export const useRepositoryStore = create((set, get) => ({
         return _inFlightPromise || Promise.resolve();
       }
       _requestInFlight = true;
-      set({ loadingList: true });
+      set({
+  loadingList: true,
+  mediaList: [],
+});
       _inFlightPromise = (async () => {
         try {
           const { filters, pagination, sortBy, q } = get();
@@ -177,7 +180,10 @@ export const useRepositoryStore = create((set, get) => ({
 
     // create and store in-flight promise
     _inFlightDetailMap[id] = (async () => {
-      set({ loadingDetail: true });
+      set({
+  loadingDetail: true,
+  selectedMedia: null,
+});
       try {
         const media = await getMediaById(id);
         set({ selectedMedia: media });

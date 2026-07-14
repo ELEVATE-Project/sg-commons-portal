@@ -295,6 +295,7 @@ if (urlView !== viewMode) {
                 </div>
               </div>
             )}
+            {!loadingList && (
             <div className="w-full mt-6 mx-auto">
               <Pagination
   resourcesPerPage={itemsPerPage}
@@ -308,6 +309,7 @@ if (urlView !== viewMode) {
   }}
 />
             </div>
+            )}
           </main>
           </div>
         </div>
