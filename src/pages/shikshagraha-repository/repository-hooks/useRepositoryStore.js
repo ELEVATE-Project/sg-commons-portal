@@ -241,7 +241,7 @@ export const useRepositoryStore = create((set, get) => ({
         },
         {
           key: "tags",
-          label: "Themes",
+          label: "Categories",
           options: master?.tags?.map((x) => ({
             value: x?.name,
             display: x?.name,

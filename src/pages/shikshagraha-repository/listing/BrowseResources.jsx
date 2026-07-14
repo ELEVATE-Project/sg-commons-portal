@@ -247,7 +247,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   // Labels for group chips
   const filterGroupLabels = {
     organizations: "Organization",
-    tags: "Theme",
+    tags: "Categories",
     resource_types: "Resource Type",
     resource_type: "Resource Type",
     file_types: "File Type",
@@ -756,7 +756,7 @@ const displayedResources = compact
                           setFilters({ [chip.group]: [] }, true);
                           const paramMap = {
                             organizations: ["org", "fromResource"],
-                            tags: ["theme"],
+                            tags: ["categories"],
                             resource_types: ["resource_types", "resource_type"],
                             resource_type: ["resource_type", "resource_types"],
                             file_types: ["file_type", "filetype"],
