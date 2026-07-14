@@ -228,7 +228,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       } catch (e) {
         // ignore
       }
-      return { type: "categories", name };
+      return { type: "Categories", name };
     }
 
     return null;
