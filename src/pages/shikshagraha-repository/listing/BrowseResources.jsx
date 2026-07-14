@@ -170,7 +170,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const {t} = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const orgParam = searchParams.get("org");
-  const themeParam = searchParams.get("theme");
+  const categoriesParam = searchParams.get("categories");
   const fromResourceParam = searchParams.get("fromResource");
   const hasResults = resources?.length > 0;
   const safeSetSearchParams = (next, opts = { replace: true }) => {
@@ -187,7 +187,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     return next;
   };
   const filters = useRepositoryStore((state) => state.filters);
-  const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || themeParam));
+  const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || categoriesParam));
   // Prevent URL filter sync from rerunning on page-only query changes.
   const previousUrlFilterKeyRef = useRef(null);
 
@@ -228,16 +228,26 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       } catch (e) {
         // ignore
       }
-      return { type: "Theme", name };
+      return { type: "Categories", name };
     }
 
     return null;
   }, [filters, masterList]);
 
+  const hasMultipleFilters = useMemo(() => {
+  if (!filters) return false;
+
+  const totalSelected = Object.values(filters).reduce((count, values) => {
+    return count + (Array.isArray(values) ? values.length : 0);
+  }, 0);
+
+  return totalSelected > 1;
+}, [filters]);
+
   // Labels for group chips
   const filterGroupLabels = {
     organizations: "Organization",
-    tags: "Theme",
+    tags: "Categories",
     resource_types: "Resource Type",
     resource_type: "Resource Type",
     file_types: "File Type",
@@ -367,13 +377,13 @@ const displayedResources = compact
   ]);
 
   useEffect(() => {
-    if (!orgParam && !themeParam) {
+    if (!orgParam && !categoriesParam) {
       previousUrlFilterKeyRef.current = null;
       return;
     }
     if (!masterList) return;
 
-    const urlFilterKey = JSON.stringify({ orgParam, themeParam });
+    const urlFilterKey = JSON.stringify({ orgParam, categoriesParam });
     // Same org/theme with a new page param is pagination, not a new filter.
     if (previousUrlFilterKeyRef.current === urlFilterKey) return;
     previousUrlFilterKeyRef.current = urlFilterKey;
@@ -412,8 +422,8 @@ const displayedResources = compact
     if (orgParam) {
       nextFilters.organizations = toSelectedOptions(orgParam, orgDropdown?.options);
     }
-    if (themeParam) {
-      nextFilters.tags = toSelectedOptions(themeParam, tagDropdown?.options);
+    if (categoriesParam) {
+      nextFilters.tags = toSelectedOptions(categoriesParam, tagDropdown?.options);
     }
 
     if (!Object.keys(nextFilters).length) return;
@@ -438,7 +448,7 @@ const displayedResources = compact
     replaceRepositoryQueryState,
     searchParams,
     setSearchParams,
-    themeParam,
+    categoriesParam,
   ]);
    
   return (
@@ -466,9 +476,11 @@ const displayedResources = compact
 >
   <div className="flex-1 min-w-0">
     <h2 className="text-xl sm:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading capitalize break-words">
-      {selectedSingleLabel
-        ? `${selectedSingleLabel.name} Resources`
-        : t(title ?? "repository.browseResources")}
+      {hasMultipleFilters
+  ? t("repository.browseAllResources")
+  : selectedSingleLabel
+    ? `${selectedSingleLabel.name} Resources`
+    : t(title ?? "repository.browseResources")}
     </h2>
 
     {!compact && (
@@ -744,7 +756,7 @@ const displayedResources = compact
                           setFilters({ [chip.group]: [] }, true);
                           const paramMap = {
                             organizations: ["org", "fromResource"],
-                            tags: ["theme"],
+                            tags: ["categories"],
                             resource_types: ["resource_types", "resource_type"],
                             resource_type: ["resource_type", "resource_types"],
                             file_types: ["file_type", "filetype"],

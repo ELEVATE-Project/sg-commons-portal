@@ -179,6 +179,7 @@
     ,
     "repository": {
         "browseResources": "Browse Resources",
+        "browseAllResources": "Browse All Resources",
         "browseResourcesDescription": "Discover high quality resources for your project",
         "library": "Library",
         "resultsCount_one": "{{count}} result",

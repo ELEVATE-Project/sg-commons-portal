@@ -63,7 +63,10 @@ export const useRepositoryStore = create((set, get) => ({
         return _inFlightPromise || Promise.resolve();
       }
       _requestInFlight = true;
-      set({ loadingList: true });
+      set({
+  loadingList: true,
+  mediaList: [],
+});
       _inFlightPromise = (async () => {
         try {
           const { filters, pagination, sortBy, q } = get();
@@ -105,21 +108,12 @@ export const useRepositoryStore = create((set, get) => ({
             let data;
             try {
               data = await listMedia(queryParams);
-              const prevCount = get().mediaCount;
-              const prevList = get().mediaList || [];
-              const prevIds = prevList.map((m) => m?.id).join(",");
-              const newIds = (data.results || []).map((m) => m?.id).join(",");
-              if (prevCount === data.count && prevIds === newIds) {
-                
-              } else {
-                set({
-                  mediaList: [...data.results],
-                  mediaCount: data.count,
-                  mediaNext: data.next,
-                  mediaPrevious: data.previous,
-                });
-                
-              }
+              set({
+  mediaList: [...data.results],
+  mediaCount: data.count,
+  mediaNext: data.next,
+  mediaPrevious: data.previous,
+});
               return data;
             } catch (err) {
               throw err;
@@ -186,7 +180,10 @@ export const useRepositoryStore = create((set, get) => ({
 
     // create and store in-flight promise
     _inFlightDetailMap[id] = (async () => {
-      set({ loadingDetail: true });
+      set({
+  loadingDetail: true,
+  selectedMedia: null,
+});
       try {
         const media = await getMediaById(id);
         set({ selectedMedia: media });
@@ -250,7 +247,7 @@ export const useRepositoryStore = create((set, get) => ({
         },
         {
           key: "tags",
-          label: "Themes",
+          label: "Categories",
           options: master?.tags?.map((x) => ({
             value: x?.name,
             display: x?.name,

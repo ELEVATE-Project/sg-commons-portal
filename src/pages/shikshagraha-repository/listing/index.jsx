@@ -53,7 +53,7 @@ const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
   const searchParamsString = searchParams.toString();
   const hasRepositoryUrlFilters =
     searchParams.has("org") ||
-    searchParams.has("theme") ||
+    searchParams.has("categories") ||
     searchParams.has("fromResource");
 
 useEffect(() => {
@@ -295,6 +295,7 @@ if (urlView !== viewMode) {
                 </div>
               </div>
             )}
+            {!loadingList && (
             <div className="w-full mt-6 mx-auto">
               <Pagination
   resourcesPerPage={itemsPerPage}
@@ -308,6 +309,7 @@ if (urlView !== viewMode) {
   }}
 />
             </div>
+            )}
           </main>
           </div>
         </div>

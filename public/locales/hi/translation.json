@@ -33,6 +33,7 @@
     "noResourceFoundTitle": "कोई मेल खाता समाधान नहीं मिला। कृपया अपना प्रॉम्प्ट बदलें।",
     "repository": {
         "browseResources": "संसाधन देखें",
+        "browseAllResources": "सभी संसाधन ब्राउज़ करें",
         "browseResourcesDescription": "अपने प्रोजेक्ट के लिए उच्च गुणवत्ता वाले संसाधन खोजें",
         "library": "लाइब्रेरी",
         "resultsCount_one": "{{count}} परिणाम",

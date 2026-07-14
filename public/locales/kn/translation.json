@@ -33,6 +33,7 @@
     "noResourceFoundTitle": "ಹೊಂದುವ ಪರಿಹಾರಗಳು ಸಿಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು ಬದಲಾಯಿಸಿ.",
     "repository": {
         "browseResources": "ಸಂಪನ್ಮೂಲಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ",
+        "browseAllResources": "ಎಲ್ಲಾ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ",
         "browseResourcesDescription": "ನಿಮ್ಮ ಯೋಜನೆಗೆ ಉನ್ನತ ಗುಣಮಟ್ಟದ ಸಂಪನ್ಮೂಲಗಳನ್ನು ಅನ್ವೇಷಿಸಿ",
         "library": "ಗ್ರಂಥಾಲಯ",
         "resultsCount_one": "{{count}} ಫಲಿತಾಂಶ",

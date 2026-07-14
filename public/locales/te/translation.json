@@ -33,6 +33,7 @@
     "noResourceFoundTitle": "సరిపోలే పరిష్కారాలు కనబడలేదు. దయచేసి మీ ప్రాంప్ట్‌ను మార్చండి.",
     "repository": {
         "browseResources": "వనరులను బ్రౌజ్ చేయండి",
+        "browseAllResources": "అన్ని వనరులను బ్రౌజ్ చేయండి",
         "browseResourcesDescription": "మీ ప్రాజెక్ట్ కోసం ఉన్నత నాణ్యత గల వనరులను కనుగొనండి",
         "library": "గ్రంథాలయం",
         "resultsCount_one": "{{count}} ఫలితం",
