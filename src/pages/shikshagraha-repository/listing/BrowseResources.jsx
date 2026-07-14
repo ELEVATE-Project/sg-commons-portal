@@ -170,7 +170,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const {t} = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const orgParam = searchParams.get("org");
-  const themeParam = searchParams.get("theme");
+  const categoriesParam = searchParams.get("categories");
   const fromResourceParam = searchParams.get("fromResource");
   const hasResults = resources?.length > 0;
   const safeSetSearchParams = (next, opts = { replace: true }) => {
@@ -187,7 +187,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     return next;
   };
   const filters = useRepositoryStore((state) => state.filters);
-  const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || themeParam));
+  const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || categoriesParam));
   // Prevent URL filter sync from rerunning on page-only query changes.
   const previousUrlFilterKeyRef = useRef(null);
 
@@ -228,7 +228,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       } catch (e) {
         // ignore
       }
-      return { type: "Theme", name };
+      return { type: "categories", name };
     }
 
     return null;
@@ -377,13 +377,13 @@ const displayedResources = compact
   ]);
 
   useEffect(() => {
-    if (!orgParam && !themeParam) {
+    if (!orgParam && !categoriesParam) {
       previousUrlFilterKeyRef.current = null;
       return;
     }
     if (!masterList) return;
 
-    const urlFilterKey = JSON.stringify({ orgParam, themeParam });
+    const urlFilterKey = JSON.stringify({ orgParam, categoriesParam });
     // Same org/theme with a new page param is pagination, not a new filter.
     if (previousUrlFilterKeyRef.current === urlFilterKey) return;
     previousUrlFilterKeyRef.current = urlFilterKey;
@@ -422,8 +422,8 @@ const displayedResources = compact
     if (orgParam) {
       nextFilters.organizations = toSelectedOptions(orgParam, orgDropdown?.options);
     }
-    if (themeParam) {
-      nextFilters.tags = toSelectedOptions(themeParam, tagDropdown?.options);
+    if (categoriesParam) {
+      nextFilters.tags = toSelectedOptions(categoriesParam, tagDropdown?.options);
     }
 
     if (!Object.keys(nextFilters).length) return;
@@ -448,7 +448,7 @@ const displayedResources = compact
     replaceRepositoryQueryState,
     searchParams,
     setSearchParams,
-    themeParam,
+    categoriesParam,
   ]);
    
   return (

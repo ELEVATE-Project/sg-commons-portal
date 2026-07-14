@@ -53,7 +53,7 @@ const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
   const searchParamsString = searchParams.toString();
   const hasRepositoryUrlFilters =
     searchParams.has("org") ||
-    searchParams.has("theme") ||
+    searchParams.has("categories") ||
     searchParams.has("fromResource");
 
 useEffect(() => {

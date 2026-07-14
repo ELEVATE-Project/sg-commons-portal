@@ -47,7 +47,7 @@ export default function RepositoryPage() {
   // If there are no org/theme params in URL, ensure repository filters are cleared
   useEffect(() => {
     const org = searchParams.get("org");
-    const theme = searchParams.get("theme");
+    const theme = searchParams.get("categories");
     if (!org && !theme) {
       try {
         const forceReset = useRepositoryStore.getState().forceResetFilters;
