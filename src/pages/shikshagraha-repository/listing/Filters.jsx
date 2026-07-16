@@ -724,7 +724,7 @@ useEffect(() => {
                                     </button>
                                   </div>
                                 </div>
-                                <DropdownSelect compact sectionKey={key} isFiltered={!!q} label={label} options={filtered} allOptions={options || []} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} />
+                                <DropdownSelect compact sectionKey={key} isFiltered={!!q} label={label} options={filtered} allOptions={options || []} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} appliedSelected={filters[key] || []}  />
                               </>
                             ) : null}
                           </div>
@@ -989,7 +989,7 @@ useEffect(() => {
     )
   }
 
-  const DropdownSelect = ({ label, options = [], allOptions = [], selected = [], onChange, compact = false, sectionKey = "", isFiltered = false }) => {
+  const DropdownSelect = ({ label, options = [], allOptions = [], selected = [], onChange, compact = false, sectionKey = "", isFiltered = false, appliedSelected = [] }) => {
     const { t } = useTranslation();
     const selectedCount = Array.isArray(selected) ? selected.length : 0
     const getOptionValue = item => {
@@ -1015,7 +1015,7 @@ useEffect(() => {
     }
 
     // Normalize options to { value, label }
-    const optionsList = normalizeOptions(options)
+    const normalizedOptions = normalizeOptions(options)
 
     if (compact) {
       const selectedItems = Array.isArray(selected)
@@ -1024,7 +1024,28 @@ useEffect(() => {
             .split(",")
             .map(value => value.trim())
             .filter(Boolean)
-      const selectedValues = new Set(selectedItems.map(getOptionKey).filter(Boolean))
+const selectedValues = new Set(selectedItems.map(getOptionKey).filter(Boolean))
+
+const appliedItems = Array.isArray(appliedSelected)
+  ? appliedSelected
+  : String(appliedSelected || "")
+      .split(",")
+      .map(value => value.trim())
+      .filter(Boolean)
+
+const appliedValues = new Set(
+  appliedItems.map(getOptionKey).filter(Boolean)
+)
+
+const optionsList = [...normalizedOptions].sort((a, b) => {
+  const aSelected = appliedValues.has(getOptionKey(a))
+  const bSelected = appliedValues.has(getOptionKey(b))
+
+  if (aSelected && !bSelected) return -1
+  if (!aSelected && bSelected) return 1
+
+  return 0
+})
       const compareOptionsList =
         sectionKey === "tags" && !isFiltered ? normalizeOptions(allOptions) : optionsList
       const allSelectedByValue =

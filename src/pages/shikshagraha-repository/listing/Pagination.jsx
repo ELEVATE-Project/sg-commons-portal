@@ -29,47 +29,54 @@ function Pagination({
   return (
     <div className="flex justify-center mb-10">
       <ReactPaginate
-        forcePage={selectedPage}
-        pageCount={pageCount}
-        onPageChange={handlePageClick}
-        marginPagesDisplayed={1}
-        pageRangeDisplayed={isMobile ? 3 : 5}
-        breakLabel="..."
-        previousLabel={null}
-        nextLabel={null}
-        renderOnZeroPageCount={null}
-        containerClassName="flex items-center gap-4 text-sm font-medium"
+  forcePage={selectedPage}
+  pageCount={pageCount}
+  onPageChange={handlePageClick}
+  marginPagesDisplayed={1}
+  pageRangeDisplayed={isMobile ? 3 : 5}
+  breakLabel="..."
+  previousLabel={null}
+  nextLabel={null}
+  renderOnZeroPageCount={null}
+  containerClassName="flex items-center gap-4 text-sm font-medium"
 
-pageClassName="group"
+  pageClassName="group"
 
-pageLinkClassName="
-  flex
-  items-center
-  justify-center
-  w-7
-  h-7
-  rounded-md
-  text-repository-paginationText
-  transition-colors
-  group-hover:bg-gray-200
-  group-hover:text-repository-paginationText
-"
+  pageLinkClassName="
+    flex
+    items-center
+    justify-center
+    w-7
+    h-7
+    rounded-md
+    text-repository-paginationText
+    transition-colors
+    group-hover:bg-gray-200
+    group-hover:text-repository-paginationText
+  "
 
-activeClassName=""
+  activeClassName=""
+  
+  activeLinkClassName="
+    flex
+    items-center
+    justify-center
+    w-7
+    h-7
+    rounded-md
+    !bg-repository-primary
+    !text-white
+    hover:!bg-repository-primary
+    hover:!text-white
+  "
 
-activeLinkClassName="
-  flex
-  items-center
-  justify-center
-  w-7
-  h-7
-  rounded-md
-  !bg-repository-primary
-  !text-white
-  hover:!bg-repository-primary
-  hover:!text-white
-"
-      />
+  breakClassName="pointer-events-none"
+  breakLinkClassName="
+    cursor-default
+    pointer-events-none
+    text-repository-paginationText
+  "
+/>
     </div>
   );
 }
