@@ -69,6 +69,12 @@ activeLinkClassName="
   hover:!bg-repository-primary
   hover:!text-white
 "
+breakClassName="pointer-events-none"
+  breakLinkClassName="
+    cursor-default
+    pointer-events-none
+    text-repository-paginationText
+  "
       />
     </div>
   );

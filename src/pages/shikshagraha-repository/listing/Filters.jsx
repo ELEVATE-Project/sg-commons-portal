@@ -85,6 +85,7 @@
     const [queryMap, setQueryMap] = useState({})
     const [openMap, setOpenMap] = useState({})
     const [pendingFilters, setPendingFilters] = useState({})
+    const sectionRefs = useRef({});
 
     // sticky behavior removed: filters will remain in normal document flow
 
@@ -535,7 +536,14 @@ useEffect(() => {
       openDrawer()
     }
     setOpenMap((prev) => ({ ...prev, [group]: true }))
-  }
+
+    setTimeout(() => {
+      sectionRefs.current[group]?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 150);
+  };
 
   window.addEventListener("sg-open-filter-group", handleOpenFilterGroup)
   return () => {
@@ -654,7 +662,9 @@ useEffect(() => {
                         const isOpen = !!openMap[key]
 
                         return (
-                          <div key={key} className="pb-4">
+                          <div key={key} className="pb-4" ref={(el) => {
+                              sectionRefs.current[key] = el;
+                            }}>
                             <div className="flex items-center justify-between mb-2 pl-5">
                               {/* <label className="block font-medium text-[var(--listing-primary)]">{label}</label> */}
                               <label className="block font-bold text-[0.8rem] leading-none tracking-normal text-[var(--listing-primary)]" style={{ fontFamily: "Comfortaa" }}>{label}</label>
@@ -724,7 +734,7 @@ useEffect(() => {
                                     </button>
                                   </div>
                                 </div>
-                                <DropdownSelect compact sectionKey={key} isFiltered={!!q} label={label} options={filtered} allOptions={options || []} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} />
+                                <DropdownSelect compact sectionKey={key} isFiltered={!!q} label={label} options={filtered} allOptions={options || []} selected={pendingFilters[key] || []} onChange={value => setPendingFilters(prev => ({ ...prev, [key]: value }))} appliedSelected={filters[key] || []}  />
                               </>
                             ) : null}
                           </div>
@@ -989,7 +999,7 @@ useEffect(() => {
     )
   }
 
-  const DropdownSelect = ({ label, options = [], allOptions = [], selected = [], onChange, compact = false, sectionKey = "", isFiltered = false }) => {
+  const DropdownSelect = ({ label, options = [], allOptions = [], selected = [], onChange, compact = false, sectionKey = "", isFiltered = false, appliedSelected = [] }) => {
     const { t } = useTranslation();
     const selectedCount = Array.isArray(selected) ? selected.length : 0
     const getOptionValue = item => {
@@ -1015,7 +1025,27 @@ useEffect(() => {
     }
 
     // Normalize options to { value, label }
-    const optionsList = normalizeOptions(options)
+    const normalizedOptions = normalizeOptions(options)
+    const appliedItems = Array.isArray(appliedSelected)
+  ? appliedSelected
+  : String(appliedSelected || "")
+      .split(",")
+      .map(value => value.trim())
+      .filter(Boolean)
+
+const appliedValues = new Set(
+  appliedItems.map(getOptionKey).filter(Boolean)
+)
+
+const optionsList = [...normalizedOptions].sort((a, b) => {
+  const aSelected = appliedValues.has(getOptionKey(a))
+  const bSelected = appliedValues.has(getOptionKey(b))
+
+  if (aSelected && !bSelected) return -1
+  if (!aSelected && bSelected) return 1
+
+  return 0
+})
 
     if (compact) {
       const selectedItems = Array.isArray(selected)
@@ -1024,7 +1054,7 @@ useEffect(() => {
             .split(",")
             .map(value => value.trim())
             .filter(Boolean)
-      const selectedValues = new Set(selectedItems.map(getOptionKey).filter(Boolean))
+const selectedValues = new Set(selectedItems.map(getOptionKey).filter(Boolean))
       const compareOptionsList =
         sectionKey === "tags" && !isFiltered ? normalizeOptions(allOptions) : optionsList
       const allSelectedByValue =

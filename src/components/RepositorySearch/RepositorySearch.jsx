@@ -271,7 +271,7 @@ return (
       isHeader
         ? "gap-1 rounded-xl px-3 py-4 w-full max-w-[44rem]"
         : "gap-3 h-[4.1rem] w-full max-w-[43.9rem] rounded-[0.563rem] px-4"
-    } shadow-[0px_4px_12px_rgba(0,0,0,0.08)] ${className}`}
+    } shadow-[0.464rem_0.464rem_1.857rem_rgba(127,50,137,0.2)] ${className}`}
   >
 <img
   src={SearchIcon}
@@ -309,7 +309,7 @@ return (
   ) : (
     <>
       <span
-        className="font-bold text-[var(--listing-text-bold)]"
+        className="font-bold text-[var(--listing-text-bold)] ml-2"
         style={{
           fontFamily: "Manrope",
           fontSize: "1rem",

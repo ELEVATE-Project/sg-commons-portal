@@ -453,7 +453,7 @@ const displayedResources = compact
    
   return (
     <div
-  className={`relative overflow-hidden py-5 lg:py-12 w-full scroll-mt-24 ${
+  className={`relative overflow-hidden py-5 lg:py-6 w-full scroll-mt-24 ${
     compact || displayedResources.length === 0 ? "" : "min-h-screen"
   }`}
   data-browse-resources
@@ -617,93 +617,89 @@ const displayedResources = compact
       </div>
 
 <div className="flex items-center justify-between w-full lg:w-auto lg:flex-nowrap lg:justify-end lg:gap-6 lg:shrink-0">
-<div className="flex items-center gap-3 shrink-0">
-          <button
-          disabled={!hasResults}
-  onClick={() => setViewMode("grid")}
-  className={`
-    flex items-center justify-center
-    w-[1.7556rem]
-    h-[1.8656rem]
-    rounded-[0.4389rem]
-    border
-    transition-all
-    ${
-      viewMode === "grid"
-        ? "bg-repository-primary border-repository-primary text-white"
-        : "bg-white border-repository-controlBorder text-repository-controlIcon"
-    }
-    ${!hasResults ? "opacity-50 cursor-not-allowed" : ""}
-  `}
->
-  <Grid
-  className={`w-[0.875rem] h-[0.875rem]`}
-/>
-</button>
-      <button
-  type="button"
-  disabled={!hasResults}
-  onClick={() => setViewMode("list")}
-  className={`
-    flex items-center justify-center
-    w-[1.7556rem]
-    h-[1.8656rem]
-    rounded-[0.4389rem]
-    border
-    transition-all
-    ${
-      viewMode === "list"
-        ? "bg-repository-primary border-repository-primary text-white"
-        : "bg-white border-repository-controlBorder text-repository-controlIcon"
-    }
-    ${!hasResults ? "opacity-50 cursor-not-allowed" : ""}
-  `}
->
-  <List
-  className={`w-[0.875rem] h-[0.875rem]`}
-/>
-</button>
-        </div>
 
-       <Dropdown
-  options={perPageOptions}
-  disabled={!hasResults}
-  selectedValue={itemsPerPage}
-  onSelect={(value) => {
-    handleItemsPerPageChange(value);
-  }}
- className="
-  shrink-0
-  [&>div>button]:min-w-[5.5rem]
-  [&>div>button]:w-auto
-  [&>div>button]:justify-between
-  [&>div>button]:border
-  [&>div>button]:border-repository-controlBorder
-  [&>div>button]:rounded-[0.5487rem]
-  [&>div>button]:bg-white
-  [&>div>button]:px-3
-"
-  dropdownClassName="w-[5.5rem]"
-  renderButton={(selected) => (
-    <span
-  className="
-    font-inter
-    font-normal
-    text-[0.7682rem]
-    leading-[1.125rem]
-    text-repository-textPrimary
-    flex
-    items-center
-  "
->
-  <span className="whitespace-nowrap">{selected?.label || "6"} {t("repository.items")}</span>
-</span>
-  )}
-/>
-        <div className="shrink-0">
-  <Filters />
+  {/* Left */}
+  <div className="flex items-center gap-3 shrink-0">
+    <button
+      type="button"
+      disabled={!hasResults}
+      onClick={() => setViewMode("grid")}
+      className={`
+        flex items-center justify-center
+        w-[1.7556rem]
+        h-[1.8656rem]
+        rounded-[0.4389rem]
+        border
+        transition-all
+        ${
+          viewMode === "grid"
+            ? "bg-repository-primary border-repository-primary text-white"
+            : "bg-white border-repository-controlBorder text-repository-controlIcon"
+        }
+        ${!hasResults ? "opacity-50 cursor-not-allowed" : ""}
+      `}
+    >
+      <Grid className="w-[0.875rem] h-[0.875rem]" />
+    </button>
+
+    <button
+      type="button"
+      disabled={!hasResults}
+      onClick={() => setViewMode("list")}
+      className={`
+        flex items-center justify-center
+        w-[1.7556rem]
+        h-[1.8656rem]
+        rounded-[0.4389rem]
+        border
+        transition-all
+        ${
+          viewMode === "list"
+            ? "bg-repository-primary border-repository-primary text-white"
+            : "bg-white border-repository-controlBorder text-repository-controlIcon"
+        }
+        ${!hasResults ? "opacity-50 cursor-not-allowed" : ""}
+      `}
+    >
+      <List className="w-[0.875rem] h-[0.875rem]" />
+    </button>
+  </div>
+
+  {/* Right */}
+  <div className="flex items-center gap-3 shrink-0">
+    <Dropdown
+      options={perPageOptions}
+      disabled={!hasResults}
+      selectedValue={itemsPerPage}
+      onSelect={(value) => {
+        handleItemsPerPageChange(value);
+      }}
+      className="
+        shrink-0
+        [&>div>button]:min-w-[5.5rem]
+        [&>div>button]:w-auto
+        [&>div>button]:justify-between
+        [&>div>button]:border
+        [&>div>button]:border-repository-controlBorder
+        [&>div>button]:rounded-[0.5487rem]
+        [&>div>button]:bg-white
+        [&>div>button]:px-3
+      "
+      dropdownClassName="w-[5.5rem]"
+      renderButton={(selected) => (
+        <span className="font-inter font-normal text-[0.7682rem] leading-[1.125rem] text-repository-textPrimary flex items-center">
+          <span className="whitespace-nowrap">
+            {selected?.label || "6"} {t("repository.items")}
+          </span>
+        </span>
+      )}
+    />
+
+    <div className="shrink-0">
+      <Filters />
+    </div>
+  </div>
 </div>
-      </div>
     </div>
   )}
 </div>

@@ -430,20 +430,17 @@ function ResourceMeta({ resource }) {
         <div className="mt-5 flex justify-between items-center flex-wrap gap-4">
           <div className="flex gap-3">
 <button
-  onClick={async () => {
-    try {
-      if (resource?.id) {
-        await trackResourceDownload(resource.id);
-      }
-    } catch (err) {
-      console.error("Failed to track download", err);
-    }
-
+  onClick={() => {
     const success = openSafeUrl(resource?.file);
 
-    if (!success) {
-      toast.error(t("repository.invalidDownloadURL"));
-    }
+if (!success) {
+  toast.error(t("repository.invalidDownloadURL"));
+  return;
+}
+
+if (resource?.id) {
+  trackResourceDownload(resource.id);
+}
   }}
   className="
     inline-flex
