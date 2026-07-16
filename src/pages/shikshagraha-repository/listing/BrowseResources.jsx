@@ -621,6 +621,7 @@ const displayedResources = compact
   {/* Left */}
   <div className="flex items-center gap-3 shrink-0">
     <button
+      type="button"
       disabled={!hasResults}
       onClick={() => setViewMode("grid")}
       className={`

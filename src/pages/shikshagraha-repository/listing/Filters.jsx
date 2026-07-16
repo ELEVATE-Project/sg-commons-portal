@@ -85,6 +85,7 @@
     const [queryMap, setQueryMap] = useState({})
     const [openMap, setOpenMap] = useState({})
     const [pendingFilters, setPendingFilters] = useState({})
+    const sectionRefs = useRef({});
 
     // sticky behavior removed: filters will remain in normal document flow
 
@@ -535,7 +536,14 @@ useEffect(() => {
       openDrawer()
     }
     setOpenMap((prev) => ({ ...prev, [group]: true }))
-  }
+
+    setTimeout(() => {
+      sectionRefs.current[group]?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 150);
+  };
 
   window.addEventListener("sg-open-filter-group", handleOpenFilterGroup)
   return () => {
@@ -654,7 +662,9 @@ useEffect(() => {
                         const isOpen = !!openMap[key]
 
                         return (
-                          <div key={key} className="pb-4">
+                          <div key={key} className="pb-4" ref={(el) => {
+                              sectionRefs.current[key] = el;
+                            }}>
                             <div className="flex items-center justify-between mb-2 pl-5">
                               {/* <label className="block font-medium text-[var(--listing-primary)]">{label}</label> */}
                               <label className="block font-bold text-[0.8rem] leading-none tracking-normal text-[var(--listing-primary)]" style={{ fontFamily: "Comfortaa" }}>{label}</label>
@@ -1016,17 +1026,7 @@ useEffect(() => {
 
     // Normalize options to { value, label }
     const normalizedOptions = normalizeOptions(options)
-
-    if (compact) {
-      const selectedItems = Array.isArray(selected)
-        ? selected
-        : String(selected || "")
-            .split(",")
-            .map(value => value.trim())
-            .filter(Boolean)
-const selectedValues = new Set(selectedItems.map(getOptionKey).filter(Boolean))
-
-const appliedItems = Array.isArray(appliedSelected)
+    const appliedItems = Array.isArray(appliedSelected)
   ? appliedSelected
   : String(appliedSelected || "")
       .split(",")
@@ -1046,6 +1046,15 @@ const optionsList = [...normalizedOptions].sort((a, b) => {
 
   return 0
 })
+
+    if (compact) {
+      const selectedItems = Array.isArray(selected)
+        ? selected
+        : String(selected || "")
+            .split(",")
+            .map(value => value.trim())
+            .filter(Boolean)
+const selectedValues = new Set(selectedItems.map(getOptionKey).filter(Boolean))
       const compareOptionsList =
         sectionKey === "tags" && !isFiltered ? normalizeOptions(allOptions) : optionsList
       const allSelectedByValue =

@@ -439,9 +439,7 @@ if (!success) {
 }
 
 if (resource?.id) {
-  trackResourceDownload(resource.id).catch((err) => {
-    console.error("Failed to track download", err);
-  });
+  trackResourceDownload(resource.id);
 }
   }}
   className="
