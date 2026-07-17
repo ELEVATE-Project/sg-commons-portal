@@ -61,7 +61,7 @@
 
     - name: Fetch pm2 config file
       shell: >
-        curl --location --request GET '{{ vaultAddress }}mohiniPortalPM2Config'
+        curl --location --request GET '{{ vaultAddress }}sg-commons-frontend'
         --header 'X-Vault-Token: {{ slurpfile['content'] | b64decode }}' 
         | jq '.data.data' > '{{ project_path }}/pm2.config.json'
   
