@@ -28,7 +28,7 @@
 
     - name: Fetch .env from Vault
       shell: >
-        curl --location --request GET '{{ vaultAddress }}mohini-env' 
+        curl --location --request GET '{{ vaultAddress }}sg-commons-frontend' 
         --header 'X-Vault-Token: {{ slurpfile['content'] | b64decode }}' | jq '.data' > '{{ project_path }}/data2.json'""
       register: env_response
 
@@ -37,36 +37,6 @@
       register: envConfig 
     - debug: 
         msg: " cred {{ envConfig }} "    
-
-    - name: Fetch credentials from Vault
-      shell: >
-        curl --location --request GET '{{ vaultAddress }}mohini-frontend' 
-        --header 'X-Vault-Token: {{ slurpfile['content'] | b64decode }}'
-      register: vault_response
-
-    - name: Ensure Vault response is valid JSON
-      fail:
-        msg: "Vault response is not valid JSON or does not contain expected data."
-      when: vault_response.stdout is not search('\"data\":')
-
-    - name: Debug Vault response (for troubleshooting)
-      debug:
-        msg: "{{ vault_response.stdout }}"
-
-    - name: Extract and write the entire data.data to .env-cmdrc
-      copy:
-        content: "{{ vault_response.stdout | from_json | json_query('data.data') | to_json }}"
-        dest: "{{ project_path }}/.env-cmdrc"
-
-    - name: Verify .env-cmdrc file creation
-      stat:
-        path: "{{ project_path }}/.env-cmdrc"
-      register: env_file_stat
-
-    - name: Fail if .env-cmdrc file was not created
-      fail:
-        msg: ".env-cmdrc file was not created!"
-      when: not env_file_stat.stat.exists
 
     - name: Remove the old build
       shell: "rm -rf {{project_path}}/build"
