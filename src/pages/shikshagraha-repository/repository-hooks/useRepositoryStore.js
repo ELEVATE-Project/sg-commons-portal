@@ -46,6 +46,16 @@ export const useRepositoryStore = create((set, get) => ({
   pagination: DEFAULT_PAGINATION,
   sortBy: DEFAULT_SORT_BY,
   repositoryScrollY: 0,
+  lastOpenedResourceId: null,
+
+
+  setLastOpenedResourceId: (id) => {
+  set({ lastOpenedResourceId: id });
+},
+
+clearLastOpenedResourceId: () => {
+  set({ lastOpenedResourceId: null });
+},
 
   // Actions
   /**

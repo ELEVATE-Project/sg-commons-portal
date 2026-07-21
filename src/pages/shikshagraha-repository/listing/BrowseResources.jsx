@@ -79,7 +79,7 @@ const Dropdown = ({
             e.preventDefault();
             if (!disabled) toggleDropdown();
           }}
-          className={`flex items-center gap-2 px-3 py-2 rounded ${dropdownClassName}`}
+          className={`flex items-center gap-2 px-3 py-2 rounded ${dropdownClassName} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           {renderButton ? renderButton(selectedOption) : <span>{selectedOption?.label ?? ""}</span>}
           <span className={`w-4 h-4 transition-transform ${isOpen ? "transform rotate-180" : ""}`}>
@@ -612,7 +612,7 @@ const displayedResources = compact
     </span>
   </span>
 )}
-          disabled={isSearchActive || !hasResults}
+          disabled={!hasResults}
         />
       </div>
 
