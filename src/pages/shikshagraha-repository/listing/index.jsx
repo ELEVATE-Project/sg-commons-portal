@@ -177,21 +177,27 @@ useEffect(() => {
 }, [viewMode]);
 
   useEffect(() => {
-    const urlView = searchParams.get("view") || "grid";
+  if (navigationType !== "POP") return;
 
-if (urlView !== viewMode) {
-  setViewMode(urlView);
-}
-    if (hasRestoredScrollRef.current) return;
-    if (!mediaList) return;
+  if (hasRestoredScrollRef.current) return;
 
-    hasRestoredScrollRef.current = true;
-    const scrollY = useRepositoryStore.getState().repositoryScrollY || 0;
-    window.requestAnimationFrame(() => {
-      window.scrollTo(0, scrollY);
-      useRepositoryStore.getState().setRepositoryScrollY(0);
+  if (!mediaList?.length) return;
+
+  hasRestoredScrollRef.current = true;
+
+  const scrollY =
+    useRepositoryStore.getState().repositoryScrollY;
+
+  requestAnimationFrame(() => {
+    window.scrollTo({
+      top: scrollY,
+      left: 0,
+      behavior: "instant",
     });
-  }, [mediaList]);
+
+    useRepositoryStore.getState().setRepositoryScrollY(0);
+  });
+}, [mediaList, navigationType]);
 
   useEffect(() => {
     if (skipNextUrlSearchSyncRef.current) {

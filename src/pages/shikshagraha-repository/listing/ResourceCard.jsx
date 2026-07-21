@@ -244,7 +244,8 @@ const handleCardKeyDown = (e) => {
             font-medium
             text-repository-cardTitle
             line-clamp-2
-    sm:line-clamp-1
+            sm:line-clamp-1
+            break-words
           "
         >
           {resource?.title || t("repository.notAvailable")}
@@ -449,6 +450,7 @@ title={resource.organization}
               font-semibold
               text-repository-title
               line-clamp-3
+              break-words
             "
           >
             {resource?.title || t("repository.notAvailable")}
