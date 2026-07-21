@@ -122,6 +122,9 @@ export default function ResourceCard({ resource, viewMode = "grid" }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const setRepositoryScrollY = useRepositoryStore((state) => state.setRepositoryScrollY)
+  const setLastOpenedResourceId = useRepositoryStore(
+  (state) => state.setLastOpenedResourceId
+);
 
   const { background,icon, Icon: FileIcon } = getMediaFileTypeStyles(
   resource?.media_type_display
@@ -138,6 +141,7 @@ const sourceProviderIcon = getSourceProviderIcon(
   const handleCardClick = () => {
     trackResourceView(resource?.id);
     setRepositoryScrollY(window.scrollY || 0);
+setLastOpenedResourceId(resource.id);
     const snapshot = useRepositoryStore.getState().getRepositoryQuerySnapshot();
     const historyState = window.history.state || {};
     const nextRouterState = {
@@ -168,6 +172,7 @@ const handleCardKeyDown = (e) => {
   return (
     <div
       role="button"
+      id={`resource-${resource.id}`}
       tabIndex={0}
   onClick={handleCardClick}
   onKeyDown={handleCardKeyDown}
@@ -382,7 +387,7 @@ title={resource.organization}
 }
 
   return (
-    <div className="border-b border-gray-100 pb-2 rounded-[0.75rem]">
+    <div className="border-b border-gray-100 pb-2 rounded-[0.75rem]" id={`resource-${resource.id}`}>
   <div
     role="button"
     tabIndex={0}

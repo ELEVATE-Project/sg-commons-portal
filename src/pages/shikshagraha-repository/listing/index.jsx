@@ -56,6 +56,14 @@ const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
     searchParams.has("categories") ||
     searchParams.has("fromResource");
 
+    useEffect(() => {
+  const fromDetail = !!location.state?.repositorySnapshot;
+
+  if (!fromDetail && navigationType !== "POP") {
+    window.scrollTo(0, 0);
+  }
+}, [location.key, navigationType, location.state]);
+
 useEffect(() => {
   const handleResize = () => {
     setIsMobile(window.innerWidth < 768);
@@ -176,27 +184,32 @@ useEffect(() => {
   setSearchParams(params, { replace: true });
 }, [viewMode]);
 
-  useEffect(() => {
+useEffect(() => {
   if (navigationType !== "POP") return;
-
   if (hasRestoredScrollRef.current) return;
-
   if (!mediaList?.length) return;
+
+  const {
+    lastOpenedResourceId,
+    clearLastOpenedResourceId,
+  } = useRepositoryStore.getState();
+
+  if (!lastOpenedResourceId) return;
+
+  const element = document.getElementById(
+    `resource-${lastOpenedResourceId}`
+  );
+
+  if (!element) return;
 
   hasRestoredScrollRef.current = true;
 
-  const scrollY =
-    useRepositoryStore.getState().repositoryScrollY;
-
-  requestAnimationFrame(() => {
-    window.scrollTo({
-      top: scrollY,
-      left: 0,
-      behavior: "instant",
-    });
-
-    useRepositoryStore.getState().setRepositoryScrollY(0);
+  element.scrollIntoView({
+    behavior: "instant",
+    block: "center",
   });
+
+  clearLastOpenedResourceId();
 }, [mediaList, navigationType]);
 
   useEffect(() => {
@@ -241,14 +254,18 @@ useEffect(() => {
     }
   }, [location.search, location.state, navigationType, setSearch, setSearchParams]);
 
-  useEffect(() => {
-    if (!!mediaList?.length && q && !loadingList) {
-      const browseSection = document.querySelector("[data-browse-resources]");
-      if (browseSection) {
-        browseSection.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
-  }, [mediaList, q, loadingList]);
+useEffect(() => {
+  if (navigationType === "POP") return;
+
+  if (!!mediaList?.length && q && !loadingList) {
+    const browseSection = document.querySelector("[data-browse-resources]");
+
+    browseSection?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+}, [mediaList, q, loadingList, navigationType]);
 
   return (
     <div
