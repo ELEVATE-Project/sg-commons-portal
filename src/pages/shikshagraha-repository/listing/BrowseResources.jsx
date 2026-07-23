@@ -53,9 +53,24 @@ const Dropdown = ({
   dropdownClassName = "",
   disabled = false,
   tooltipText = "",
+  showTooltipOnHover = false,
 }) => {
   const { isOpen, toggleDropdown, closeDropdown, dropdownRef } = useDropdown();
   const [showTooltip, setShowTooltip] = useState(false);
+  const show = useCallback(() => {
+  if (showTooltipOnHover && tooltipText) {
+    setShowTooltip(true);
+  }
+}, [showTooltipOnHover, tooltipText]);
+
+const hide = useCallback(() => {
+  setShowTooltip(false);
+}, []);
+
+const isTouchDevice = useMemo(
+  () => window.matchMedia("(pointer: coarse)").matches,
+  []
+);
 
   const handleSelect = useCallback(
     (value) => {
@@ -71,14 +86,32 @@ const Dropdown = ({
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
-      <div className="relative">
+<div
+  className="relative"
+  onMouseEnter={!isTouchDevice ? show : undefined}
+  onMouseLeave={!isTouchDevice ? hide : undefined}
+  onClick={
+    isTouchDevice
+      ? (e) => {
+          if (!disabled) return;
+          e.preventDefault();
+          show();
+          clearTimeout(window.tooltipTimer);
+          window.tooltipTimer = setTimeout(hide, 2500);
+        }
+      : undefined
+  }
+>
         <button
           type="button"
-          disabled={disabled}
+          aria-disabled={disabled}
           onClick={(e) => {
-            e.preventDefault();
-            if (!disabled) toggleDropdown();
-          }}
+  e.preventDefault();
+
+  if (disabled) return;
+
+  toggleDropdown();
+}}
           className={`flex items-center gap-2 px-3 py-2 rounded ${dropdownClassName} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           {renderButton ? renderButton(selectedOption) : <span>{selectedOption?.label ?? ""}</span>}
@@ -88,13 +121,14 @@ const Dropdown = ({
         </button>
       </div>
       {showTooltip && tooltipText && (
-        <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-[var(--listing-strong-text)] text-white text-xs rounded whitespace-nowrap z-50">
-          {tooltipText}
-          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
-            <div className="border-4 border-transparent border-t-gray-900"></div>
-          </div>
-        </div>
-      )}
+  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-[220px] max-w-[90vw] sm:w-[260px] md:w-auto md:max-w-none rounded-md bg-[var(--listing-strong-text)] px-3 py-2 text-xs text-white text-center whitespace-normal md:whitespace-nowrap break-words md:break-normal shadow-lg">
+    {tooltipText}
+
+    <div className="absolute top-full left-1/2 -translate-x-1/2">
+      <div className="border-4 border-transparent border-t-[var(--listing-strong-text)]" />
+    </div>
+  </div>
+)}
       {isOpen && !disabled && (
         <div
           className={`absolute right-0 left-auto sm:left-auto
@@ -169,6 +203,8 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const navigate = useNavigate();
   const {t} = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const searchResourceText = searchParams.get("searchResourceText");
+  const isAISearch = !!searchResourceText?.trim();
   const orgParam = searchParams.get("org");
   const categoriesParam = searchParams.get("categories");
   const fromResourceParam = searchParams.get("fromResource");
@@ -602,6 +638,8 @@ const displayedResources = compact
           onSelect={(value) => {
             setSortBy(value);
           }}
+  showTooltipOnHover={isAISearch}
+  tooltipText={t("sortDisabledTooltipText")}
  renderButton={(selected) => (
   <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
     <span className="font-normal text-repository-textSecondary">
@@ -612,7 +650,7 @@ const displayedResources = compact
     </span>
   </span>
 )}
-          disabled={!hasResults}
+          disabled={isAISearch || !hasResults}
         />
       </div>
 
