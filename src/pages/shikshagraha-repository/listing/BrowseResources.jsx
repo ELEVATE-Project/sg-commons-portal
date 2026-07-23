@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import React, { useMemo, useState, useEffect, useRef, useCallback, useId } from "react";
 import { Grid, List, ChevronDown, Check, ArrowRight, X } from "lucide-react";
 import ResourceCard from "./ResourceCard";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
@@ -84,12 +84,27 @@ const isTouchDevice = useMemo(
     return options.find((o) => String(o.value) === String(selectedValue)) ?? null;
   }, [options, selectedValue]);
 
+  const tooltipTimerRef = useRef(null);
+const tooltipId = useId();
+ useEffect(() => {
+ return () => {
+    clearTimeout(tooltipTimerRef.current);
+ };
+}, []);
+
+useEffect(() => {
+  if (!showTooltipOnHover) {
+    setShowTooltip(false);
+  }
+}, [showTooltipOnHover]);
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
 <div
   className="relative"
   onMouseEnter={!isTouchDevice ? show : undefined}
   onMouseLeave={!isTouchDevice ? hide : undefined}
+  onFocus={show}
+  onBlur={hide}
   onClick={
     isTouchDevice
       ? (e) => {
@@ -97,7 +112,7 @@ const isTouchDevice = useMemo(
           e.preventDefault();
           show();
           clearTimeout(window.tooltipTimer);
-          window.tooltipTimer = setTimeout(hide, 2500);
+          tooltipTimerRef.current = setTimeout(hide, 2500);
         }
       : undefined
   }
@@ -105,6 +120,9 @@ const isTouchDevice = useMemo(
         <button
           type="button"
           aria-disabled={disabled}
+          aria-describedby={
+    showTooltip && tooltipText ? tooltipId : undefined
+  }
           onClick={(e) => {
   e.preventDefault();
 
