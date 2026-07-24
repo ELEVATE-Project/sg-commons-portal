@@ -79,7 +79,7 @@ const Dropdown = ({
             e.preventDefault();
             if (!disabled) toggleDropdown();
           }}
-          className={`flex items-center gap-2 px-3 py-2 rounded ${dropdownClassName}`}
+          className={`flex items-center gap-2 px-3 py-2 rounded ${dropdownClassName} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           {renderButton ? renderButton(selectedOption) : <span>{selectedOption?.label ?? ""}</span>}
           <span className={`w-4 h-4 transition-transform ${isOpen ? "transform rotate-180" : ""}`}>
@@ -170,8 +170,9 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const {t} = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const orgParam = searchParams.get("org");
-  const themeParam = searchParams.get("theme");
+  const categoriesParam = searchParams.get("categories");
   const fromResourceParam = searchParams.get("fromResource");
+  const hasResults = resources?.length > 0;
   const safeSetSearchParams = (next, opts = { replace: true }) => {
     try {
       setSearchParams(next, opts);
@@ -186,7 +187,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     return next;
   };
   const filters = useRepositoryStore((state) => state.filters);
-  const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || themeParam));
+  const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || categoriesParam));
   // Prevent URL filter sync from rerunning on page-only query changes.
   const previousUrlFilterKeyRef = useRef(null);
 
@@ -227,16 +228,26 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       } catch (e) {
         // ignore
       }
-      return { type: "Theme", name };
+      return { type: "Categories", name };
     }
 
     return null;
   }, [filters, masterList]);
 
+  const hasMultipleFilters = useMemo(() => {
+  if (!filters) return false;
+
+  const totalSelected = Object.values(filters).reduce((count, values) => {
+    return count + (Array.isArray(values) ? values.length : 0);
+  }, 0);
+
+  return totalSelected > 1;
+}, [filters]);
+
   // Labels for group chips
   const filterGroupLabels = {
     organizations: "Organization",
-    tags: "Theme",
+    tags: "Categories",
     resource_types: "Resource Type",
     resource_type: "Resource Type",
     file_types: "File Type",
@@ -302,8 +313,13 @@ const displayedResources = compact
   ];
 
   const handleItemsPerPageChange = (value) => {
-    setPagination({ limit: Number(value) });
-  };
+  const next = new URLSearchParams(searchParams);
+
+  next.set("page", "1");
+  next.set("limit", value);
+
+  setSearchParams(next, { replace: true });
+};
   
   // (Old org-only effect removed; handled by combined org/theme effect above)
   useEffect(() => {
@@ -361,13 +377,13 @@ const displayedResources = compact
   ]);
 
   useEffect(() => {
-    if (!orgParam && !themeParam) {
+    if (!orgParam && !categoriesParam) {
       previousUrlFilterKeyRef.current = null;
       return;
     }
     if (!masterList) return;
 
-    const urlFilterKey = JSON.stringify({ orgParam, themeParam });
+    const urlFilterKey = JSON.stringify({ orgParam, categoriesParam });
     // Same org/theme with a new page param is pagination, not a new filter.
     if (previousUrlFilterKeyRef.current === urlFilterKey) return;
     previousUrlFilterKeyRef.current = urlFilterKey;
@@ -406,8 +422,8 @@ const displayedResources = compact
     if (orgParam) {
       nextFilters.organizations = toSelectedOptions(orgParam, orgDropdown?.options);
     }
-    if (themeParam) {
-      nextFilters.tags = toSelectedOptions(themeParam, tagDropdown?.options);
+    if (categoriesParam) {
+      nextFilters.tags = toSelectedOptions(categoriesParam, tagDropdown?.options);
     }
 
     if (!Object.keys(nextFilters).length) return;
@@ -432,12 +448,12 @@ const displayedResources = compact
     replaceRepositoryQueryState,
     searchParams,
     setSearchParams,
-    themeParam,
+    categoriesParam,
   ]);
    
   return (
     <div
-  className={`relative overflow-hidden py-5 lg:py-12 w-full scroll-mt-24 ${
+  className={`relative overflow-hidden py-5 lg:py-6 w-full scroll-mt-24 ${
     compact || displayedResources.length === 0 ? "" : "min-h-screen"
   }`}
   data-browse-resources
@@ -460,9 +476,11 @@ const displayedResources = compact
 >
   <div className="flex-1 min-w-0">
     <h2 className="text-xl sm:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading capitalize break-words">
-      {selectedSingleLabel
-        ? `${selectedSingleLabel.name} Resources`
-        : t(title ?? "repository.browseResources")}
+      {hasMultipleFilters
+  ? t("repository.browseAllResources")
+  : selectedSingleLabel
+    ? `${selectedSingleLabel.name} Resources`
+    : t(title ?? "repository.browseResources")}
     </h2>
 
     {!compact && (
@@ -485,7 +503,7 @@ const displayedResources = compact
   <button
     type="button"
     onClick={() => {
-  replaceRepositoryQueryState({ repositoryScrollY: 0 });
+  replaceRepositoryQueryState({ repositoryScrollY: 0, sortBy });
   safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
   navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
 }}
@@ -535,7 +553,7 @@ const displayedResources = compact
       <button
   type="button"
   onClick={() => {
-  replaceRepositoryQueryState({ repositoryScrollY: 0 });
+  replaceRepositoryQueryState({ repositoryScrollY: 0, sortBy });
   safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
   navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
 }}
@@ -594,94 +612,94 @@ const displayedResources = compact
     </span>
   </span>
 )}
-          disabled={isSearchActive}
-          tooltipText={`${t("sortDisabledTooltipText")}`}
+          disabled={!hasResults}
         />
       </div>
 
 <div className="flex items-center justify-between w-full lg:w-auto lg:flex-nowrap lg:justify-end lg:gap-6 lg:shrink-0">
-<div className="flex items-center gap-3 shrink-0">
-          <button
-  onClick={() => setViewMode("grid")}
-  className={`
-    flex items-center justify-center
-    w-[1.7556rem]
-    h-[1.8656rem]
-    rounded-[0.4389rem]
-    border
-    transition-all
-    ${
-      viewMode === "grid"
-        ? "bg-repository-primary border-repository-primary text-white"
-        : "bg-white border-repository-controlBorder text-repository-controlIcon"
-    }
-  `}
->
-  <Grid
-  className={`w-[0.875rem] h-[0.875rem]`}
-/>
-</button>
-      <button
-  type="button"
-  onClick={() => setViewMode("list")}
-  className={`
-    flex items-center justify-center
-    w-[1.7556rem]
-    h-[1.8656rem]
-    rounded-[0.4389rem]
-    border
-    transition-all
-    ${
-      viewMode === "list"
-        ? "bg-repository-primary border-repository-primary text-white"
-        : "bg-white border-repository-controlBorder text-repository-controlIcon"
-    }
-  `}
->
-  <List
-  className={`w-[0.875rem] h-[0.875rem]`}
-/>
-</button>
-        </div>
 
-       <Dropdown
-  options={perPageOptions}
-  selectedValue={itemsPerPage}
-  onSelect={(value) => {
-    handleItemsPerPageChange(value);
-  }}
- className="
-  shrink-0
-  [&>div>button]:min-w-[5.5rem]
-  [&>div>button]:w-auto
-  [&>div>button]:justify-between
-  [&>div>button]:border
-  [&>div>button]:border-repository-controlBorder
-  [&>div>button]:rounded-[0.5487rem]
-  [&>div>button]:bg-white
-  [&>div>button]:px-3
-"
-  dropdownClassName="w-[5.5rem]"
-  renderButton={(selected) => (
-    <span
-  className="
-    font-inter
-    font-normal
-    text-[0.7682rem]
-    leading-[1.125rem]
-    text-repository-textPrimary
-    flex
-    items-center
-  "
->
-  <span className="whitespace-nowrap">{selected?.label || "6"} {t("repository.items")}</span>
-</span>
-  )}
-/>
-        <div className="shrink-0">
-  <Filters />
+  {/* Left */}
+  <div className="flex items-center gap-3 shrink-0">
+    <button
+      type="button"
+      disabled={!hasResults}
+      onClick={() => setViewMode("grid")}
+      className={`
+        flex items-center justify-center
+        w-[1.7556rem]
+        h-[1.8656rem]
+        rounded-[0.4389rem]
+        border
+        transition-all
+        ${
+          viewMode === "grid"
+            ? "bg-repository-primary border-repository-primary text-white"
+            : "bg-white border-repository-controlBorder text-repository-controlIcon"
+        }
+        ${!hasResults ? "opacity-50 cursor-not-allowed" : ""}
+      `}
+    >
+      <Grid className="w-[0.875rem] h-[0.875rem]" />
+    </button>
+
+    <button
+      type="button"
+      disabled={!hasResults}
+      onClick={() => setViewMode("list")}
+      className={`
+        flex items-center justify-center
+        w-[1.7556rem]
+        h-[1.8656rem]
+        rounded-[0.4389rem]
+        border
+        transition-all
+        ${
+          viewMode === "list"
+            ? "bg-repository-primary border-repository-primary text-white"
+            : "bg-white border-repository-controlBorder text-repository-controlIcon"
+        }
+        ${!hasResults ? "opacity-50 cursor-not-allowed" : ""}
+      `}
+    >
+      <List className="w-[0.875rem] h-[0.875rem]" />
+    </button>
+  </div>
+
+  {/* Right */}
+  <div className="flex items-center gap-3 shrink-0">
+    <Dropdown
+      options={perPageOptions}
+      disabled={!hasResults}
+      selectedValue={itemsPerPage}
+      onSelect={(value) => {
+        handleItemsPerPageChange(value);
+      }}
+      className="
+        shrink-0
+        [&>div>button]:min-w-[5.5rem]
+        [&>div>button]:w-auto
+        [&>div>button]:justify-between
+        [&>div>button]:border
+        [&>div>button]:border-repository-controlBorder
+        [&>div>button]:rounded-[0.5487rem]
+        [&>div>button]:bg-white
+        [&>div>button]:px-3
+      "
+      dropdownClassName="w-[5.5rem]"
+      renderButton={(selected) => (
+        <span className="font-inter font-normal text-[0.7682rem] leading-[1.125rem] text-repository-textPrimary flex items-center">
+          <span className="whitespace-nowrap">
+            {selected?.label || "6"} {t("repository.items")}
+          </span>
+        </span>
+      )}
+    />
+
+    <div className="shrink-0">
+      <Filters />
+    </div>
+  </div>
 </div>
-      </div>
     </div>
   )}
 </div>
@@ -734,7 +752,7 @@ const displayedResources = compact
                           setFilters({ [chip.group]: [] }, true);
                           const paramMap = {
                             organizations: ["org", "fromResource"],
-                            tags: ["theme"],
+                            tags: ["categories"],
                             resource_types: ["resource_types", "resource_type"],
                             resource_type: ["resource_type", "resource_types"],
                             file_types: ["file_type", "filetype"],

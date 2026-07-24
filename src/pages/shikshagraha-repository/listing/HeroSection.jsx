@@ -8,6 +8,8 @@ import right2 from "assets/hero-section-image-4.svg";
 import scrollDownIcon from 'assets/scroll-down.svg';
 import { useNavigate } from "react-router-dom";
 import ROUTES from "../../../url";
+import Notification from "../../../components/ToastMessage/TotastMessage";
+
 export default function HeroSection() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -112,7 +114,7 @@ useEffect(() => {
 >
   {t('repository.hero.description')}
 </p>    
-
+<Notification />
         <RepositorySearch  onSearch={handleSearchFromHero}/>
           {/* Scroll */}
 

@@ -43,6 +43,16 @@ export const useRepositoryStore = create((set, get) => ({
   pagination: DEFAULT_PAGINATION,
   sortBy: DEFAULT_SORT_BY,
   repositoryScrollY: 0,
+  lastOpenedResourceId: null,
+
+
+  setLastOpenedResourceId: (id) => {
+  set({ lastOpenedResourceId: id });
+},
+
+clearLastOpenedResourceId: () => {
+  set({ lastOpenedResourceId: null });
+},
 
   // Actions
   /**
@@ -60,7 +70,10 @@ export const useRepositoryStore = create((set, get) => ({
         return _inFlightPromise || Promise.resolve();
       }
       _requestInFlight = true;
-      set({ loadingList: true });
+      set({
+  loadingList: true,
+  mediaList: [],
+});
       _inFlightPromise = (async () => {
         try {
           const { filters, pagination, sortBy, q } = get();
@@ -87,18 +100,12 @@ export const useRepositoryStore = create((set, get) => ({
             if (cached && (Date.now() - cached.ts) < 500) {
               // apply cached response to state if needed
               const data = cached.data;
-              const prevCount = get().mediaCount;
-              const prevList = get().mediaList || [];
-              const prevIds = prevList.map((m) => m?.id).join(",");
-              const newIds = (data.results || []).map((m) => m?.id).join(",");
-              if (!(prevCount === data.count && prevIds === newIds)) {
-                set({
-                  mediaList: data.results,
-                  mediaCount: data.count,
-                  mediaNext: data.next,
-                  mediaPrevious: data.previous,
-                });
-              }
+              set({
+  mediaList: [...data.results],
+  mediaCount: data.count,
+  mediaNext: data.next,
+  mediaPrevious: data.previous,
+});
               return data;
             }
           } catch (e) {}
@@ -108,21 +115,12 @@ export const useRepositoryStore = create((set, get) => ({
             let data;
             try {
               data = await listMedia(queryParams);
-              const prevCount = get().mediaCount;
-              const prevList = get().mediaList || [];
-              const prevIds = prevList.map((m) => m?.id).join(",");
-              const newIds = (data.results || []).map((m) => m?.id).join(",");
-              if (prevCount === data.count && prevIds === newIds) {
-                
-              } else {
-                set({
-                  mediaList: data.results,
-                  mediaCount: data.count,
-                  mediaNext: data.next,
-                  mediaPrevious: data.previous,
-                });
-                
-              }
+              set({
+  mediaList: [...data.results],
+  mediaCount: data.count,
+  mediaNext: data.next,
+  mediaPrevious: data.previous,
+});
               return data;
             } catch (err) {
               throw err;
@@ -187,14 +185,12 @@ export const useRepositoryStore = create((set, get) => ({
     // return existing in-flight promise for this id if present
     if (_inFlightDetailMap[id]) return _inFlightDetailMap[id];
 
-    const current = get();
-    if (current.selectedMedia && String(current.selectedMedia.id) === String(id)) {
-      return Promise.resolve(current.selectedMedia);
-    }
-
     // create and store in-flight promise
     _inFlightDetailMap[id] = (async () => {
-      set({ loadingDetail: true });
+      set({
+  loadingDetail: true,
+  selectedMedia: null,
+});
       try {
         const media = await getMediaById(id);
         set({ selectedMedia: media });
@@ -258,7 +254,7 @@ export const useRepositoryStore = create((set, get) => ({
         },
         {
           key: "tags",
-          label: "Themes",
+          label: "Categories",
           options: master?.tags?.map((x) => ({
             value: x?.name,
             display: x?.name,
@@ -450,6 +446,11 @@ export const useRepositoryStore = create((set, get) => ({
     }));
     get().fetchMediaList();
   },
+
+  setSelectedMedia: (media) =>
+  set({
+    selectedMedia: media,
+  }),
   /**
    * Set pagination parameters
    * @param {Object} newPagination - e.g. { offset: 20, limit: 10 }

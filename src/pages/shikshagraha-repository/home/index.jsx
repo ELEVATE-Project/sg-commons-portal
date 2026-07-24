@@ -9,6 +9,7 @@ import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
 import ExploreByTheme from "../listing/ExploreByTheme";
+import { useNavigationType } from "react-router-dom";
 
 export default function RepositoryPage() {
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
@@ -25,6 +26,8 @@ export default function RepositoryPage() {
   const resetFilters = useRepositoryStore((state) => state.resetFilters);
 
   const [searchParams] = useSearchParams();
+  const navigationType = useNavigationType();
+  const hasRestoredScrollRef = useRef(false);
 
   // NOTE: Do not auto-clear `org`/`theme` params on initial mount. Listing
   // (`BrowseResources`) handles mapping URL -> filters and will control when
@@ -47,8 +50,8 @@ export default function RepositoryPage() {
   // If there are no org/theme params in URL, ensure repository filters are cleared
   useEffect(() => {
     const org = searchParams.get("org");
-    const theme = searchParams.get("theme");
-    if (!org && !theme) {
+    const categories = searchParams.get("categories");
+    if (!org && !categories) {
       try {
         const forceReset = useRepositoryStore.getState().forceResetFilters;
         if (forceReset) {
@@ -64,13 +67,40 @@ export default function RepositoryPage() {
 
 
   useEffect(() => {
-    if (!!mediaList?.length && q && !loadingList) {
-      const browseSection = document.querySelector("[data-browse-resources]");
-      if (browseSection) {
-        browseSection.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
-  }, [mediaList, q, loadingList]);
+  if (navigationType === "POP") return;
+
+  if (!!mediaList?.length && q && !loadingList) {
+    const browseSection = document.querySelector("[data-browse-resources]");
+
+    browseSection?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+}, [mediaList, q, loadingList, navigationType]);
+
+useEffect(() => {
+  if (navigationType !== "POP") return;
+
+  if (hasRestoredScrollRef.current) return;
+
+  if (!mediaList?.length) return;
+
+  hasRestoredScrollRef.current = true;
+
+  const scrollY =
+    useRepositoryStore.getState().repositoryScrollY || 0;
+
+  requestAnimationFrame(() => {
+    window.scrollTo({
+      top: scrollY,
+      left: 0,
+      behavior: "instant",
+    });
+
+    useRepositoryStore.getState().setRepositoryScrollY(0);
+  });
+}, [mediaList, navigationType]);
 
   return (
     <div className="bg-[var(--listing-white)]  relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>

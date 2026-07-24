@@ -15,11 +15,16 @@ import { useLocation, useNavigationType, useSearchParams } from "react-router-do
 const LISTING_RESOURCE_LIMIT = 6;
 
 export default function RepositoryPage() {
-  const [viewMode, setViewMode] = useState("grid");
-  const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [viewMode, setViewMode] = useState(
+  searchParams.get("view") || "grid"
+);
+  const loadingList = useRepositoryStore((state) => state.loadingList);
+const loadingDetail = useRepositoryStore((state) => state.loadingDetail);
+const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
 
   const { t } = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const mediaList = useRepositoryStore((state) => state.mediaList);
   const showBlockingLoader =
@@ -44,11 +49,20 @@ export default function RepositoryPage() {
   const skipNextSnapshotStampRef = useRef(false);
   const skipNextResultSetResetRef = useRef(false);
   const pageParam = searchParams.get("page") || "1";
+  const limitParam = Number(searchParams.get("limit"));
   const searchParamsString = searchParams.toString();
   const hasRepositoryUrlFilters =
     searchParams.has("org") ||
-    searchParams.has("theme") ||
+    searchParams.has("categories") ||
     searchParams.has("fromResource");
+
+    useEffect(() => {
+  const fromDetail = !!location.state?.repositorySnapshot;
+
+  if (!fromDetail && navigationType !== "POP") {
+    window.scrollTo(0, 0);
+  }
+}, [location.key, navigationType, location.state]);
 
 useEffect(() => {
   const handleResize = () => {
@@ -94,9 +108,10 @@ useEffect(() => {
   useEffect(() => {
     const rawPage = Number(pageParam);
     const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
-    const targetLimit = hasInitializedPageSizeRef.current
-      ? pagination.limit
-      : LISTING_RESOURCE_LIMIT;
+    const targetLimit =
+  Number.isFinite(limitParam) && limitParam > 0
+    ? limitParam
+    : LISTING_RESOURCE_LIMIT;
     const nextOffset = (page - 1) * targetLimit;
 
     hasInitializedPageSizeRef.current = true;
@@ -109,7 +124,7 @@ useEffect(() => {
       offset: nextOffset,
       limit: targetLimit,
     });
-  }, [pageParam, pagination.limit, pagination.offset, setPagination]);
+  }, [pageParam, limitParam, pagination.offset, setPagination]);
 
   useEffect(() => {
     const resultSetKey = JSON.stringify({ filters, q });
@@ -158,16 +173,44 @@ useEffect(() => {
   ]);
 
   useEffect(() => {
-    if (hasRestoredScrollRef.current) return;
-    if (!mediaList) return;
+  const params = new URLSearchParams(searchParams);
 
-    hasRestoredScrollRef.current = true;
-    const scrollY = useRepositoryStore.getState().repositoryScrollY || 0;
-    window.requestAnimationFrame(() => {
-      window.scrollTo(0, scrollY);
-      useRepositoryStore.getState().setRepositoryScrollY(0);
-    });
-  }, [mediaList]);
+  if (viewMode === "grid") {
+    params.delete("view");
+  } else {
+    params.set("view", viewMode);
+  }
+
+  setSearchParams(params, { replace: true });
+}, [viewMode]);
+
+useEffect(() => {
+  if (navigationType !== "POP") return;
+  if (hasRestoredScrollRef.current) return;
+  if (!mediaList?.length) return;
+
+  const {
+    lastOpenedResourceId,
+    clearLastOpenedResourceId,
+  } = useRepositoryStore.getState();
+
+  if (!lastOpenedResourceId) return;
+
+  const element = document.getElementById(
+    `resource-${lastOpenedResourceId}`
+  );
+
+  if (!element) return;
+
+  hasRestoredScrollRef.current = true;
+
+  element.scrollIntoView({
+    behavior: "instant",
+    block: "center",
+  });
+
+  clearLastOpenedResourceId();
+}, [mediaList, navigationType]);
 
   useEffect(() => {
     if (skipNextUrlSearchSyncRef.current) {
@@ -211,14 +254,18 @@ useEffect(() => {
     }
   }, [location.search, location.state, navigationType, setSearch, setSearchParams]);
 
-  useEffect(() => {
-    if (!!mediaList?.length && q && !loadingList) {
-      const browseSection = document.querySelector("[data-browse-resources]");
-      if (browseSection) {
-        browseSection.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
-  }, [mediaList, q, loadingList]);
+useEffect(() => {
+  if (navigationType === "POP") return;
+
+  if (!!mediaList?.length && q && !loadingList) {
+    const browseSection = document.querySelector("[data-browse-resources]");
+
+    browseSection?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+}, [mediaList, q, loadingList, navigationType]);
 
   return (
     <div
@@ -226,10 +273,11 @@ useEffect(() => {
   style={{
     ...theme.vars,
     overflowY: "visible",
+    overflowAnchor: "none", 
     backgroundImage: `url(${left1}), url(${right2})`,
     backgroundPosition: isMobile
       ? "left -2rem top 12rem, right -2rem top 20rem"
-      : "left 2.8rem top 18.5rem, right 1.7rem top 31.8rem",
+      : "left 2.8rem top 24.5rem, right 1.7rem top 32.5rem",
     backgroundRepeat: "no-repeat",
     backgroundSize: isMobile
       ? "5rem, 6rem"
@@ -249,7 +297,6 @@ useEffect(() => {
           </div> */}
 
           <main className="w-full mx-auto">
-            {(!!mediaList?.length || hasRepositoryUrlFilters) && (
 
  <BrowseResources
                 resources={mediaList}
@@ -259,7 +306,6 @@ useEffect(() => {
   setViewMode={setViewMode}
   cardsSpacing={true}
               />
-            )}
          
            
             {!showBlockingLoader && !mediaList?.length && (
@@ -272,6 +318,7 @@ useEffect(() => {
                 </div>
               </div>
             )}
+            {!loadingList && (
             <div className="w-full mt-6 mx-auto">
               <Pagination
   resourcesPerPage={itemsPerPage}
@@ -285,6 +332,7 @@ useEffect(() => {
   }}
 />
             </div>
+            )}
           </main>
           </div>
         </div>
