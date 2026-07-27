@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
 import ExploreByTheme from "../listing/ExploreByTheme";
 import { useNavigationType } from "react-router-dom";
-
+import BrowseResourcesGrid from "../listing/BrowseResourcesGrid";
 export default function RepositoryPage() {
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
@@ -28,7 +28,6 @@ export default function RepositoryPage() {
   const [searchParams] = useSearchParams();
   const navigationType = useNavigationType();
   const hasRestoredScrollRef = useRef(false);
-
   // NOTE: Do not auto-clear `org`/`theme` params on initial mount. Listing
   // (`BrowseResources`) handles mapping URL -> filters and will control when
   // to clear transient params (on Back / clear actions). This effect was
@@ -116,12 +115,20 @@ useEffect(() => {
           <main className="w-full mx-auto">
             {!!mediaList?.length && (
 
- <BrowseResources
-                resources={mediaList}
-  viewMode="grid"
-  compact={true}
-  title="repository.library"
-              />
+<>
+  <BrowseResources
+    resources={mediaList}
+    viewMode="grid"
+    compact
+    title="repository.library"
+  />
+  <BrowseResourcesGrid
+    displayedResources={mediaList}
+    viewMode="grid"
+    cardsSpacing={true}
+    filtersInitialized={true}
+  />
+</>
             )}
          
            

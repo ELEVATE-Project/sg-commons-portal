@@ -1,8 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback, useId } from "react";
 import { Grid, List, ChevronDown, Check, ArrowRight, X } from "lucide-react";
-import ResourceCard from "./ResourceCard";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
-import MitraAiAssistantAside from "./MitraAiAssistantAside.jsx";
 import Filters from "./Filters";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -67,6 +65,20 @@ const hide = useCallback(() => {
   setShowTooltip(false);
 }, []);
 
+    const tooltipTimerRef = useRef(null);
+const tooltipId = useId();
+  useEffect(() => {
+  return () => {
+    clearTimeout(tooltipTimerRef.current);
+  };
+}, []);
+
+useEffect(() => {
+  if (!showTooltipOnHover) {
+    setShowTooltip(false);
+  }
+}, [showTooltipOnHover]);
+
 const isTouchDevice = useMemo(
   () => window.matchMedia("(pointer: coarse)").matches,
   []
@@ -84,19 +96,6 @@ const isTouchDevice = useMemo(
     return options.find((o) => String(o.value) === String(selectedValue)) ?? null;
   }, [options, selectedValue]);
 
-  const tooltipTimerRef = useRef(null);
-const tooltipId = useId();
- useEffect(() => {
- return () => {
-    clearTimeout(tooltipTimerRef.current);
- };
-}, []);
-
-useEffect(() => {
-  if (!showTooltipOnHover) {
-    setShowTooltip(false);
-  }
-}, [showTooltipOnHover]);
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
 <div
@@ -139,7 +138,7 @@ useEffect(() => {
         </button>
       </div>
       {showTooltip && tooltipText && (
-  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-[220px] max-w-[90vw] sm:w-[260px] md:w-auto md:max-w-none rounded-md bg-[var(--listing-strong-text)] px-3 py-2 text-xs text-white text-center whitespace-normal md:whitespace-nowrap break-words md:break-normal shadow-lg">
+  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-[220px] max-w-[90vw] sm:w-[260px] md:w-auto md:max-w-none rounded-md bg-[var(--listing-strong-text)] px-3 py-2 text-xs text-white text-center whitespace-normal md:whitespace-nowrap break-words md:break-normal shadow-lg" id={tooltipId} role="tooltip">
     {tooltipText}
 
     <div className="absolute top-full left-1/2 -translate-x-1/2">
@@ -342,6 +341,8 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     } catch (e) {}
   };
 
+
+
   useEffect(() => {
     if (!filtersInitialized && !loadingList) setFiltersInitialized(true);
   }, [loadingList, filtersInitialized]);
@@ -507,18 +508,14 @@ const displayedResources = compact
    
   return (
     <div
-  className={`relative overflow-hidden py-5 lg:py-6 w-full scroll-mt-24 ${
-    compact || displayedResources.length === 0 ? "" : "min-h-screen"
-  }`}
+  className={`relative overflow-visible pt-5 lg:pt-6 w-full scroll-mt-24 z-50`}
   data-browse-resources
 >
       <div
         className="absolute inset-0 z-0 pointer-events-none"
       />
       <section
-  className={`relative z-10 max-w-[93.75rem] mx-auto ${
-    compact || displayedResources.length === 0 ? "" : "min-h-screen"
-  }`}
+  className={`relative z-10 max-w-[93.75rem] mx-auto`}
 >
 <div className="w-full px-4 sm:px-6 lg:px-0 lg:w-[92.5%] mx-auto">
         {/* ⬇️ EVERYTHING BELOW IS EXACT SAME (no change) */}
@@ -660,6 +657,7 @@ const displayedResources = compact
   tooltipText={t("sortDisabledTooltipText")}
  renderButton={(selected) => (
   <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
+  
     <span className="font-normal text-repository-textSecondary">
       {t("repository.sortByLabel")}:
     </span>{" "}
@@ -761,7 +759,7 @@ const displayedResources = compact
 </div>
 
           {/* Group chips row (Organization, Theme, etc.) */}
-          <div className="mt-6 mb-10 flex w-full items-center gap-3 sm:mt-8 sm:mb-14 sm:gap-4">
+          <div className="mt-6 flex w-full items-center gap-3 sm:mt-8 sm:mb-4 sm:gap-4">
             <div className="flex-1 overflow-x-auto">
               <div className="flex w-max items-center gap-3 pr-4 sm:gap-6">
                 {filterGroupChips.map((chip) => (
@@ -844,43 +842,6 @@ const displayedResources = compact
             )}
           </div>
 
-        <div className="relative overflow-hidden">
-          <div
-            className="absolute inset-0 z-0 pointer-events-none"
-          />
-          <div className="relative z-10">
-            <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">
-<div
-  className={`grid w-full
-  ${
-    viewMode === "grid"
-      ? "gap-9 md:gap-x-4 md:gap-y-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-      : "gap-3 grid-cols-1"
-  }
-  ${
-    cardsSpacing ? "px-2 sm:px-4 md:px-6 lg:px-16" : "px-2 sm:px-0"
-  }`} aria-busy={!filtersInitialized}>
-    {filtersInitialized ? (
-      displayedResources.map((resource, index) => (
-        <React.Fragment key={`resource-${resource.id}-${index}`}>
-          <ResourceCard
-            key={resource.id}
-            resource={resource}
-            index={index}
-            viewMode={viewMode}
-          />
-        </React.Fragment>
-      ))
-    ) : (
-      // lightweight skeleton placeholders to prevent layout jump
-      Array.from({ length: viewMode === 'grid' ? 6 : 3 }).map((_, i) => (
-        <div key={`skeleton-${i}`} className="w-full h-40 bg-gray-200 rounded-lg animate-pulse" />
-      ))
-    )}
-  </div>
-            </div>
-          </div>
-        </div>
 </div>
       </section>
     </div>

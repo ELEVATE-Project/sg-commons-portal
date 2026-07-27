@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import BrowseResources from "./BrowseResources.jsx";
 import Pagination from "./Pagination.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
@@ -11,6 +11,7 @@ import PageHeader from "../../../components/PageHeader";
 import left1 from "assets/dandelion-left-1.png";
 import right2 from "assets/dandelion-right-2.png";
 import { useLocation, useNavigationType, useSearchParams } from "react-router-dom";
+import BrowseResourcesGrid from "./BrowseResourcesGrid";
 
 const LISTING_RESOURCE_LIMIT = 6;
 
@@ -55,6 +56,51 @@ const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
     searchParams.has("org") ||
     searchParams.has("categories") ||
     searchParams.has("fromResource");
+  const fixedTopRef = useRef(null);
+  const [fixedTopHeight, setFixedTopHeight] = useState(0);
+  const footerRef = useRef(null);
+const [headerOffset, setHeaderOffset] = useState(0);
+const scrollContainerRef = useRef(null);
+
+  useEffect(() => {
+    const node = fixedTopRef.current;
+    if (!node) return;
+
+    const updateHeight = () => setFixedTopHeight(node.offsetHeight);
+    updateHeight();
+
+    const resizeObserver = new ResizeObserver(updateHeight);
+    resizeObserver.observe(node);
+
+    window.addEventListener("resize", updateHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateHeight);
+    };
+  }, [isMobile, viewMode, mediaList, showBlockingLoader]);
+  // ----------------------------------------------------------------------
+
+  useEffect(() => {
+  if (!footerRef.current) return;
+
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        setHeaderOffset(entry.intersectionRect.height);
+      } else {
+        setHeaderOffset(0);
+      }
+    },
+    {
+      threshold: Array.from({ length: 101 }, (_, i) => i / 100),
+    }
+  );
+
+  observer.observe(footerRef.current);
+
+  return () => observer.disconnect();
+}, []);
 
     useEffect(() => {
   const fromDetail = !!location.state?.repositorySnapshot;
@@ -78,7 +124,6 @@ useEffect(() => {
     const snapshot = location.state?.repositorySnapshot;
     if (navigationType !== "POP" || !snapshot) return;
 
-    // Restoring from detail should keep the exact search/filter/page snapshot.
     skipNextUrlSearchSyncRef.current = true;
     skipNextSnapshotStampRef.current = true;
     skipNextResultSetResetRef.current = true;
@@ -135,7 +180,6 @@ useEffect(() => {
       return;
     }
 
-    // New searches or filters start from page 1; ordinary page clicks do not.
     if (previousResultSetKeyRef.current === null) {
       previousResultSetKeyRef.current = resultSetKey;
       return;
@@ -185,32 +229,74 @@ useEffect(() => {
 }, [viewMode]);
 
 useEffect(() => {
-  if (navigationType !== "POP") return;
+  const snapshot = location.state?.repositorySnapshot;
+  if (navigationType !== "POP" || !snapshot) return;
+
+  skipNextUrlSearchSyncRef.current = true;
+  skipNextSnapshotStampRef.current = true;
+  skipNextResultSetResetRef.current = true;
+
+  hasRestoredScrollRef.current = false;
+
+  useRepositoryStore
+    .getState()
+    .replaceRepositoryQueryState(snapshot)
+    .then(() => {
+      restoreScrollPosition(snapshot.repositoryScrollY);
+    });
+}, [location.key, location.state, navigationType]);
+
+const restoreScrollPosition = useCallback((repositoryScrollY) => {
   if (hasRestoredScrollRef.current) return;
-  if (!mediaList?.length) return;
 
-  const {
-    lastOpenedResourceId,
-    clearLastOpenedResourceId,
-  } = useRepositoryStore.getState();
+  let cancelled = false;
+  let rafId = null;
+  let tries = 0;
+  let lastHeight = -1;
+  let stableFrames = 0;
 
-  if (!lastOpenedResourceId) return;
+  const { lastOpenedResourceId } = useRepositoryStore.getState();
 
-  const element = document.getElementById(
-    `resource-${lastOpenedResourceId}`
-  );
+  const attempt = () => {
+    if (cancelled) return;
+    const el = scrollContainerRef.current;
+    if (!el) return;
 
-  if (!element) return;
+    const currentHeight = el.scrollHeight;
+    if (currentHeight === lastHeight) {
+      stableFrames++;
+    } else {
+      stableFrames = 0;
+      lastHeight = currentHeight;
+    }
 
-  hasRestoredScrollRef.current = true;
+    if (stableFrames < 3 && tries < 60) {
+      tries++;
+      rafId = requestAnimationFrame(attempt);
+      return;
+    }
 
-  element.scrollIntoView({
-    behavior: "instant",
-    block: "center",
-  });
+    const targetEl = lastOpenedResourceId
+      ? document.getElementById(`resource-${lastOpenedResourceId}`)
+      : null;
 
-  clearLastOpenedResourceId();
-}, [mediaList, navigationType]);
+    if (targetEl) {
+      targetEl.scrollIntoView({ block: "center" });
+    } else {
+      el.scrollTop = repositoryScrollY;
+    }
+
+    hasRestoredScrollRef.current = true;
+    useRepositoryStore.getState().setRepositoryScrollY(0);
+  };
+
+  rafId = requestAnimationFrame(attempt);
+
+  return () => {
+    cancelled = true;
+    if (rafId) cancelAnimationFrame(rafId);
+  };
+}, []);
 
   useEffect(() => {
     if (skipNextUrlSearchSyncRef.current) {
@@ -269,11 +355,9 @@ useEffect(() => {
 
   return (
     <div
-  className="bg-white relative listing-pages overflow-x-hidden overflow-y-visible"
+  className="bg-white relative listing-pages overflow-x-hidden"
   style={{
     ...theme.vars,
-    overflowY: "visible",
-    overflowAnchor: "none", 
     backgroundImage: `url(${left1}), url(${right2})`,
     backgroundPosition: isMobile
       ? "left -2rem top 12rem, right -2rem top 20rem"
@@ -285,67 +369,98 @@ useEffect(() => {
     backgroundAttachment: "fixed",
   }}
 >
-      <div className="container max-w-[93.75rem] mx-auto">
-        <div className="min-h-screen py-3 flex flex-col align-items-center gap-4">
-        <div className="w-full sm:px-6 lg:px-0 lg:w-[96.3%] mx-auto">
-                    <PageHeader showSearch />
-                  </div>
-           <div className="">
-
-          {/* <div className="w-full mt-4 md:mt-6 z-50">
-            <Filters />
-          </div> */}
-
-          <main className="w-full mx-auto">
-
- <BrowseResources
-                resources={mediaList}
-  viewMode={viewMode}
-  compact={false}
-  title="repository.browseResources"
-  setViewMode={setViewMode}
-  cardsSpacing={true}
-              />
-         
-           
-            {!showBlockingLoader && !mediaList?.length && (
-              <div className="w-full pt-10 mx-auto flex flex-col items-center justify-center">
-                <div className="text-muted">
-                  <GrResources size={100} />
-                </div>
-                <div className="flex flex-col items-center justify-center p-4">
-                  <h2 className="text-lg py-2 text-center">{t("noResourceFoundTitle")}</h2>
-                </div>
-              </div>
-            )}
-            {!loadingList && (
-            <div className="w-full mt-6 mx-auto">
-              <Pagination
-  resourcesPerPage={itemsPerPage}
-  totalResources={mediaCount}
-  selectedPage={Number(searchParams.get("page") || 1) - 1}
-  paginate={(page) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", page + 1);
-
-    setSearchParams(params, { replace: true });
+      <div
+  ref={fixedTopRef}
+  className="fixed top-0 left-0 right-0 z-40 bg-white transition-transform duration-150"
+  style={{
+    transform: `translateY(-${headerOffset}px)`,
   }}
-/>
-            </div>
-            )}
-          </main>
+>
+        <div className="container max-w-[93.75rem] mx-auto">
+          <div className="w-full sm:px-6 lg:px-0 lg:w-[96.3%] mx-auto pt-3">
+            <PageHeader showSearch />
           </div>
+          <BrowseResources
+            resources={mediaList}
+            compact={false}
+            title="repository.browseResources"
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+          />
         </div>
       </div>
+
+      <div
+  id="repository-scroll-container"
+  ref={scrollContainerRef}
+  className="overflow-y-auto"
+  style={{
+    paddingTop: fixedTopHeight,
+    height: "100vh",
+  }}
+>
+        <div className="container max-w-[93.75rem] mx-auto">
+          <div className="min-h-screen pb-3 flex flex-col align-items-center gap-4">
+            <div className="">
+              <main className="w-full mx-auto">
+                <BrowseResourcesGrid
+                  displayedResources={mediaList}
+                  viewMode={viewMode}
+                  cardsSpacing={true}
+                  setViewMode={setViewMode}
+                  filtersInitialized={true}
+                />
+
+                {!showBlockingLoader && !mediaList?.length && (
+                  <div className="w-full pt-10 mx-auto flex flex-col items-center justify-center">
+                    <div className="text-muted">
+                      <GrResources size={100} />
+                    </div>
+                    <div className="flex flex-col items-center justify-center p-4">
+                      <h2 className="text-lg py-2 text-center">{t("noResourceFoundTitle")}</h2>
+                    </div>
+                  </div>
+                )}
+                {!loadingList && (
+                  <div className="w-full mt-6 mx-auto">
+                    <Pagination
+                      resourcesPerPage={itemsPerPage}
+                      totalResources={mediaCount}
+                      selectedPage={Number(searchParams.get("page") || 1) - 1}
+                      paginate={(page) => {
+
+  if (scrollContainerRef.current) {
+    scrollContainerRef.current.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  const params = new URLSearchParams(searchParams);
+  params.set("page", page + 1);
+
+  setSearchParams(params, { replace: true });
+}}
+                    />
+                  </div>
+                )}
+              </main>
+            </div>
+          </div>
+        </div>
+
+        <MitraAiAssistantAside />
+
+        <div ref={footerRef}>
+  <Footer />
+</div>
+      </div>
+
       {showBlockingLoader && (
         <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-black bg-opacity-75 text-white h-screen">
           {t("common.loadingText")}
         </div>
       )}
-
-      <MitraAiAssistantAside />
-
-      <Footer />
     </div>
   );
 }

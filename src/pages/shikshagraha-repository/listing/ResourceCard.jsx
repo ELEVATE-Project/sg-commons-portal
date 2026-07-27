@@ -143,7 +143,9 @@ const sourceProviderIcon = getSourceProviderIcon(
 
   const handleCardClick = () => {
     trackResourceView(resource?.id);
-    setRepositoryScrollY(window.scrollY || 0);
+    const scrollContainer = document.getElementById("repository-scroll-container");
+
+setRepositoryScrollY(scrollContainer?.scrollTop || 0);
 setLastOpenedResourceId(resource.id);
     const snapshot = useRepositoryStore.getState().getRepositoryQuerySnapshot();
     const historyState = window.history.state || {};
