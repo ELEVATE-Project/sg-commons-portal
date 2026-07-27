@@ -36,6 +36,12 @@ const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
 
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
   const filters = useRepositoryStore((state) => state.filters);
+  const hasAppliedFilters =
+  Object.values(filters || {}).some((value) =>
+    Array.isArray(value)
+      ? value.length > 0
+      : value !== null && value !== undefined && value !== ""
+  );
   const pagination = useRepositoryStore((state) => state.pagination);
   const setPagination = useRepositoryStore((state) => state.setPagination);
   const sortBy = useRepositoryStore((state) => state.sortBy);
@@ -369,11 +375,19 @@ useEffect(() => {
     backgroundAttachment: "fixed",
   }}
 >
-      <div
+<div
   ref={fixedTopRef}
   className="fixed top-0 left-0 right-0 z-40 bg-white transition-transform duration-150"
   style={{
+    height: isMobile
+  ? hasAppliedFilters
+    ? "50vh"
+    : "44vh"
+  : hasAppliedFilters
+    ? "43vh"
+    : "33vh",
     transform: `translateY(-${headerOffset}px)`,
+    marginBottom: "-1rem",
   }}
 >
         <div className="container max-w-[93.75rem] mx-auto">

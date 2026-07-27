@@ -117,13 +117,13 @@ useEffect(() => {
 
 <>
   <BrowseResources
-    resources={mediaList}
+    resources={mediaList.slice(0, 6)}
     viewMode="grid"
     compact
     title="repository.library"
   />
   <BrowseResourcesGrid
-    displayedResources={mediaList}
+    displayedResources={mediaList.slice(0, 6)}
     viewMode="grid"
     cardsSpacing={true}
     filtersInitialized={true}
