@@ -138,7 +138,7 @@ const isTouchDevice = useMemo(
         </button>
       </div>
       {showTooltip && tooltipText && (
-  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-[220px] max-w-[90vw] sm:w-[260px] md:w-auto md:max-w-none rounded-md bg-[var(--listing-strong-text)] px-3 py-2 text-xs text-white text-center whitespace-normal md:whitespace-nowrap break-words md:break-normal shadow-lg" id={tooltipId} role="tooltip">
+  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-[13.75rem] max-w-[90vw] sm:w-[16.25rem] md:w-auto md:max-w-none rounded-md bg-[var(--listing-strong-text)] px-3 py-2 text-xs text-white text-center whitespace-normal md:whitespace-nowrap break-words md:break-normal shadow-lg" id={tooltipId} role="tooltip">
     {tooltipText}
 
     <div className="absolute top-full left-1/2 -translate-x-1/2">
