@@ -453,7 +453,7 @@ useEffect(() => {
   const params = new URLSearchParams(searchParams);
   params.set("page", page + 1);
 
-  setSearchParams(params, { replace: true });
+  setSearchParams(params);
 }}
                     />
                   </div>

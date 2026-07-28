@@ -85,20 +85,59 @@ useEffect(() => {
 
   if (!mediaList?.length) return;
 
-  hasRestoredScrollRef.current = true;
+  let tries = 0;
+  let lastHeight = -1;
+  let stableFrames = 0;
+  let rafId;
 
-  const scrollY =
-    useRepositoryStore.getState().repositoryScrollY || 0;
+  const restore = () => {
+    const currentHeight = document.documentElement.scrollHeight;
 
-  requestAnimationFrame(() => {
-    window.scrollTo({
-      top: scrollY,
-      left: 0,
-      behavior: "instant",
-    });
+    if (currentHeight === lastHeight) {
+      stableFrames++;
+    } else {
+      stableFrames = 0;
+      lastHeight = currentHeight;
+    }
 
-    useRepositoryStore.getState().setRepositoryScrollY(0);
-  });
+    if (stableFrames < 3 && tries < 60) {
+      tries++;
+      rafId = requestAnimationFrame(restore);
+      return;
+    }
+
+    const {
+      lastOpenedResourceId,
+      repositoryScrollY,
+      setRepositoryScrollY,
+      clearLastOpenedResourceId,
+    } = useRepositoryStore.getState();
+
+    const target = lastOpenedResourceId
+      ? document.getElementById(`resource-${lastOpenedResourceId}`)
+      : null;
+
+    if (target) {
+      target.scrollIntoView({
+        block: "center",
+        behavior: "instant",
+      });
+      clearLastOpenedResourceId();
+    } else {
+      window.scrollTo({
+        top: repositoryScrollY,
+        left: 0,
+        behavior: "instant",
+      });
+    }
+
+    setRepositoryScrollY(0);
+    hasRestoredScrollRef.current = true;
+  };
+
+  rafId = requestAnimationFrame(restore);
+
+  return () => cancelAnimationFrame(rafId);
 }, [mediaList, navigationType]);
 
   return (
@@ -117,9 +156,9 @@ useEffect(() => {
 
 <>
   <BrowseResources
-    resources={mediaList.slice(0, 6)}
+    resources={mediaList}
     viewMode="grid"
-    compact
+    compact={true}
     title="repository.library"
   />
   <BrowseResourcesGrid
