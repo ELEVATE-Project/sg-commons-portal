@@ -67,6 +67,7 @@ const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
   const footerRef = useRef(null);
 const [headerOffset, setHeaderOffset] = useState(0);
 const scrollContainerRef = useRef(null);
+const restoreRafRef = useRef(null);
 
   useEffect(() => {
     const node = fixedTopRef.current;
@@ -125,16 +126,6 @@ useEffect(() => {
 
   return () => window.removeEventListener("resize", handleResize);
 }, []);
-
-  useEffect(() => {
-    const snapshot = location.state?.repositorySnapshot;
-    if (navigationType !== "POP" || !snapshot) return;
-
-    skipNextUrlSearchSyncRef.current = true;
-    skipNextSnapshotStampRef.current = true;
-    skipNextResultSetResetRef.current = true;
-    useRepositoryStore.getState().replaceRepositoryQueryState(snapshot);
-  }, [location.key, location.state, navigationType]);
 
   useEffect(() => {
     if (skipNextSnapshotStampRef.current) {
@@ -235,28 +226,17 @@ useEffect(() => {
 }, [viewMode]);
 
 useEffect(() => {
-  const snapshot = location.state?.repositorySnapshot;
-  if (navigationType !== "POP" || !snapshot) return;
-
-  skipNextUrlSearchSyncRef.current = true;
-  skipNextSnapshotStampRef.current = true;
-  skipNextResultSetResetRef.current = true;
-
-  hasRestoredScrollRef.current = false;
-
-  useRepositoryStore
-    .getState()
-    .replaceRepositoryQueryState(snapshot)
-    .then(() => {
-      restoreScrollPosition(snapshot.repositoryScrollY);
-    });
-}, [location.key, location.state, navigationType]);
+  return () => {
+    if (restoreRafRef.current) {
+      cancelAnimationFrame(restoreRafRef.current);
+    }
+  };
+}, []);
 
 const restoreScrollPosition = useCallback((repositoryScrollY) => {
   if (hasRestoredScrollRef.current) return;
 
   let cancelled = false;
-  let rafId = null;
   let tries = 0;
   let lastHeight = -1;
   let stableFrames = 0;
@@ -266,7 +246,13 @@ const restoreScrollPosition = useCallback((repositoryScrollY) => {
   const attempt = () => {
     if (cancelled) return;
     const el = scrollContainerRef.current;
-    if (!el) return;
+    if (!el) {
+  if (tries < 60) {
+    tries++;
+    restoreRafRef.current = requestAnimationFrame(attempt);
+  }
+  return;
+}
 
     const currentHeight = el.scrollHeight;
     if (currentHeight === lastHeight) {
@@ -278,7 +264,7 @@ const restoreScrollPosition = useCallback((repositoryScrollY) => {
 
     if (stableFrames < 3 && tries < 60) {
       tries++;
-      rafId = requestAnimationFrame(attempt);
+      restoreRafRef.current = requestAnimationFrame(attempt);
       return;
     }
 
@@ -296,13 +282,27 @@ const restoreScrollPosition = useCallback((repositoryScrollY) => {
     useRepositoryStore.getState().setRepositoryScrollY(0);
   };
 
-  rafId = requestAnimationFrame(attempt);
-
-  return () => {
-    cancelled = true;
-    if (rafId) cancelAnimationFrame(rafId);
-  };
+  restoreRafRef.current = requestAnimationFrame(attempt);
 }, []);
+
+useEffect(() => {
+  const snapshot = location.state?.repositorySnapshot;
+  if (navigationType !== "POP" || !snapshot) return;
+
+  skipNextUrlSearchSyncRef.current = true;
+  skipNextSnapshotStampRef.current = true;
+  skipNextResultSetResetRef.current = true;
+
+  hasRestoredScrollRef.current = false;
+
+  useRepositoryStore
+    .getState()
+    .replaceRepositoryQueryState(snapshot)
+    .then(() => {
+      restoreScrollPosition(snapshot.repositoryScrollY);
+    });
+}, [location.key, location.state, navigationType, restoreScrollPosition]);
+
 
   useEffect(() => {
     if (skipNextUrlSearchSyncRef.current) {

@@ -145,7 +145,9 @@ const sourceProviderIcon = getSourceProviderIcon(
     trackResourceView(resource?.id);
     const scrollContainer = document.getElementById("repository-scroll-container");
 
-setRepositoryScrollY(scrollContainer?.scrollTop || 0);
+setRepositoryScrollY(
+  scrollContainer ? scrollContainer.scrollTop : window.scrollY
+);
 setLastOpenedResourceId(resource.id);
     const snapshot = useRepositoryStore.getState().getRepositoryQuerySnapshot();
     const historyState = window.history.state || {};

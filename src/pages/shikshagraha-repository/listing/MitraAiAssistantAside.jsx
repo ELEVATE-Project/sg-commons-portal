@@ -43,28 +43,41 @@ export default function MitraAiAssistantAside({ defaultBottom = 70 }) {
     return () => clearTimeout(timeout);
   }, [open]);
 
-  useEffect(() => {
-    const footer = document.querySelector("footer, section.footer, .footer");
-    if (!footer) return;
+useEffect(() => {
+  const footer = document.querySelector("footer, section.footer, .footer");
+  if (!footer) return;
 
-    const DEFAULT_BOTTOM = defaultBottom;
-    const GAP = 16;
+  const scrollContainer = document.getElementById(
+    "repository-scroll-container"
+  );
 
-    const updateOffset = () => {
-      const footerRect = footer.getBoundingClientRect();
-      const visibleOverlap = window.innerHeight - footerRect.top;
-      setBottomOffset(visibleOverlap > 0 ? visibleOverlap + GAP : DEFAULT_BOTTOM);
-    };
+  const DEFAULT_BOTTOM = defaultBottom;
+  const GAP = 16;
 
-    updateOffset();
-    window.addEventListener("scroll", updateOffset, { passive: true });
-    window.addEventListener("resize", updateOffset);
+  const updateOffset = () => {
+    const footerRect = footer.getBoundingClientRect();
+    const visibleOverlap = window.innerHeight - footerRect.top;
 
-    return () => {
-      window.removeEventListener("scroll", updateOffset);
-      window.removeEventListener("resize", updateOffset);
-    };
-  }, [defaultBottom]);
+    setBottomOffset(
+      visibleOverlap > 0 ? visibleOverlap + GAP : DEFAULT_BOTTOM
+    );
+  };
+
+  updateOffset();
+
+  const scrollTarget = scrollContainer || window;
+
+  scrollTarget.addEventListener("scroll", updateOffset, {
+    passive: true,
+  });
+
+  window.addEventListener("resize", updateOffset);
+
+  return () => {
+    scrollTarget.removeEventListener("scroll", updateOffset);
+    window.removeEventListener("resize", updateOffset);
+  };
+}, [defaultBottom]);
 
   return (
     <>

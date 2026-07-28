@@ -13,17 +13,6 @@ function Pagination({
 
   const handlePageClick = (e) => {
     paginate(e.selected);
-
-    const browseSection = document.querySelector(
-      "[data-browse-resources]"
-    );
-
-    if (browseSection) {
-      browseSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
   };
 
   return (
