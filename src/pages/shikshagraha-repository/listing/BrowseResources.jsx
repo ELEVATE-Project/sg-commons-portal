@@ -362,13 +362,12 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   ];
 
 const handleItemsPerPageChange = (value) => {
-  // Scroll to top immediately
   const container = document.getElementById("repository-scroll-container");
 
   if (container) {
     container.scrollTo({
       top: 0,
-      behavior: "instant", // use "smooth" if you prefer
+      behavior: "instant",
     });
   }
 

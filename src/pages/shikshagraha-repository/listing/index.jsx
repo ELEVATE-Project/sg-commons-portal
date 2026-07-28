@@ -279,7 +279,7 @@ const restoreScrollPosition = useCallback((repositoryScrollY) => {
   : null;
 
 if (targetEl) {
-  const extraGap = 24; // increase to 32 or 40 if you want more space
+  const extraGap = 24;
 
   el.scrollTo({
     top: Math.max(0, targetEl.offsetTop - extraGap),
