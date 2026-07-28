@@ -204,7 +204,6 @@ const DefaultDropdownItem = ({ option, isSelected, onSelect }) => {
 
 export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false, cardsSpacing = false }) {
   const pagination = useRepositoryStore((state) => state.pagination);
-  const setPagination = useRepositoryStore((state) => state.setPagination);
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
   const sortBy = useRepositoryStore((state) => state.sortBy);
   const setSortBy = useRepositoryStore((state) => state.setSortBy);
@@ -216,7 +215,6 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const setFilters = useRepositoryStore((state) => state.setFilters);
   const replaceRepositoryQueryState = useRepositoryStore((state) => state.replaceRepositoryQueryState);
   const loadingList = useRepositoryStore((state) => state.loadingList);
-  const isSearchActive = searchInput && searchInput.trim().length > 0;
   const navigate = useNavigate();
   const {t} = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -234,11 +232,10 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     }
   };
   const resetPageParam = (params) => {
-    // Filter changes intentionally restart browsing from the first page.
-    const next = new URLSearchParams(params.toString());
-    next.set("page", "1");
-    return next;
-  };
+  const next = new URLSearchParams(params.toString());
+  next.delete("page"); // page 1 is the default
+  return next;
+};
   const filters = useRepositoryStore((state) => state.filters);
   const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || categoriesParam));
   // Prevent URL filter sync from rerunning on page-only query changes.
@@ -357,9 +354,6 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   ];
 
   const itemsPerPage = pagination.limit;
-const displayedResources = compact
-  ? resources.slice(0, 6)
-  : resources;
   const perPageOptions = [
     { value: 6, label: "6" },
     { value: 12, label: "12" },
@@ -370,7 +364,7 @@ const displayedResources = compact
   const handleItemsPerPageChange = (value) => {
   const next = new URLSearchParams(searchParams);
 
-  next.set("page", "1");
+  next.delete("page");
   next.set("limit", value);
 
   setSearchParams(next, { replace: true });
