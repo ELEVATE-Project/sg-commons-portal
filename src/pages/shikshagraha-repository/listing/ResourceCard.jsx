@@ -22,7 +22,8 @@ const MEDIA_FILE_TYPE = {
   DOCX: "DOCX",
   XLSX: "XLSX",
   PPTX: "PPTX",
-  CSV: "CSV"
+  CSV: "CSV",
+  DOC: "DOC"
 }
 
 export const getMediaFileTypeStyles = type => {
@@ -34,6 +35,7 @@ export const getMediaFileTypeStyles = type => {
       }
 
     case MEDIA_FILE_TYPE.DOCX:
+    case MEDIA_FILE_TYPE.DOC:
       return {
         background: "bg-repository-docxBg",
         icon: DocxIcon,
@@ -69,6 +71,7 @@ text: "text-repository-pdfTagText",
       }
 
     case MEDIA_FILE_TYPE.DOCX:
+    case MEDIA_FILE_TYPE.DOC:
       return {
         bg: "bg-repository-docxTagBg",
 text: "text-repository-docxTagText",
@@ -140,7 +143,11 @@ const sourceProviderIcon = getSourceProviderIcon(
 
   const handleCardClick = () => {
     trackResourceView(resource?.id);
-    setRepositoryScrollY(window.scrollY || 0);
+    const scrollContainer = document.getElementById("repository-scroll-container");
+
+setRepositoryScrollY(
+  scrollContainer ? scrollContainer.scrollTop : window.scrollY
+);
 setLastOpenedResourceId(resource.id);
     const snapshot = useRepositoryStore.getState().getRepositoryQuerySnapshot();
     const historyState = window.history.state || {};

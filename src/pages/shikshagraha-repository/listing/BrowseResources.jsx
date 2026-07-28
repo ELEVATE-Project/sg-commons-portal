@@ -1,8 +1,6 @@
-import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import React, { useMemo, useState, useEffect, useRef, useCallback, useId } from "react";
 import { Grid, List, ChevronDown, Check, ArrowRight, X } from "lucide-react";
-import ResourceCard from "./ResourceCard";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
-import MitraAiAssistantAside from "./MitraAiAssistantAside.jsx";
 import Filters from "./Filters";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -53,9 +51,38 @@ const Dropdown = ({
   dropdownClassName = "",
   disabled = false,
   tooltipText = "",
+  showTooltipOnHover = false,
 }) => {
   const { isOpen, toggleDropdown, closeDropdown, dropdownRef } = useDropdown();
   const [showTooltip, setShowTooltip] = useState(false);
+  const show = useCallback(() => {
+  if (showTooltipOnHover && tooltipText) {
+    setShowTooltip(true);
+  }
+}, [showTooltipOnHover, tooltipText]);
+
+const hide = useCallback(() => {
+  setShowTooltip(false);
+}, []);
+
+    const tooltipTimerRef = useRef(null);
+const tooltipId = useId();
+  useEffect(() => {
+  return () => {
+    clearTimeout(tooltipTimerRef.current);
+  };
+}, []);
+
+useEffect(() => {
+  if (!showTooltipOnHover) {
+    setShowTooltip(false);
+  }
+}, [showTooltipOnHover]);
+
+const isTouchDevice = useMemo(
+  () => window.matchMedia("(pointer: coarse)").matches,
+  []
+);
 
   const handleSelect = useCallback(
     (value) => {
@@ -71,14 +98,37 @@ const Dropdown = ({
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
-      <div className="relative">
+<div
+  className="relative"
+  onMouseEnter={!isTouchDevice ? show : undefined}
+  onMouseLeave={!isTouchDevice ? hide : undefined}
+  onFocus={show}
+  onBlur={hide}
+  onClick={
+    isTouchDevice
+      ? (e) => {
+          if (!disabled) return;
+          e.preventDefault();
+          show();
+          clearTimeout(window.tooltipTimer);
+          tooltipTimerRef.current = setTimeout(hide, 2500);
+        }
+      : undefined
+  }
+>
         <button
           type="button"
-          disabled={disabled}
+          aria-disabled={disabled}
+          aria-describedby={
+    showTooltip && tooltipText ? tooltipId : undefined
+  }
           onClick={(e) => {
-            e.preventDefault();
-            if (!disabled) toggleDropdown();
-          }}
+  e.preventDefault();
+
+  if (disabled) return;
+
+  toggleDropdown();
+}}
           className={`flex items-center gap-2 px-3 py-2 rounded ${dropdownClassName} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           {renderButton ? renderButton(selectedOption) : <span>{selectedOption?.label ?? ""}</span>}
@@ -88,13 +138,14 @@ const Dropdown = ({
         </button>
       </div>
       {showTooltip && tooltipText && (
-        <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-2 bg-[var(--listing-strong-text)] text-white text-xs rounded whitespace-nowrap z-50">
-          {tooltipText}
-          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
-            <div className="border-4 border-transparent border-t-gray-900"></div>
-          </div>
-        </div>
-      )}
+  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-[13.75rem] max-w-[90vw] sm:w-[16.25rem] md:w-auto md:max-w-none rounded-md bg-[var(--listing-strong-text)] px-3 py-2 text-xs text-white text-center whitespace-normal md:whitespace-nowrap break-words md:break-normal shadow-lg" id={tooltipId} role="tooltip">
+    {tooltipText}
+
+    <div className="absolute top-full left-1/2 -translate-x-1/2">
+      <div className="border-4 border-transparent border-t-[var(--listing-strong-text)]" />
+    </div>
+  </div>
+)}
       {isOpen && !disabled && (
         <div
           className={`absolute right-0 left-auto sm:left-auto
@@ -153,7 +204,6 @@ const DefaultDropdownItem = ({ option, isSelected, onSelect }) => {
 
 export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false, cardsSpacing = false }) {
   const pagination = useRepositoryStore((state) => state.pagination);
-  const setPagination = useRepositoryStore((state) => state.setPagination);
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
   const sortBy = useRepositoryStore((state) => state.sortBy);
   const setSortBy = useRepositoryStore((state) => state.setSortBy);
@@ -165,10 +215,11 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const setFilters = useRepositoryStore((state) => state.setFilters);
   const replaceRepositoryQueryState = useRepositoryStore((state) => state.replaceRepositoryQueryState);
   const loadingList = useRepositoryStore((state) => state.loadingList);
-  const isSearchActive = searchInput && searchInput.trim().length > 0;
   const navigate = useNavigate();
   const {t} = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const searchResourceText = searchParams.get("searchResourceText");
+  const isAISearch = !!searchResourceText?.trim();
   const orgParam = searchParams.get("org");
   const categoriesParam = searchParams.get("categories");
   const fromResourceParam = searchParams.get("fromResource");
@@ -181,11 +232,10 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     }
   };
   const resetPageParam = (params) => {
-    // Filter changes intentionally restart browsing from the first page.
-    const next = new URLSearchParams(params.toString());
-    next.set("page", "1");
-    return next;
-  };
+  const next = new URLSearchParams(params.toString());
+  next.delete("page"); // page 1 is the default
+  return next;
+};
   const filters = useRepositoryStore((state) => state.filters);
   const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || categoriesParam));
   // Prevent URL filter sync from rerunning on page-only query changes.
@@ -288,6 +338,8 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     } catch (e) {}
   };
 
+
+
   useEffect(() => {
     if (!filtersInitialized && !loadingList) setFiltersInitialized(true);
   }, [loadingList, filtersInitialized]);
@@ -302,9 +354,6 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   ];
 
   const itemsPerPage = pagination.limit;
-const displayedResources = compact
-  ? resources.slice(0, 6)
-  : resources;
   const perPageOptions = [
     { value: 6, label: "6" },
     { value: 12, label: "12" },
@@ -315,7 +364,7 @@ const displayedResources = compact
   const handleItemsPerPageChange = (value) => {
   const next = new URLSearchParams(searchParams);
 
-  next.set("page", "1");
+  next.delete("page");
   next.set("limit", value);
 
   setSearchParams(next, { replace: true });
@@ -453,18 +502,14 @@ const displayedResources = compact
    
   return (
     <div
-  className={`relative overflow-hidden py-5 lg:py-6 w-full scroll-mt-24 ${
-    compact || displayedResources.length === 0 ? "" : "min-h-screen"
-  }`}
+  className={`relative overflow-visible pt-5 lg:pt-6 w-full scroll-mt-24 z-50`}
   data-browse-resources
 >
       <div
         className="absolute inset-0 z-0 pointer-events-none"
       />
       <section
-  className={`relative z-10 max-w-[93.75rem] mx-auto ${
-    compact || displayedResources.length === 0 ? "" : "min-h-screen"
-  }`}
+  className={`relative z-10 max-w-[93.75rem] mx-auto`}
 >
 <div className="w-full px-4 sm:px-6 lg:px-0 lg:w-[92.5%] mx-auto">
         {/* ⬇️ EVERYTHING BELOW IS EXACT SAME (no change) */}
@@ -602,8 +647,11 @@ const displayedResources = compact
           onSelect={(value) => {
             setSortBy(value);
           }}
+  showTooltipOnHover={isAISearch}
+  tooltipText={t("sortDisabledTooltipText")}
  renderButton={(selected) => (
   <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
+  
     <span className="font-normal text-repository-textSecondary">
       {t("repository.sortByLabel")}:
     </span>{" "}
@@ -612,7 +660,7 @@ const displayedResources = compact
     </span>
   </span>
 )}
-          disabled={!hasResults}
+          disabled={isAISearch || !hasResults}
         />
       </div>
 
@@ -705,7 +753,7 @@ const displayedResources = compact
 </div>
 
           {/* Group chips row (Organization, Theme, etc.) */}
-          <div className="mt-6 mb-10 flex w-full items-center gap-3 sm:mt-8 sm:mb-14 sm:gap-4">
+          <div className="mt-6 flex w-full items-center gap-3 sm:mt-8 sm:mb-4 sm:gap-4">
             <div className="flex-1 overflow-x-auto">
               <div className="flex w-max items-center gap-3 pr-4 sm:gap-6">
                 {filterGroupChips.map((chip) => (
@@ -788,43 +836,6 @@ const displayedResources = compact
             )}
           </div>
 
-        <div className="relative overflow-hidden">
-          <div
-            className="absolute inset-0 z-0 pointer-events-none"
-          />
-          <div className="relative z-10">
-            <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">
-<div
-  className={`grid w-full
-  ${
-    viewMode === "grid"
-      ? "gap-9 md:gap-x-4 md:gap-y-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-      : "gap-3 grid-cols-1"
-  }
-  ${
-    cardsSpacing ? "px-2 sm:px-4 md:px-6 lg:px-16" : "px-2 sm:px-0"
-  }`} aria-busy={!filtersInitialized}>
-    {filtersInitialized ? (
-      displayedResources.map((resource, index) => (
-        <React.Fragment key={`resource-${resource.id}-${index}`}>
-          <ResourceCard
-            key={resource.id}
-            resource={resource}
-            index={index}
-            viewMode={viewMode}
-          />
-        </React.Fragment>
-      ))
-    ) : (
-      // lightweight skeleton placeholders to prevent layout jump
-      Array.from({ length: viewMode === 'grid' ? 6 : 3 }).map((_, i) => (
-        <div key={`skeleton-${i}`} className="w-full h-40 bg-gray-200 rounded-lg animate-pulse" />
-      ))
-    )}
-  </div>
-            </div>
-          </div>
-        </div>
 </div>
       </section>
     </div>

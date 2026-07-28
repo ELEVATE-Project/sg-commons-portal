@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
 import ExploreByTheme from "../listing/ExploreByTheme";
 import { useNavigationType } from "react-router-dom";
-
+import BrowseResourcesGrid from "../listing/BrowseResourcesGrid";
 export default function RepositoryPage() {
   const { loadingList, loadingDetail, loadingMaster } = useRepositoryStore();
 
@@ -28,7 +28,6 @@ export default function RepositoryPage() {
   const [searchParams] = useSearchParams();
   const navigationType = useNavigationType();
   const hasRestoredScrollRef = useRef(false);
-
   // NOTE: Do not auto-clear `org`/`theme` params on initial mount. Listing
   // (`BrowseResources`) handles mapping URL -> filters and will control when
   // to clear transient params (on Back / clear actions). This effect was
@@ -86,20 +85,59 @@ useEffect(() => {
 
   if (!mediaList?.length) return;
 
-  hasRestoredScrollRef.current = true;
+  let tries = 0;
+  let lastHeight = -1;
+  let stableFrames = 0;
+  let rafId;
 
-  const scrollY =
-    useRepositoryStore.getState().repositoryScrollY || 0;
+  const restore = () => {
+    const currentHeight = document.documentElement.scrollHeight;
 
-  requestAnimationFrame(() => {
-    window.scrollTo({
-      top: scrollY,
-      left: 0,
-      behavior: "instant",
-    });
+    if (currentHeight === lastHeight) {
+      stableFrames++;
+    } else {
+      stableFrames = 0;
+      lastHeight = currentHeight;
+    }
 
-    useRepositoryStore.getState().setRepositoryScrollY(0);
-  });
+    if (stableFrames < 3 && tries < 60) {
+      tries++;
+      rafId = requestAnimationFrame(restore);
+      return;
+    }
+
+    const {
+      lastOpenedResourceId,
+      repositoryScrollY,
+      setRepositoryScrollY,
+      clearLastOpenedResourceId,
+    } = useRepositoryStore.getState();
+
+    const target = lastOpenedResourceId
+      ? document.getElementById(`resource-${lastOpenedResourceId}`)
+      : null;
+
+    if (target) {
+      target.scrollIntoView({
+        block: "center",
+        behavior: "instant",
+      });
+      clearLastOpenedResourceId();
+    } else {
+      window.scrollTo({
+        top: repositoryScrollY,
+        left: 0,
+        behavior: "instant",
+      });
+    }
+
+    setRepositoryScrollY(0);
+    hasRestoredScrollRef.current = true;
+  };
+
+  rafId = requestAnimationFrame(restore);
+
+  return () => cancelAnimationFrame(rafId);
 }, [mediaList, navigationType]);
 
   return (
@@ -116,12 +154,20 @@ useEffect(() => {
           <main className="w-full mx-auto">
             {!!mediaList?.length && (
 
- <BrowseResources
-                resources={mediaList}
-  viewMode="grid"
-  compact={true}
-  title="repository.library"
-              />
+<>
+  <BrowseResources
+    resources={mediaList}
+    viewMode="grid"
+    compact={true}
+    title="repository.library"
+  />
+  <BrowseResourcesGrid
+    displayedResources={mediaList.slice(0, 6)}
+    viewMode="grid"
+    cardsSpacing={true}
+    filtersInitialized={true}
+  />
+</>
             )}
          
            
