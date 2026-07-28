@@ -27,12 +27,17 @@ export default function BrowseResourcesGrid({
           >
             {filtersInitialized ? (
               displayedResources.map((resource, index) => (
-                <ResourceCard
-                  key={resource.id}
-                  resource={resource}
-                  index={index}
-                  viewMode={viewMode}
-                />
+                <div
+  key={resource.id}
+  data-resource-card
+  data-resource-id={resource.id}
+>
+  <ResourceCard
+    resource={resource}
+    index={index}
+    viewMode={viewMode}
+  />
+</div>
               ))
             ) : (
               Array.from({

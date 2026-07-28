@@ -361,7 +361,17 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     { value: 48, label: "48" },
   ];
 
-  const handleItemsPerPageChange = (value) => {
+const handleItemsPerPageChange = (value) => {
+  // Scroll to top immediately
+  const container = document.getElementById("repository-scroll-container");
+
+  if (container) {
+    container.scrollTo({
+      top: 0,
+      behavior: "instant", // use "smooth" if you prefer
+    });
+  }
+
   const next = new URLSearchParams(searchParams);
 
   next.delete("page");
@@ -581,6 +591,15 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   options={sortOptions}
   selectedValue={sortBy}
   onSelect={(value) => {
+    const container = document.getElementById("repository-scroll-container");
+
+    if (container) {
+      container.scrollTo({
+        top: 0,
+        behavior: "instant",
+      });
+    }
+
     setSortBy(value);
   }}
   renderButton={(selected) => (
@@ -645,8 +664,17 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
           options={sortOptions}
           selectedValue={sortBy}
           onSelect={(value) => {
-            setSortBy(value);
-          }}
+  const container = document.getElementById("repository-scroll-container");
+
+  if (container) {
+    container.scrollTo({
+      top: 0,
+      behavior: "instant",
+    });
+  }
+
+  setSortBy(value);
+}}
   showTooltipOnHover={isAISearch}
   tooltipText={t("sortDisabledTooltipText")}
  renderButton={(selected) => (

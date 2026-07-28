@@ -88,25 +88,31 @@ const restoreRafRef = useRef(null);
   }, [isMobile, viewMode, mediaList, showBlockingLoader]);
   // ----------------------------------------------------------------------
 
-  useEffect(() => {
-  if (!footerRef.current) return;
+useEffect(() => {
+  const container = scrollContainerRef.current;
+  const footer = footerRef.current;
 
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting) {
-        setHeaderOffset(entry.intersectionRect.height);
-      } else {
-        setHeaderOffset(0);
-      }
-    },
-    {
-      threshold: Array.from({ length: 101 }, (_, i) => i / 100),
-    }
-  );
+  if (!container || !footer) return;
 
-  observer.observe(footerRef.current);
+  const updateHeaderOffset = () => {
+    const footerRect = footer.getBoundingClientRect();
+    const overlap = Math.max(0, window.innerHeight - footerRect.top);
 
-  return () => observer.disconnect();
+    setHeaderOffset(overlap);
+  };
+
+  updateHeaderOffset();
+
+  container.addEventListener("scroll", updateHeaderOffset, {
+    passive: true,
+  });
+
+  window.addEventListener("resize", updateHeaderOffset);
+
+  return () => {
+    container.removeEventListener("scroll", updateHeaderOffset);
+    window.removeEventListener("resize", updateHeaderOffset);
+  };
 }, []);
 
     useEffect(() => {
@@ -269,20 +275,69 @@ const restoreScrollPosition = useCallback((repositoryScrollY) => {
     }
 
     const targetEl = lastOpenedResourceId
-      ? document.getElementById(`resource-${lastOpenedResourceId}`)
-      : null;
+  ? document.getElementById(`resource-${lastOpenedResourceId}`)
+  : null;
 
-    if (targetEl) {
-      targetEl.scrollIntoView({ block: "center" });
-    } else {
-      el.scrollTop = repositoryScrollY;
-    }
+if (targetEl) {
+  const extraGap = 24; // increase to 32 or 40 if you want more space
+
+  el.scrollTo({
+    top: Math.max(0, targetEl.offsetTop - extraGap),
+    behavior: "instant",
+  });
+} else {
+  el.scrollTop = repositoryScrollY;
+}
 
     hasRestoredScrollRef.current = true;
     useRepositoryStore.getState().setRepositoryScrollY(0);
   };
 
   restoreRafRef.current = requestAnimationFrame(attempt);
+}, []);
+
+const handleViewModeChange = useCallback((mode) => {
+  const container = scrollContainerRef.current;
+
+  if (!container) {
+    setViewMode(mode);
+    return;
+  }
+
+  const cards = [...container.querySelectorAll("[data-resource-card]")];
+
+  let anchor = null;
+
+  for (const card of cards) {
+    const top = card.offsetTop;
+
+    if (top + card.offsetHeight > container.scrollTop) {
+      anchor = {
+        id: card.dataset.resourceId,
+        offset: container.scrollTop - top,
+      };
+      break;
+    }
+  }
+
+  if (!anchor) {
+    setViewMode(mode);
+    return;
+  }
+
+  setViewMode(mode);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const newCard = container.querySelector(
+        `[data-resource-id="${anchor.id}"]`
+      );
+
+      if (!newCard) return;
+
+      container.scrollTop = newCard.offsetTop + anchor.offset;
+    });
+  });
 }, []);
 
 useEffect(() => {
@@ -377,16 +432,15 @@ useEffect(() => {
 >
 <div
   ref={fixedTopRef}
-  className="fixed top-0 left-0 right-0 z-40 bg-white transition-transform duration-150"
+  className="fixed top-0 left-0 right-0 z-40 bg-white"
   style={{
     height: isMobile
-  ? hasAppliedFilters
-    ? "50vh"
-    : "44vh"
-  : hasAppliedFilters
-    ? "43vh"
-    : "33vh",
-    transform: `translateY(-${headerOffset}px)`,
+      ? hasAppliedFilters
+        ? "50vh"
+        : "44vh"
+      : hasAppliedFilters
+        ? "43vh"
+        : "33vh",
     marginBottom: "-1rem",
   }}
 >
@@ -399,12 +453,12 @@ useEffect(() => {
             compact={false}
             title="repository.browseResources"
             viewMode={viewMode}
-            setViewMode={setViewMode}
+            setViewMode={handleViewModeChange}
           />
         </div>
       </div>
 
-      <div
+<div
   id="repository-scroll-container"
   ref={scrollContainerRef}
   className="overflow-y-auto"
