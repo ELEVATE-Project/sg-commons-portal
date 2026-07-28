@@ -19,11 +19,11 @@ export default function RepositoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [viewMode, setViewMode] = useState(
-  searchParams.get("view") || "grid"
-);
+    searchParams.get("view") || "grid"
+  );
   const loadingList = useRepositoryStore((state) => state.loadingList);
-const loadingDetail = useRepositoryStore((state) => state.loadingDetail);
-const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
+  const loadingDetail = useRepositoryStore((state) => state.loadingDetail);
+  const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
 
   const { t } = useTranslation()
 
@@ -37,11 +37,11 @@ const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
   const filters = useRepositoryStore((state) => state.filters);
   const hasAppliedFilters =
-  Object.values(filters || {}).some((value) =>
-    Array.isArray(value)
-      ? value.length > 0
-      : value !== null && value !== undefined && value !== ""
-  );
+    Object.values(filters || {}).some((value) =>
+      Array.isArray(value)
+        ? value.length > 0
+        : value !== null && value !== undefined && value !== ""
+    );
   const pagination = useRepositoryStore((state) => state.pagination);
   const setPagination = useRepositoryStore((state) => state.setPagination);
   const sortBy = useRepositoryStore((state) => state.sortBy);
@@ -65,9 +65,9 @@ const loadingMaster = useRepositoryStore((state) => state.loadingMaster);
   const fixedTopRef = useRef(null);
   const [fixedTopHeight, setFixedTopHeight] = useState(0);
   const footerRef = useRef(null);
-const [headerOffset, setHeaderOffset] = useState(0);
-const scrollContainerRef = useRef(null);
-const restoreRafRef = useRef(null);
+  const [headerOffset, setHeaderOffset] = useState(0);
+  const scrollContainerRef = useRef(null);
+  const restoreRafRef = useRef(null);
 
   useEffect(() => {
     const node = fixedTopRef.current;
@@ -88,50 +88,50 @@ const restoreRafRef = useRef(null);
   }, [isMobile, viewMode, mediaList, showBlockingLoader]);
   // ----------------------------------------------------------------------
 
-useEffect(() => {
-  const container = scrollContainerRef.current;
-  const footer = footerRef.current;
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    const footer = footerRef.current;
 
-  if (!container || !footer) return;
+    if (!container || !footer) return;
 
-  const updateHeaderOffset = () => {
-    const footerRect = footer.getBoundingClientRect();
-    const overlap = Math.max(0, window.innerHeight - footerRect.top);
+    const updateHeaderOffset = () => {
+      const footerRect = footer.getBoundingClientRect();
+      const overlap = Math.max(0, window.innerHeight - footerRect.top);
 
-    setHeaderOffset(overlap);
-  };
+      setHeaderOffset(overlap);
+    };
 
-  updateHeaderOffset();
+    updateHeaderOffset();
 
-  container.addEventListener("scroll", updateHeaderOffset, {
-    passive: true,
-  });
+    container.addEventListener("scroll", updateHeaderOffset, {
+      passive: true,
+    });
 
-  window.addEventListener("resize", updateHeaderOffset);
+    window.addEventListener("resize", updateHeaderOffset);
 
-  return () => {
-    container.removeEventListener("scroll", updateHeaderOffset);
-    window.removeEventListener("resize", updateHeaderOffset);
-  };
-}, []);
+    return () => {
+      container.removeEventListener("scroll", updateHeaderOffset);
+      window.removeEventListener("resize", updateHeaderOffset);
+    };
+  }, []);
 
-    useEffect(() => {
-  const fromDetail = !!location.state?.repositorySnapshot;
+  useEffect(() => {
+    const fromDetail = !!location.state?.repositorySnapshot;
 
-  if (!fromDetail && navigationType !== "POP") {
-    window.scrollTo(0, 0);
-  }
-}, [location.key, navigationType, location.state]);
+    if (!fromDetail && navigationType !== "POP") {
+      window.scrollTo(0, 0);
+    }
+  }, [location.key, navigationType, location.state]);
 
-useEffect(() => {
-  const handleResize = () => {
-    setIsMobile(window.innerWidth < 768);
-  };
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
 
-  window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize);
 
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (skipNextSnapshotStampRef.current) {
@@ -157,9 +157,9 @@ useEffect(() => {
     const rawPage = Number(pageParam);
     const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
     const targetLimit =
-  Number.isFinite(limitParam) && limitParam > 0
-    ? limitParam
-    : LISTING_RESOURCE_LIMIT;
+      Number.isFinite(limitParam) && limitParam > 0
+        ? limitParam
+        : LISTING_RESOURCE_LIMIT;
     const nextOffset = (page - 1) * targetLimit;
 
     hasInitializedPageSizeRef.current = true;
@@ -220,143 +220,143 @@ useEffect(() => {
   ]);
 
   useEffect(() => {
-  const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams);
 
-  if (viewMode === "grid") {
-    params.delete("view");
-  } else {
-    params.set("view", viewMode);
-  }
-
-  setSearchParams(params, { replace: true });
-}, [viewMode]);
-
-useEffect(() => {
-  return () => {
-    if (restoreRafRef.current) {
-      cancelAnimationFrame(restoreRafRef.current);
-    }
-  };
-}, []);
-
-const restoreScrollPosition = useCallback((repositoryScrollY) => {
-  if (hasRestoredScrollRef.current) return;
-
-  let cancelled = false;
-  let tries = 0;
-  let lastHeight = -1;
-  let stableFrames = 0;
-
-  const { lastOpenedResourceId } = useRepositoryStore.getState();
-
-  const attempt = () => {
-    if (cancelled) return;
-    const el = scrollContainerRef.current;
-    if (!el) {
-  if (tries < 60) {
-    tries++;
-    restoreRafRef.current = requestAnimationFrame(attempt);
-  }
-  return;
-}
-
-    const currentHeight = el.scrollHeight;
-    if (currentHeight === lastHeight) {
-      stableFrames++;
+    if (viewMode === "grid") {
+      params.delete("view");
     } else {
-      stableFrames = 0;
-      lastHeight = currentHeight;
+      params.set("view", viewMode);
     }
 
-    if (stableFrames < 3 && tries < 60) {
-      tries++;
-      restoreRafRef.current = requestAnimationFrame(attempt);
+    setSearchParams(params, { replace: true });
+  }, [viewMode]);
+
+  useEffect(() => {
+    return () => {
+      if (restoreRafRef.current) {
+        cancelAnimationFrame(restoreRafRef.current);
+      }
+    };
+  }, []);
+
+  const restoreScrollPosition = useCallback((repositoryScrollY) => {
+    if (hasRestoredScrollRef.current) return;
+
+    let cancelled = false;
+    let tries = 0;
+    let lastHeight = -1;
+    let stableFrames = 0;
+
+    const { lastOpenedResourceId } = useRepositoryStore.getState();
+
+    const attempt = () => {
+      if (cancelled) return;
+      const el = scrollContainerRef.current;
+      if (!el) {
+        if (tries < 60) {
+          tries++;
+          restoreRafRef.current = requestAnimationFrame(attempt);
+        }
+        return;
+      }
+
+      const currentHeight = el.scrollHeight;
+      if (currentHeight === lastHeight) {
+        stableFrames++;
+      } else {
+        stableFrames = 0;
+        lastHeight = currentHeight;
+      }
+
+      if (stableFrames < 3 && tries < 60) {
+        tries++;
+        restoreRafRef.current = requestAnimationFrame(attempt);
+        return;
+      }
+
+      const targetEl = lastOpenedResourceId
+        ? document.getElementById(`resource-${lastOpenedResourceId}`)
+        : null;
+
+      if (targetEl) {
+        const extraGap = 24;
+
+        el.scrollTo({
+          top: Math.max(0, targetEl.offsetTop - extraGap),
+          behavior: "instant",
+        });
+      } else {
+        el.scrollTop = repositoryScrollY;
+      }
+
+      hasRestoredScrollRef.current = true;
+      useRepositoryStore.getState().setRepositoryScrollY(0);
+    };
+
+    restoreRafRef.current = requestAnimationFrame(attempt);
+  }, []);
+
+  const handleViewModeChange = useCallback((mode) => {
+    const container = scrollContainerRef.current;
+
+    if (!container) {
+      setViewMode(mode);
       return;
     }
 
-    const targetEl = lastOpenedResourceId
-  ? document.getElementById(`resource-${lastOpenedResourceId}`)
-  : null;
+    const cards = [...container.querySelectorAll("[data-resource-card]")];
 
-if (targetEl) {
-  const extraGap = 24;
+    let anchor = null;
 
-  el.scrollTo({
-    top: Math.max(0, targetEl.offsetTop - extraGap),
-    behavior: "instant",
-  });
-} else {
-  el.scrollTop = repositoryScrollY;
-}
+    for (const card of cards) {
+      const top = card.offsetTop;
 
-    hasRestoredScrollRef.current = true;
-    useRepositoryStore.getState().setRepositoryScrollY(0);
-  };
-
-  restoreRafRef.current = requestAnimationFrame(attempt);
-}, []);
-
-const handleViewModeChange = useCallback((mode) => {
-  const container = scrollContainerRef.current;
-
-  if (!container) {
-    setViewMode(mode);
-    return;
-  }
-
-  const cards = [...container.querySelectorAll("[data-resource-card]")];
-
-  let anchor = null;
-
-  for (const card of cards) {
-    const top = card.offsetTop;
-
-    if (top + card.offsetHeight > container.scrollTop) {
-      anchor = {
-        id: card.dataset.resourceId,
-        offset: container.scrollTop - top,
-      };
-      break;
+      if (top + card.offsetHeight > container.scrollTop) {
+        anchor = {
+          id: card.dataset.resourceId,
+          offset: container.scrollTop - top,
+        };
+        break;
+      }
     }
-  }
 
-  if (!anchor) {
+    if (!anchor) {
+      setViewMode(mode);
+      return;
+    }
+
     setViewMode(mode);
-    return;
-  }
 
-  setViewMode(mode);
-
-  requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      const newCard = container.querySelector(
-        `[data-resource-id="${anchor.id}"]`
-      );
+      requestAnimationFrame(() => {
+        const newCard = container.querySelector(
+          `[data-resource-id="${anchor.id}"]`
+        );
 
-      if (!newCard) return;
+        if (!newCard) return;
 
-      container.scrollTop = newCard.offsetTop + anchor.offset;
+        container.scrollTop = newCard.offsetTop + anchor.offset;
+      });
     });
-  });
-}, []);
+  }, []);
 
-useEffect(() => {
-  const snapshot = location.state?.repositorySnapshot;
-  if (navigationType !== "POP" || !snapshot) return;
+  useEffect(() => {
+    const snapshot = location.state?.repositorySnapshot;
+    if (navigationType !== "POP" || !snapshot) return;
 
-  skipNextUrlSearchSyncRef.current = true;
-  skipNextSnapshotStampRef.current = true;
-  skipNextResultSetResetRef.current = true;
+    skipNextUrlSearchSyncRef.current = true;
+    skipNextSnapshotStampRef.current = true;
+    skipNextResultSetResetRef.current = true;
 
-  hasRestoredScrollRef.current = false;
+    hasRestoredScrollRef.current = false;
 
-  useRepositoryStore
-    .getState()
-    .replaceRepositoryQueryState(snapshot)
-    .then(() => {
-      restoreScrollPosition(snapshot.repositoryScrollY);
-    });
-}, [location.key, location.state, navigationType, restoreScrollPosition]);
+    useRepositoryStore
+      .getState()
+      .replaceRepositoryQueryState(snapshot)
+      .then(() => {
+        restoreScrollPosition(snapshot.repositoryScrollY);
+      });
+  }, [location.key, location.state, navigationType, restoreScrollPosition]);
 
 
   useEffect(() => {
@@ -401,49 +401,49 @@ useEffect(() => {
     }
   }, [location.search, location.state, navigationType, setSearch, setSearchParams]);
 
-useEffect(() => {
-  if (navigationType === "POP") return;
+  useEffect(() => {
+    if (navigationType === "POP") return;
 
-  if (!!mediaList?.length && q && !loadingList) {
-    const browseSection = document.querySelector("[data-browse-resources]");
+    if (!!mediaList?.length && q && !loadingList) {
+      const browseSection = document.querySelector("[data-browse-resources]");
 
-    browseSection?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }
-}, [mediaList, q, loadingList, navigationType]);
+      browseSection?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [mediaList, q, loadingList, navigationType]);
 
   return (
     <div
-  className="bg-white relative listing-pages overflow-x-hidden"
-  style={{
-    ...theme.vars,
-    backgroundImage: `url(${left1}), url(${right2})`,
-    backgroundPosition: isMobile
-      ? "left -2rem top 12rem, right -2rem top 20rem"
-      : "left 2.8rem top 24.5rem, right 1.7rem top 32.5rem",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: isMobile
-      ? "5rem, 6rem"
-      : "8rem, 10rem",
-    backgroundAttachment: "fixed",
-  }}
->
-<div
-  ref={fixedTopRef}
-  className="fixed top-0 left-0 right-0 z-40 bg-white"
-  style={{
-    height: isMobile
-      ? hasAppliedFilters
-        ? "50vh"
-        : "44vh"
-      : hasAppliedFilters
-        ? "43vh"
-        : "33vh",
-    marginBottom: "-1rem",
-  }}
->
+      className="bg-white relative listing-pages overflow-x-hidden"
+      style={{
+        ...theme.vars,
+        backgroundImage: `url(${left1}), url(${right2})`,
+        backgroundPosition: isMobile
+          ? "left -2rem top 12rem, right -2rem top 20rem"
+          : "left 2.8rem top 24.5rem, right 1.7rem top 32.5rem",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: isMobile
+          ? "5rem, 6rem"
+          : "8rem, 10rem",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div
+        ref={fixedTopRef}
+        className="fixed top-0 left-0 right-0 z-40 bg-white"
+        style={{
+          height: isMobile
+            ? hasAppliedFilters
+              ? "50vh"
+              : "44vh"
+            : hasAppliedFilters
+              ? "43vh"
+              : "33vh",
+          marginBottom: "-1rem",
+        }}
+      >
         <div className="container max-w-[93.75rem] mx-auto">
           <div className="w-full sm:px-6 lg:px-0 lg:w-[96.3%] mx-auto pt-3">
             <PageHeader showSearch />
@@ -458,15 +458,15 @@ useEffect(() => {
         </div>
       </div>
 
-<div
-  id="repository-scroll-container"
-  ref={scrollContainerRef}
-  className="overflow-y-auto"
-  style={{
-    paddingTop: fixedTopHeight,
-    height: "100vh",
-  }}
->
+      <div
+        id="repository-scroll-container"
+        ref={scrollContainerRef}
+        className="overflow-y-auto"
+        style={{
+          paddingTop: fixedTopHeight,
+          height: "100vh",
+        }}
+      >
         <div className="container max-w-[93.75rem] mx-auto">
           <div className="min-h-screen pb-3 flex flex-col align-items-center gap-4">
             <div className="">
@@ -497,18 +497,18 @@ useEffect(() => {
                       selectedPage={Number(searchParams.get("page") || 1) - 1}
                       paginate={(page) => {
 
-  if (scrollContainerRef.current) {
-    scrollContainerRef.current.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }
+                        if (scrollContainerRef.current) {
+                          scrollContainerRef.current.scrollTo({
+                            top: 0,
+                            behavior: "smooth",
+                          });
+                        }
 
-  const params = new URLSearchParams(searchParams);
-  params.set("page", page + 1);
+                        const params = new URLSearchParams(searchParams);
+                        params.set("page", page + 1);
 
-  setSearchParams(params);
-}}
+                        setSearchParams(params);
+                      }}
                     />
                   </div>
                 )}
@@ -520,8 +520,8 @@ useEffect(() => {
         <MitraAiAssistantAside />
 
         <div ref={footerRef}>
-  <Footer />
-</div>
+          <Footer />
+        </div>
       </div>
 
       {showBlockingLoader && (

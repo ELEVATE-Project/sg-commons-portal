@@ -9,7 +9,7 @@ import ROUTES from "../../../url";
 const useDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  
+
 
   const toggleDropdown = useCallback(() => {
     setIsOpen((prev) => !prev);
@@ -56,33 +56,33 @@ const Dropdown = ({
   const { isOpen, toggleDropdown, closeDropdown, dropdownRef } = useDropdown();
   const [showTooltip, setShowTooltip] = useState(false);
   const show = useCallback(() => {
-  if (showTooltipOnHover && tooltipText) {
-    setShowTooltip(true);
-  }
-}, [showTooltipOnHover, tooltipText]);
+    if (showTooltipOnHover && tooltipText) {
+      setShowTooltip(true);
+    }
+  }, [showTooltipOnHover, tooltipText]);
 
-const hide = useCallback(() => {
-  setShowTooltip(false);
-}, []);
-
-    const tooltipTimerRef = useRef(null);
-const tooltipId = useId();
-  useEffect(() => {
-  return () => {
-    clearTimeout(tooltipTimerRef.current);
-  };
-}, []);
-
-useEffect(() => {
-  if (!showTooltipOnHover) {
+  const hide = useCallback(() => {
     setShowTooltip(false);
-  }
-}, [showTooltipOnHover]);
+  }, []);
 
-const isTouchDevice = useMemo(
-  () => window.matchMedia("(pointer: coarse)").matches,
-  []
-);
+  const tooltipTimerRef = useRef(null);
+  const tooltipId = useId();
+  useEffect(() => {
+    return () => {
+      clearTimeout(tooltipTimerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!showTooltipOnHover) {
+      setShowTooltip(false);
+    }
+  }, [showTooltipOnHover]);
+
+  const isTouchDevice = useMemo(
+    () => window.matchMedia("(pointer: coarse)").matches,
+    []
+  );
 
   const handleSelect = useCallback(
     (value) => {
@@ -98,37 +98,37 @@ const isTouchDevice = useMemo(
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
-<div
-  className="relative"
-  onMouseEnter={!isTouchDevice ? show : undefined}
-  onMouseLeave={!isTouchDevice ? hide : undefined}
-  onFocus={show}
-  onBlur={hide}
-  onClick={
-    isTouchDevice
-      ? (e) => {
-          if (!disabled) return;
-          e.preventDefault();
-          show();
-          clearTimeout(window.tooltipTimer);
-          tooltipTimerRef.current = setTimeout(hide, 2500);
+      <div
+        className="relative"
+        onMouseEnter={!isTouchDevice ? show : undefined}
+        onMouseLeave={!isTouchDevice ? hide : undefined}
+        onFocus={show}
+        onBlur={hide}
+        onClick={
+          isTouchDevice
+            ? (e) => {
+              if (!disabled) return;
+              e.preventDefault();
+              show();
+              clearTimeout(window.tooltipTimer);
+              tooltipTimerRef.current = setTimeout(hide, 2500);
+            }
+            : undefined
         }
-      : undefined
-  }
->
+      >
         <button
           type="button"
           aria-disabled={disabled}
           aria-describedby={
-    showTooltip && tooltipText ? tooltipId : undefined
-  }
+            showTooltip && tooltipText ? tooltipId : undefined
+          }
           onClick={(e) => {
-  e.preventDefault();
+            e.preventDefault();
 
-  if (disabled) return;
+            if (disabled) return;
 
-  toggleDropdown();
-}}
+            toggleDropdown();
+          }}
           className={`flex items-center gap-2 px-3 py-2 rounded ${dropdownClassName} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           {renderButton ? renderButton(selectedOption) : <span>{selectedOption?.label ?? ""}</span>}
@@ -138,14 +138,14 @@ const isTouchDevice = useMemo(
         </button>
       </div>
       {showTooltip && tooltipText && (
-  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-[13.75rem] max-w-[90vw] sm:w-[16.25rem] md:w-auto md:max-w-none rounded-md bg-[var(--listing-strong-text)] px-3 py-2 text-xs text-white text-center whitespace-normal md:whitespace-nowrap break-words md:break-normal shadow-lg" id={tooltipId} role="tooltip">
-    {tooltipText}
+        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50 w-[13.75rem] max-w-[90vw] sm:w-[16.25rem] md:w-auto md:max-w-none rounded-md bg-[var(--listing-strong-text)] px-3 py-2 text-xs text-white text-center whitespace-normal md:whitespace-nowrap break-words md:break-normal shadow-lg" id={tooltipId} role="tooltip">
+          {tooltipText}
 
-    <div className="absolute top-full left-1/2 -translate-x-1/2">
-      <div className="border-4 border-transparent border-t-[var(--listing-strong-text)]" />
-    </div>
-  </div>
-)}
+          <div className="absolute top-full left-1/2 -translate-x-1/2">
+            <div className="border-4 border-transparent border-t-[var(--listing-strong-text)]" />
+          </div>
+        </div>
+      )}
       {isOpen && !disabled && (
         <div
           className={`absolute right-0 left-auto sm:left-auto
@@ -184,11 +184,10 @@ const DefaultDropdownItem = ({ option, isSelected, onSelect }) => {
   return (
     <button
       type="button"
-      className={`w-full text-left px-4 py-2 text-sm flex items-center justify-between ${
-        isSelected
+      className={`w-full text-left px-4 py-2 text-sm flex items-center justify-between ${isSelected
           ? "bg-[var(--listing-surface)] text-[var(--listing-secondary)]"
           : "text-[var(--listing-strong-text)] hover:bg-[var(--listing-surface-soft)]"
-      }`}
+        }`}
       onClick={(e) => {
         e.stopPropagation();
         onSelect?.();
@@ -216,7 +215,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const replaceRepositoryQueryState = useRepositoryStore((state) => state.replaceRepositoryQueryState);
   const loadingList = useRepositoryStore((state) => state.loadingList);
   const navigate = useNavigate();
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchResourceText = searchParams.get("searchResourceText");
   const isAISearch = !!searchResourceText?.trim();
@@ -232,10 +231,10 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     }
   };
   const resetPageParam = (params) => {
-  const next = new URLSearchParams(params.toString());
-  next.delete("page"); // page 1 is the default
-  return next;
-};
+    const next = new URLSearchParams(params.toString());
+    next.delete("page"); // page 1 is the default
+    return next;
+  };
   const filters = useRepositoryStore((state) => state.filters);
   const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || categoriesParam));
   // Prevent URL filter sync from rerunning on page-only query changes.
@@ -285,14 +284,14 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   }, [filters, masterList]);
 
   const hasMultipleFilters = useMemo(() => {
-  if (!filters) return false;
+    if (!filters) return false;
 
-  const totalSelected = Object.values(filters).reduce((count, values) => {
-    return count + (Array.isArray(values) ? values.length : 0);
-  }, 0);
+    const totalSelected = Object.values(filters).reduce((count, values) => {
+      return count + (Array.isArray(values) ? values.length : 0);
+    }, 0);
 
-  return totalSelected > 1;
-}, [filters]);
+    return totalSelected > 1;
+  }, [filters]);
 
   // Labels for group chips
   const filterGroupLabels = {
@@ -335,7 +334,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     try {
       safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
       await replaceRepositoryQueryState();
-    } catch (e) {}
+    } catch (e) { }
   };
 
 
@@ -361,24 +360,24 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     { value: 48, label: "48" },
   ];
 
-const handleItemsPerPageChange = (value) => {
-  const container = document.getElementById("repository-scroll-container");
+  const handleItemsPerPageChange = (value) => {
+    const container = document.getElementById("repository-scroll-container");
 
-  if (container) {
-    container.scrollTo({
-      top: 0,
-      behavior: "instant",
-    });
-  }
+    if (container) {
+      container.scrollTo({
+        top: 0,
+        behavior: "instant",
+      });
+    }
 
-  const next = new URLSearchParams(searchParams);
+    const next = new URLSearchParams(searchParams);
 
-  next.delete("page");
-  next.set("limit", value);
+    next.delete("page");
+    next.set("limit", value);
 
-  setSearchParams(next, { replace: true });
-};
-  
+    setSearchParams(next, { replace: true });
+  };
+
   // (Old org-only effect removed; handled by combined org/theme effect above)
   useEffect(() => {
     if (!masterList) {
@@ -416,10 +415,10 @@ const handleItemsPerPageChange = (value) => {
       next.set("page", "1");
       try {
         setSearchParams(next, { replace: true });
-      } catch (e) {}
+      } catch (e) { }
     };
 
-    resolveOrgFromResource().catch(() => {});
+    resolveOrgFromResource().catch(() => { });
 
     return () => {
       cancelled = true;
@@ -508,60 +507,60 @@ const handleItemsPerPageChange = (value) => {
     setSearchParams,
     categoriesParam,
   ]);
-   
+
   return (
     <div
-  className={`relative overflow-visible pt-5 lg:pt-6 w-full scroll-mt-24 z-50`}
-  data-browse-resources
->
+      className={`relative overflow-visible pt-5 lg:pt-6 w-full scroll-mt-24 z-50`}
+      data-browse-resources
+    >
       <div
         className="absolute inset-0 z-0 pointer-events-none"
       />
       <section
-  className={`relative z-10 max-w-[93.75rem] mx-auto`}
->
-<div className="w-full px-4 sm:px-6 lg:px-0 lg:w-[92.5%] mx-auto">
-        {/* ⬇️ EVERYTHING BELOW IS EXACT SAME (no change) */}
+        className={`relative z-10 max-w-[93.75rem] mx-auto`}
+      >
+        <div className="w-full px-4 sm:px-6 lg:px-0 lg:w-[92.5%] mx-auto">
+          {/* ⬇️ EVERYTHING BELOW IS EXACT SAME (no change) */}
 
-<div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
-  <div
-  className="flex items-start justify-between gap-4 mb-3 md:mb-0"
-  data-browse-resources
->
-  <div className="flex-1 min-w-0">
-    <h2 className="text-xl sm:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading capitalize break-words">
-      {hasMultipleFilters
-  ? t("repository.browseAllResources")
-  : selectedSingleLabel
-    ? `${selectedSingleLabel.name} Resources`
-    : t(title ?? "repository.browseResources")}
-    </h2>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
+            <div
+              className="flex items-start justify-between gap-4 mb-3 md:mb-0"
+              data-browse-resources
+            >
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xl sm:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading capitalize break-words">
+                  {hasMultipleFilters
+                    ? t("repository.browseAllResources")
+                    : selectedSingleLabel
+                      ? `${selectedSingleLabel.name} Resources`
+                      : t(title ?? "repository.browseResources")}
+                </h2>
 
-    {!compact && (
-      <p
-        className="
+                {!compact && (
+                  <p
+                    className="
           font-sourceSans
           font-medium
           text-[0.875rem]
           leading-[1.3125rem]
           text-repository-body
         "
-      >
-        {t("repository.browseResourcesDescription")}
-      </p>
-    )}
+                  >
+                    {t("repository.browseResourcesDescription")}
+                  </p>
+                )}
 
-  </div>
+              </div>
 
-  {compact && (
-  <button
-    type="button"
-    onClick={() => {
-  replaceRepositoryQueryState({ repositoryScrollY: 0, sortBy });
-  safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
-  navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
-}}
-    className="
+              {compact && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    replaceRepositoryQueryState({ repositoryScrollY: 0, sortBy });
+                    safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
+                    navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
+                  }}
+                  className="
       flex sm:hidden
       items-center justify-center gap-1
       w-[7.5rem]
@@ -573,54 +572,54 @@ const handleItemsPerPageChange = (value) => {
       transition-all
       flex-shrink-0
     "
-  >
-    <span className="font-medium text-[0.8125rem] leading-[1.25rem] text-white">
-      {t("repository.browseAll")}
-    </span>
+                >
+                  <span className="font-medium text-[0.8125rem] leading-[1.25rem] text-white">
+                    {t("repository.browseAll")}
+                  </span>
 
-    <ArrowRight className="w-4 h-4 text-white" />
-  </button>
-)}
-</div>
+                  <ArrowRight className="w-4 h-4 text-white" />
+                </button>
+              )}
+            </div>
 
 
-  {compact ? (
-    <div className="flex flex-wrap items-center justify-between gap-3 w-full md:w-auto">
-      <Dropdown
-  options={sortOptions}
-  selectedValue={sortBy}
-  onSelect={(value) => {
-    const container = document.getElementById("repository-scroll-container");
+            {compact ? (
+              <div className="flex flex-wrap items-center justify-between gap-3 w-full md:w-auto">
+                <Dropdown
+                  options={sortOptions}
+                  selectedValue={sortBy}
+                  onSelect={(value) => {
+                    const container = document.getElementById("repository-scroll-container");
 
-    if (container) {
-      container.scrollTo({
-        top: 0,
-        behavior: "instant",
-      });
-    }
+                    if (container) {
+                      container.scrollTo({
+                        top: 0,
+                        behavior: "instant",
+                      });
+                    }
 
-    setSortBy(value);
-  }}
-  renderButton={(selected) => (
-  <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem] flex items-center">
-    <span className="font-normal text-repository-textPrimary">
-      {t("repository.sortByLabel")}:  
-    </span>{" "}
-    <span className="ml-2 font-bold text-repository-textPrimary">
-      {selected?.label || t("common.select")}
-    </span>
-  </span>
-)}
-/>
+                    setSortBy(value);
+                  }}
+                  renderButton={(selected) => (
+                    <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem] flex items-center">
+                      <span className="font-normal text-repository-textPrimary">
+                        {t("repository.sortByLabel")}:
+                      </span>{" "}
+                      <span className="ml-2 font-bold text-repository-textPrimary">
+                        {selected?.label || t("common.select")}
+                      </span>
+                    </span>
+                  )}
+                />
 
-      <button
-  type="button"
-  onClick={() => {
-  replaceRepositoryQueryState({ repositoryScrollY: 0, sortBy });
-  safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
-  navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
-}}
-  className="
+                <button
+                  type="button"
+                  onClick={() => {
+                    replaceRepositoryQueryState({ repositoryScrollY: 0, sortBy });
+                    safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
+                    navigate(ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST);
+                  }}
+                  className="
   hidden sm:flex
   items-center justify-center gap-1
   w-[7.5rem]
@@ -632,124 +631,122 @@ const handleItemsPerPageChange = (value) => {
   transition-all
   flex-shrink-0
 "
->
-  <span
-    className="
+                >
+                  <span
+                    className="
       font-medium
       text-[0.8125rem]
       leading-[1.25rem]
       text-white
     "
-  >
-    {t("repository.browseAll")}
-  </span>
+                  >
+                    {t("repository.browseAll")}
+                  </span>
 
-  <ArrowRight className="w-4 h-4 text-white" />
-</button>
-    </div>
-  ) : (
-    <div className="flex flex-col gap-4 w-full lg:w-auto lg:flex-row lg:items-center lg:flex-nowrap lg:shrink-0">
-      <div className="flex flex-wrap items-center justify-between gap-3 w-full lg:flex-nowrap lg:w-auto lg:justify-start lg:gap-6 lg:shrink-0">
-        <div className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
-  <span className="font-bold text-repository-textPrimary">
-    {mediaCount}
-  </span>{" "}
-  <span className="font-normal text-repository-textSecondary">
-    {t("repository.resultsCount_other")}
-  </span>
-</div>
+                  <ArrowRight className="w-4 h-4 text-white" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4 w-full lg:w-auto lg:flex-row lg:items-center lg:flex-nowrap lg:shrink-0">
+                <div className="flex flex-wrap items-center justify-between gap-3 w-full lg:flex-nowrap lg:w-auto lg:justify-start lg:gap-6 lg:shrink-0">
+                  <div className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
+                    <span className="font-bold text-repository-textPrimary">
+                      {mediaCount}
+                    </span>{" "}
+                    <span className="font-normal text-repository-textSecondary">
+                      {t("repository.resultsCount_other")}
+                    </span>
+                  </div>
 
-        <Dropdown
-          options={sortOptions}
-          selectedValue={sortBy}
-          onSelect={(value) => {
-  const container = document.getElementById("repository-scroll-container");
+                  <Dropdown
+                    options={sortOptions}
+                    selectedValue={sortBy}
+                    onSelect={(value) => {
+                      const container = document.getElementById("repository-scroll-container");
 
-  if (container) {
-    container.scrollTo({
-      top: 0,
-      behavior: "instant",
-    });
-  }
+                      if (container) {
+                        container.scrollTo({
+                          top: 0,
+                          behavior: "instant",
+                        });
+                      }
 
-  setSortBy(value);
-}}
-  showTooltipOnHover={isAISearch}
-  tooltipText={t("sortDisabledTooltipText")}
- renderButton={(selected) => (
-  <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
-  
-    <span className="font-normal text-repository-textSecondary">
-      {t("repository.sortByLabel")}:
-    </span>{" "}
-    <span className="font-bold text-repository-textPrimary">
-      {selected?.label || t("common.select")}
-    </span>
-  </span>
-)}
-          disabled={isAISearch || !hasResults}
-        />
-      </div>
+                      setSortBy(value);
+                    }}
+                    showTooltipOnHover={isAISearch}
+                    tooltipText={t("sortDisabledTooltipText")}
+                    renderButton={(selected) => (
+                      <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem]">
 
-<div className="flex items-center justify-between w-full lg:w-auto lg:flex-nowrap lg:justify-end lg:gap-6 lg:shrink-0">
+                        <span className="font-normal text-repository-textSecondary">
+                          {t("repository.sortByLabel")}:
+                        </span>{" "}
+                        <span className="font-bold text-repository-textPrimary">
+                          {selected?.label || t("common.select")}
+                        </span>
+                      </span>
+                    )}
+                    disabled={isAISearch || !hasResults}
+                  />
+                </div>
 
-  {/* Left */}
-  <div className="flex items-center gap-3 shrink-0">
-    <button
-      type="button"
-      disabled={!hasResults}
-      onClick={() => setViewMode("grid")}
-      className={`
+                <div className="flex items-center justify-between w-full lg:w-auto lg:flex-nowrap lg:justify-end lg:gap-6 lg:shrink-0">
+
+                  {/* Left */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <button
+                      type="button"
+                      disabled={!hasResults}
+                      onClick={() => setViewMode("grid")}
+                      className={`
         flex items-center justify-center
         w-[1.7556rem]
         h-[1.8656rem]
         rounded-[0.4389rem]
         border
         transition-all
-        ${
-          viewMode === "grid"
-            ? "bg-repository-primary border-repository-primary text-white"
-            : "bg-white border-repository-controlBorder text-repository-controlIcon"
-        }
+        ${viewMode === "grid"
+                          ? "bg-repository-primary border-repository-primary text-white"
+                          : "bg-white border-repository-controlBorder text-repository-controlIcon"
+                        }
         ${!hasResults ? "opacity-50 cursor-not-allowed" : ""}
       `}
-    >
-      <Grid className="w-[0.875rem] h-[0.875rem]" />
-    </button>
+                    >
+                      <Grid className="w-[0.875rem] h-[0.875rem]" />
+                    </button>
 
-    <button
-      type="button"
-      disabled={!hasResults}
-      onClick={() => setViewMode("list")}
-      className={`
+                    <button
+                      type="button"
+                      disabled={!hasResults}
+                      onClick={() => setViewMode("list")}
+                      className={`
         flex items-center justify-center
         w-[1.7556rem]
         h-[1.8656rem]
         rounded-[0.4389rem]
         border
         transition-all
-        ${
-          viewMode === "list"
-            ? "bg-repository-primary border-repository-primary text-white"
-            : "bg-white border-repository-controlBorder text-repository-controlIcon"
-        }
+        ${viewMode === "list"
+                          ? "bg-repository-primary border-repository-primary text-white"
+                          : "bg-white border-repository-controlBorder text-repository-controlIcon"
+                        }
         ${!hasResults ? "opacity-50 cursor-not-allowed" : ""}
       `}
-    >
-      <List className="w-[0.875rem] h-[0.875rem]" />
-    </button>
-  </div>
+                    >
+                      <List className="w-[0.875rem] h-[0.875rem]" />
+                    </button>
+                  </div>
 
-  {/* Right */}
-  <div className="flex items-center gap-3 shrink-0">
-    <Dropdown
-      options={perPageOptions}
-      disabled={!hasResults}
-      selectedValue={itemsPerPage}
-      onSelect={(value) => {
-        handleItemsPerPageChange(value);
-      }}
-      className="
+                  {/* Right */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <Dropdown
+                      options={perPageOptions}
+                      disabled={!hasResults}
+                      selectedValue={itemsPerPage}
+                      onSelect={(value) => {
+                        handleItemsPerPageChange(value);
+                      }}
+                      className="
         shrink-0
         [&>div>button]:min-w-[5.5rem]
         [&>div>button]:w-auto
@@ -760,24 +757,24 @@ const handleItemsPerPageChange = (value) => {
         [&>div>button]:bg-white
         [&>div>button]:px-3
       "
-      dropdownClassName="w-[5.5rem]"
-      renderButton={(selected) => (
-        <span className="font-inter font-normal text-[0.7682rem] leading-[1.125rem] text-repository-textPrimary flex items-center">
-          <span className="whitespace-nowrap">
-            {selected?.label || "6"} {t("repository.items")}
-          </span>
-        </span>
-      )}
-    />
+                      dropdownClassName="w-[5.5rem]"
+                      renderButton={(selected) => (
+                        <span className="font-inter font-normal text-[0.7682rem] leading-[1.125rem] text-repository-textPrimary flex items-center">
+                          <span className="whitespace-nowrap">
+                            {selected?.label || "6"} {t("repository.items")}
+                          </span>
+                        </span>
+                      )}
+                    />
 
-    <div className="shrink-0">
-      <Filters />
-    </div>
-  </div>
-</div>
-    </div>
-  )}
-</div>
+                    <div className="shrink-0">
+                      <Filters />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Group chips row (Organization, Theme, etc.) */}
           <div className="mt-6 flex w-full items-center gap-3 sm:mt-8 sm:mb-4 sm:gap-4">
@@ -863,7 +860,7 @@ const handleItemsPerPageChange = (value) => {
             )}
           </div>
 
-</div>
+        </div>
       </section>
     </div>
   );
