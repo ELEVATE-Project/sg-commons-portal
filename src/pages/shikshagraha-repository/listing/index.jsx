@@ -68,12 +68,18 @@ export default function RepositoryPage() {
   const [headerOffset, setHeaderOffset] = useState(0);
   const scrollContainerRef = useRef(null);
   const restoreRafRef = useRef(null);
+  const [hideBrowseHeader, setHideBrowseHeader] = useState(false);
 
   useEffect(() => {
     const node = fixedTopRef.current;
     if (!node) return;
 
-    const updateHeight = () => setFixedTopHeight(node.offsetHeight);
+    const updateHeight = () => {
+      requestAnimationFrame(() => {
+        setFixedTopHeight(node.offsetHeight);
+      });
+    };
+
     updateHeight();
 
     const resizeObserver = new ResizeObserver(updateHeight);
@@ -85,8 +91,24 @@ export default function RepositoryPage() {
       resizeObserver.disconnect();
       window.removeEventListener("resize", updateHeight);
     };
-  }, [isMobile, viewMode, mediaList, showBlockingLoader]);
-  // ----------------------------------------------------------------------
+  }, [
+    isMobile,
+    viewMode,
+    mediaList,
+    showBlockingLoader,
+    hasAppliedFilters,
+    hideBrowseHeader
+  ]);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (fixedTopRef.current) {
+          setFixedTopHeight(fixedTopRef.current.offsetHeight);
+        }
+      });
+    });
+  }, [hasAppliedFilters]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -414,6 +436,39 @@ export default function RepositoryPage() {
     }
   }, [mediaList, q, loadingList, navigationType]);
 
+  useEffect(() => {
+    if (!isMobile) {
+      setHideBrowseHeader(false);
+      return;
+    }
+
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let lastScrollTop = 0;
+
+    const HIDE_AT = 80;
+    const SHOW_AT = 20;
+
+    const handleScroll = () => {
+      const current = container.scrollTop;
+
+      if (current <= SHOW_AT) {
+        setHideBrowseHeader(false);
+      } else if (current >= HIDE_AT && current > lastScrollTop) {
+        setHideBrowseHeader(true);
+      }
+
+      lastScrollTop = current;
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, [isMobile]);
+
   return (
     <div
       className="bg-white relative listing-pages overflow-x-hidden"
@@ -432,19 +487,21 @@ export default function RepositoryPage() {
     >
       <div
         ref={fixedTopRef}
-        className="fixed top-0 left-0 right-0 z-40 bg-white"
+        className="fixed top-0 left-0 right-0 z-40 bg-white transition-transform duration-150"
         style={{
-          height: isMobile
-            ? hasAppliedFilters
-              ? "50vh"
-              : "44vh"
-            : hasAppliedFilters
-              ? "43vh"
-              : "33vh",
-          marginBottom: "-1rem",
+          transform: `translateY(-${headerOffset}px)`,
         }}
       >
-        <div className="container max-w-[93.75rem] mx-auto">
+        <div
+          className={`container max-w-[93.75rem] mx-auto ${hasAppliedFilters
+            ? isMobile && hideBrowseHeader
+              ? "-mb-2"
+              : "-mb-2"
+            : isMobile && hideBrowseHeader
+              ? "-mb-5"
+              : "-mb-7"
+            }`}
+        >
           <div className="w-full sm:px-6 lg:px-0 lg:w-[96.3%] mx-auto pt-3">
             <PageHeader showSearch />
           </div>
@@ -454,6 +511,7 @@ export default function RepositoryPage() {
             title="repository.browseResources"
             viewMode={viewMode}
             setViewMode={handleViewModeChange}
+            hideBrowseHeader={hideBrowseHeader}
           />
         </div>
       </div>
