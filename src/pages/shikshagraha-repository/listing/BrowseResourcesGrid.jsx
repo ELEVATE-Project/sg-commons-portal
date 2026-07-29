@@ -7,7 +7,7 @@ export default function BrowseResourcesGrid({
   displayedResources,
 }) {
   return (
-    <div className="relative overflow-hidden mb-5">
+    <div className="relative overflow-hidden mb-2">
       <div className="absolute inset-0 z-0 pointer-events-none" />
       <div className="relative z-10">
         <div className="flex gap-0 md:!gap-6 items-stretch justify-start md:justify-center">

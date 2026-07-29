@@ -185,8 +185,8 @@ const DefaultDropdownItem = ({ option, isSelected, onSelect }) => {
     <button
       type="button"
       className={`w-full text-left px-4 py-2 text-sm flex items-center justify-between ${isSelected
-          ? "bg-[var(--listing-surface)] text-[var(--listing-secondary)]"
-          : "text-[var(--listing-strong-text)] hover:bg-[var(--listing-surface-soft)]"
+        ? "bg-[var(--listing-surface)] text-[var(--listing-secondary)]"
+        : "text-[var(--listing-strong-text)] hover:bg-[var(--listing-surface-soft)]"
         }`}
       onClick={(e) => {
         e.stopPropagation();
@@ -201,7 +201,7 @@ const DefaultDropdownItem = ({ option, isSelected, onSelect }) => {
   );
 };
 
-export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false, cardsSpacing = false }) {
+export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false, cardsSpacing = false, hideBrowseHeader = false }) {
   const pagination = useRepositoryStore((state) => state.pagination);
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
   const sortBy = useRepositoryStore((state) => state.sortBy);
@@ -331,13 +331,30 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   }, [setFilters]);
 
   const handleClearAll = async () => {
+    const container = document.getElementById("repository-scroll-container");
+
+    if (container) {
+      container.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+
     try {
-      safeSetSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
-      await replaceRepositoryQueryState();
-    } catch (e) { }
+      const next = resetPageParam(new URLSearchParams());
+      if (pagination?.limit) {
+        next.set("limit", pagination.limit);
+      }
+
+      safeSetSearchParams(next, { replace: true });
+
+      await replaceRepositoryQueryState({
+        filters: {},
+        pagination: { limit: pagination.limit, offset: 0 },
+      });
+    } catch (e) {
+    }
   };
-
-
 
   useEffect(() => {
     if (!filtersInitialized && !loadingList) setFiltersInitialized(true);
@@ -510,7 +527,10 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
 
   return (
     <div
-      className={`relative overflow-visible pt-5 lg:pt-6 w-full scroll-mt-24 z-50`}
+      className={`
+    relative overflow-visible w-full scroll-mt-24 z-50
+    ${hideBrowseHeader ? "pt-0 lg:pt-0" : "pt-5 lg:pt-6"}
+  `}
       data-browse-resources
     >
       <div
@@ -522,10 +542,22 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
         <div className="w-full px-4 sm:px-6 lg:px-0 lg:w-[92.5%] mx-auto">
           {/* ⬇️ EVERYTHING BELOW IS EXACT SAME (no change) */}
 
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
+          <div
+            className={`
+    flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between
+    ${hideBrowseHeader ? "mb-2" : "mb-6"}
+  `}
+          >
             <div
-              className="flex items-start justify-between gap-4 mb-3 md:mb-0"
               data-browse-resources
+              className={`
+    flex items-start justify-between gap-4
+    transition-all duration-300 overflow-hidden
+    ${hideBrowseHeader
+                  ? "max-h-0 opacity-0 mb-0 py-0"
+                  : "max-h-[12.5rem] opacity-100 mb-3 md:mb-0"
+                }
+  `}
             >
               <div className="flex-1 min-w-0">
                 <h2 className="text-xl sm:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading capitalize break-words">
@@ -777,7 +809,12 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
           </div>
 
           {/* Group chips row (Organization, Theme, etc.) */}
-          <div className="mt-6 flex w-full items-center gap-3 sm:mt-8 sm:mb-4 sm:gap-4">
+          <div
+            className={`
+    flex w-full items-center gap-3 sm:gap-4
+    ${hideBrowseHeader ? "mt-3 mb-4" : "mt-6 mb-4 sm:mt-2"}
+  `}
+          >
             <div className="flex-1 overflow-x-auto">
               <div className="flex w-max items-center gap-3 pr-4 sm:gap-6">
                 {filterGroupChips.map((chip) => (
