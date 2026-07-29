@@ -437,7 +437,10 @@ export default function RepositoryPage() {
   }, [mediaList, q, loadingList, navigationType]);
 
   useEffect(() => {
-    if (!isMobile) return;
+    if (!isMobile) {
+      setHideBrowseHeader(false);
+      return;
+    }
 
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -491,12 +494,12 @@ export default function RepositoryPage() {
       >
         <div
           className={`container max-w-[93.75rem] mx-auto ${hasAppliedFilters
-              ? isMobile && hideBrowseHeader
-                ? "-mb-2"
-                : "-mb-2"
-              : isMobile && hideBrowseHeader
-                ? "-mb-5"
-                : "-mb-7"
+            ? isMobile && hideBrowseHeader
+              ? "-mb-2"
+              : "-mb-2"
+            : isMobile && hideBrowseHeader
+              ? "-mb-5"
+              : "-mb-7"
             }`}
         >
           <div className="w-full sm:px-6 lg:px-0 lg:w-[96.3%] mx-auto pt-3">

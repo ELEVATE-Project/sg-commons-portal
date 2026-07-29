@@ -19,6 +19,7 @@ let _inFlightPromise = null;
 const _inFlightQueryMap = {};
 const _recentQueryCache = {};
 const _inFlightDetailMap = {};
+let _masterListInFlight = null;
 
 const DEFAULT_PAGINATION = {
   limit: 6,
@@ -44,6 +45,7 @@ export const useRepositoryStore = create((set, get) => ({
   sortBy: DEFAULT_SORT_BY,
   repositoryScrollY: 0,
   lastOpenedResourceId: null,
+  listError: null,
 
 
   setLastOpenedResourceId: (id) => {
@@ -71,9 +73,13 @@ clearLastOpenedResourceId: () => {
       }
       _requestInFlight = true;
       set({
-  loadingList: true,
-  mediaList: [],
-});
+            loadingList: true,
+            mediaList: [],
+            mediaCount: 0,
+            mediaNext: null,
+            mediaPrevious: null,
+            listError: null,
+          });
       _inFlightPromise = (async () => {
         try {
           const { filters, pagination, sortBy, q } = get();
@@ -143,6 +149,13 @@ clearLastOpenedResourceId: () => {
             
           } else {
             console.error("Error fetching media list:", error);
+            set({
+                mediaList: [],
+                mediaCount: 0,
+                mediaNext: null,
+                mediaPrevious: null,
+                listError: error?.message || "Failed to load resources",
+              });
           }
           throw error;
         } finally {
@@ -234,56 +247,64 @@ clearLastOpenedResourceId: () => {
     }
   },
 
-  /**
-   * Fetch master list data for filters
-   */
   fetchMasterList: async () => {
+    if (get().masterList) return get().masterList;
+    if (_masterListInFlight) return _masterListInFlight;
+
     set({ loadingMaster: true });
-    try {
-      const master = await getMasterList();
 
-      const dropdown_meta = [
-        {
-          key: "organizations",
-          label: "Organization",
-          options: master?.organizations?.map((x) => ({
-            value:  x?.slug,
-            rawValue: x?.slug,
-            display: x?.name,
-          })),
-        },
-        {
-          key: "tags",
-          label: "Categories",
-          options: master?.tags?.map((x) => ({
-            value: x?.name,
-            display: x?.name,
-          })),
-        },
-        {
-          key: "resource_types",
-          label: "Resource Type",
-          options: master?.resource_types?.map((x) => ({
-            value: x?.value,
-            display: x?.display,
-          })),
-        },
-        {
-          key: "media_types",
-          label: "File Type",
-          options: master?.media_types?.map((x) => ({
-            value: x?.value,
-            display: x?.display,
-          })),
-        },
-      ];
+    _masterListInFlight = (async () => {
+      try {
+        const master = await getMasterList();
 
-      set({ masterList: dropdown_meta });
-    } catch (error) {
-      console.error("Error fetching master list:", error);
-    } finally {
-      set({ loadingMaster: false });
-    }
+        const dropdown_meta = [
+          {
+            key: "organizations",
+            label: "Organization",
+            options: master?.organizations?.map((x) => ({
+              value: x?.slug,
+              rawValue: x?.slug,
+              display: x?.name,
+            })),
+          },
+          {
+            key: "tags",
+            label: "Categories",
+            options: master?.tags?.map((x) => ({
+              value: x?.name,
+              display: x?.name,
+            })),
+          },
+          {
+            key: "resource_types",
+            label: "Resource Type",
+            options: master?.resource_types?.map((x) => ({
+              value: x?.value,
+              display: x?.display,
+            })),
+          },
+          {
+            key: "media_types",
+            label: "File Type",
+            options: master?.media_types?.map((x) => ({
+              value: x?.value,
+              display: x?.display,
+            })),
+          },
+        ];
+
+        set({ masterList: dropdown_meta });
+        return dropdown_meta;
+      } catch (error) {
+        console.error("Error fetching master list:", error);
+        throw error;
+      } finally {
+        set({ loadingMaster: false });
+        _masterListInFlight = null;
+      }
+    })();
+
+    return _masterListInFlight;
   },
 
   /**

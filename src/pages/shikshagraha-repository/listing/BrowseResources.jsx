@@ -201,7 +201,7 @@ const DefaultDropdownItem = ({ option, isSelected, onSelect }) => {
   );
 };
 
-export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false, cardsSpacing = false, hideBrowseHeader = false }) {
+export default function BrowseResources({ resources, viewMode, setViewMode, title, compact = false, hideBrowseHeader = false }) {
   const pagination = useRepositoryStore((state) => state.pagination);
   const mediaCount = useRepositoryStore((state) => state.mediaCount);
   const sortBy = useRepositoryStore((state) => state.sortBy);
@@ -341,18 +341,28 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     }
 
     try {
+      await replaceRepositoryQueryState({
+        filters: {},
+        pagination: {
+          limit: pagination.limit,
+          offset: 0,
+        },
+        sortBy,
+      });
+
       const next = resetPageParam(new URLSearchParams());
+
       if (pagination?.limit) {
         next.set("limit", pagination.limit);
       }
 
-      safeSetSearchParams(next, { replace: true });
+      if (sortBy) {
+        next.set("sort", sortBy);
+      }
 
-      await replaceRepositoryQueryState({
-        filters: {},
-        pagination: { limit: pagination.limit, offset: 0 },
-      });
-    } catch (e) {
+      safeSetSearchParams(next, { replace: true });
+    } catch (error) {
+      console.error("Failed to clear filters:", error);
     }
   };
 
@@ -525,6 +535,14 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     categoriesParam,
   ]);
 
+  useEffect(() => {
+    const sort = searchParams.get("sort");
+
+    if (sort && sort !== sortBy) {
+      setSortBy(sort);
+    }
+  }, [searchParams, sortBy, setSortBy]);
+
   return (
     <div
       className={`
@@ -631,6 +649,12 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
                     }
 
                     setSortBy(value);
+
+                    const next = new URLSearchParams(searchParams);
+                    next.set("sort", value);
+                    next.delete("page");
+
+                    setSearchParams(next, { replace: true });
                   }}
                   renderButton={(selected) => (
                     <span className="whitespace-nowrap font-inter text-[0.75rem] leading-[1.125rem] flex items-center">
@@ -704,6 +728,12 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
                       }
 
                       setSortBy(value);
+
+                      const next = new URLSearchParams(searchParams);
+                      next.set("sort", value);
+                      next.delete("page");
+
+                      setSearchParams(next, { replace: true });
                     }}
                     showTooltipOnHover={isAISearch}
                     tooltipText={t("sortDisabledTooltipText")}
