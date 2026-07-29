@@ -6,7 +6,8 @@ import {
   searchSimilarMedia,
   getMasterList,
 } from "./../repository-api/index";
-
+import i18n from "../../../i18n";
+import { REPOSITORY_FILTER_KEYS } from "../../../constants/repositoryConstants"; // adjust path
 /**
  * Zustand store for Media Repository
  * Manages media list, single media detail, filters, pagination, loading states.
@@ -259,8 +260,8 @@ clearLastOpenedResourceId: () => {
 
         const dropdown_meta = [
           {
-            key: "organizations",
-            label: "Organization",
+            key: REPOSITORY_FILTER_KEYS.ORGANIZATION,
+            label: i18n.t("repository.organization"),
             options: master?.organizations?.map((x) => ({
               value: x?.slug,
               rawValue: x?.slug,
@@ -268,24 +269,24 @@ clearLastOpenedResourceId: () => {
             })),
           },
           {
-            key: "tags",
-            label: "Categories",
+            key: REPOSITORY_FILTER_KEYS.TAGS,
+            label: i18n.t("repository.categories"),
             options: master?.tags?.map((x) => ({
               value: x?.name,
               display: x?.name,
             })),
           },
           {
-            key: "resource_types",
-            label: "Resource Type",
+            key: REPOSITORY_FILTER_KEYS.RESOURCE_TYPES,
+            label: i18n.t("repository.resourceType"),
             options: master?.resource_types?.map((x) => ({
               value: x?.value,
               display: x?.display,
             })),
           },
           {
-            key: "media_types",
-            label: "File Type",
+            key: REPOSITORY_FILTER_KEYS.MEDIA_TYPES,
+            label: i18n.t("repository.fileType"),
             options: master?.media_types?.map((x) => ({
               value: x?.value,
               display: x?.display,

@@ -70,7 +70,7 @@
         "title": "Objectives",
         "enterObjective": "Enter your objective",
         "selectObjective": "Please select one or more of these. You can also add your objective to this list.",
-        "theseAreSomeObjectives":  "Here are some objectives that can help address your challenge.",
+        "theseAreSomeObjectives": "Here are some objectives that can help address your challenge.",
         "emptyObjective": "Please enter an objective!",
         "enterObjectivePlaceholder": "Enter objectives",
         "goBack": "Go back to Objectives List",
@@ -175,8 +175,7 @@
     "guestPopUpChanges": "<div class='text-class'>\n   Are you sure you want to leave this conversation?\n    All your progress will be lost\n</div>",
     "popUpChanges": "<div class='text-class'>\n    You've been inactive for a while.\n    Do you want to continue?\n</div>",
     "confirmChanges": "Yes",
-    "denyButton": "No"
-    ,
+    "denyButton": "No",
     "repository": {
         "browseResources": "Browse Resources",
         "browseAllResources": "Browse All Resources",
@@ -238,24 +237,26 @@
             "description": "A curated knowledge repository of solutions, resources and assets for education leaders working to strengthen India's public schools.",
             "scrollDown": "Scroll down"
         },
-        "invalidDownloadURL": "Invalid download URL"
+        "invalidDownloadURL": "Invalid download URL",
+        "categories": "Categories",
+        "resourceType": "Resource Type"
     },
-    "search":{
-                "searchRotatingTexts": [
-  "content across Commons",
-  "trending resources",
-  "any education resources"
-], 
-"searchBarContent": "AI Search for",
-"recording": "Recording... {{seconds}}s",
-  "convertingVoice": "Converting voice to text...",
-  "clearSearch": "Clear search",
-  "clearIconAlt": "Clear",
-  "searchIconAlt": "Search",
-  "microphoneAlt": "Microphone",
-  "sendIconAlt": "Send",
-  "startVoiceSearch": "Start voice search",
-  "stopVoiceSearch": "Stop voice search",
-  "searchResources": "Search resources"
+    "search": {
+        "searchRotatingTexts": [
+            "content across Commons",
+            "trending resources",
+            "any education resources"
+        ],
+        "searchBarContent": "AI Search for",
+        "recording": "Recording... {{seconds}}s",
+        "convertingVoice": "Converting voice to text...",
+        "clearSearch": "Clear search",
+        "clearIconAlt": "Clear",
+        "searchIconAlt": "Search",
+        "microphoneAlt": "Microphone",
+        "sendIconAlt": "Send",
+        "startVoiceSearch": "Start voice search",
+        "stopVoiceSearch": "Stop voice search",
+        "searchResources": "Search resources"
     }
 }

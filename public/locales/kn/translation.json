@@ -72,15 +72,17 @@
         "publishedOn": "ರಂದು ಪ್ರಕಟಿಸಲಾಗಿದೆ",
         "viewAllResources": "ಎಲ್ಲಾ ಸಂಪನ್ಮೂಲಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
         "filters": {
-  "open": "ಫಿಲ್ಟರ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ",
-  "title": "ಫಿಲ್ಟರ್‌ಗಳು",
-  "clearAll": "ಎಲ್ಲವನ್ನೂ ತೆರವುಗೊಳಿಸಿ",
-  "apply": "ಅನ್ವಯಿಸಿ",
-  "selectAll": "ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ",
-  "deselectAll": "ಎಲ್ಲ ಆಯ್ಕೆಯನ್ನು ತೆಗೆದುಹಾಕಿ",
-  "noOptionsFound": "ಯಾವುದೇ ಆಯ್ಕೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ"
-},
+            "open": "ಫಿಲ್ಟರ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ",
+            "title": "ಫಿಲ್ಟರ್‌ಗಳು",
+            "clearAll": "ಎಲ್ಲವನ್ನೂ ತೆರವುಗೊಳಿಸಿ",
+            "apply": "ಅನ್ವಯಿಸಿ",
+            "selectAll": "ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ",
+            "deselectAll": "ಎಲ್ಲ ಆಯ್ಕೆಯನ್ನು ತೆಗೆದುಹಾಕಿ",
+            "noOptionsFound": "ಯಾವುದೇ ಆಯ್ಕೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ"
+        },
         "invalidDownloadURL": "ಅಮಾನ್ಯ ಡೌನ್ಲೋಡ್ URL",
+        "categories": "ವರ್ಗಗಳು",
+        "resourceType": "ಸಂಪನ್ಮೂಲದ ಪ್ರಕಾರ",
         "hero": {
             "tags": {
                 "openAccess": "ಒಪನ್-ಆಕ್ಸೆಸ್",
@@ -91,22 +93,22 @@
             "scrollDown": "ಕೆಳಗೆ ಸ್ಕ್ರೋಲ್ ಮಾಡಿ"
         }
     },
-    "search":{
-                "searchRotatingTexts": [
-  "ಕಾಮನ್ಸ್‌ನಾದ್ಯಂತ ವಿಷಯ",
-  "ಟ್ರೆಂಡಿಂಗ್ ಸಂಪನ್ಮೂಲಗಳು",
-  "ಯಾವುದೇ ಶಿಕ್ಷಣ ಸಂಪನ್ಮೂಲಗಳು"
-],
-"searchBarContent": "AI ಹುಡುಕಾಟ",
-"recording": "ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... {{seconds}}ಸೆ",
-"convertingVoice": "ಧ್ವನಿಯನ್ನು ಪಠ್ಯಕ್ಕೆ ಪರಿವರ್ತಿಸಲಾಗುತ್ತಿದೆ...",
-"clearSearch": "ಹುಡುಕಾಟವನ್ನು ತೆರವುಗೊಳಿಸಿ",
-"clearIconAlt": "ತೆರವುಗೊಳಿಸಿ",
-"searchIconAlt": "ಹುಡುಕಿ",
-"microphoneAlt": "ಮೈಕ್ರೋಫೋನ್",
-"sendIconAlt": "ಕಳುಹಿಸಿ",
-"startVoiceSearch": "ಧ್ವನಿ ಹುಡುಕಾಟವನ್ನು ಪ್ರಾರಂಭಿಸಿ",
-"stopVoiceSearch": "ಧ್ವನಿ ಹುಡುಕಾಟವನ್ನು ನಿಲ್ಲಿಸಿ",
-"searchResources": "ಸಂಪನ್ಮೂಲಗಳನ್ನು ಹುಡುಕಿ"
+    "search": {
+        "searchRotatingTexts": [
+            "ಕಾಮನ್ಸ್‌ನಾದ್ಯಂತ ವಿಷಯ",
+            "ಟ್ರೆಂಡಿಂಗ್ ಸಂಪನ್ಮೂಲಗಳು",
+            "ಯಾವುದೇ ಶಿಕ್ಷಣ ಸಂಪನ್ಮೂಲಗಳು"
+        ],
+        "searchBarContent": "AI ಹುಡುಕಾಟ",
+        "recording": "ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... {{seconds}}ಸೆ",
+        "convertingVoice": "ಧ್ವನಿಯನ್ನು ಪಠ್ಯಕ್ಕೆ ಪರಿವರ್ತಿಸಲಾಗುತ್ತಿದೆ...",
+        "clearSearch": "ಹುಡುಕಾಟವನ್ನು ತೆರವುಗೊಳಿಸಿ",
+        "clearIconAlt": "ತೆರವುಗೊಳಿಸಿ",
+        "searchIconAlt": "ಹುಡುಕಿ",
+        "microphoneAlt": "ಮೈಕ್ರೋಫೋನ್",
+        "sendIconAlt": "ಕಳುಹಿಸಿ",
+        "startVoiceSearch": "ಧ್ವನಿ ಹುಡುಕಾಟವನ್ನು ಪ್ರಾರಂಭಿಸಿ",
+        "stopVoiceSearch": "ಧ್ವನಿ ಹುಡುಕಾಟವನ್ನು ನಿಲ್ಲಿಸಿ",
+        "searchResources": "ಸಂಪನ್ಮೂಲಗಳನ್ನು ಹುಡುಕಿ"
     }
 }

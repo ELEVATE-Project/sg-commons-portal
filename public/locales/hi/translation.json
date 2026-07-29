@@ -72,14 +72,14 @@
         "publishedOn": "प्रकाशित",
         "viewAllResources": "सभी संसाधन देखें",
         "filters": {
-  "open": "फ़िल्टर खोलें",
-  "title": "फ़िल्टर",
-  "clearAll": "सभी साफ़ करें",
-  "apply": "लागू करें",
-  "selectAll": "सभी चुनें",
-  "deselectAll": "सभी का चयन हटाएँ",
-  "noOptionsFound": "कोई विकल्प नहीं मिला"
-},
+            "open": "फ़िल्टर खोलें",
+            "title": "फ़िल्टर",
+            "clearAll": "सभी साफ़ करें",
+            "apply": "लागू करें",
+            "selectAll": "सभी चुनें",
+            "deselectAll": "सभी का चयन हटाएँ",
+            "noOptionsFound": "कोई विकल्प नहीं मिला"
+        },
         "hero": {
             "tags": {
                 "openAccess": "ओपन-एक्सेस",
@@ -89,24 +89,26 @@
             "description": "शिक्षा नेताओं के लिए समाधानों, संसाधनों और परिसंपत्तियों का एक चयनित ज्ञान भंडार जो भारत के सार्वजनिक स्कूलों को मजबूत करने के लिए काम करता है।",
             "scrollDown": "नीचे स्क्रोल करें"
         },
-        "invalidDownloadURL": "अमान्य डाउनलोड URL"
+        "invalidDownloadURL": "अमान्य डाउनलोड URL",
+        "categories": "श्रेणियाँ",
+        "resourceType": "संसाधन का प्रकार"
     },
-    "search":{
-                "searchRotatingTexts": [
-  "कॉमन्स पर मौजूद कंटेंट",
-  "ट्रेंडिंग रिसोर्स",
-  "कोई भी शैक्षिक संसाधन"
-],
-"searchBarContent": "AI सर्च",
-"recording": "रिकॉर्डिंग... {{seconds}}से",
-"convertingVoice": "आवाज़ को टेक्स्ट में बदला जा रहा है...",
-"clearSearch": "खोज साफ़ करें",
-"clearIconAlt": "साफ़ करें",
-"searchIconAlt": "खोजें",
-"microphoneAlt": "माइक्रोफ़ोन",
-"sendIconAlt": "भेजें",
-"startVoiceSearch": "वॉइस खोज शुरू करें",
-"stopVoiceSearch": "वॉइस खोज बंद करें",
-"searchResources": "संसाधन खोजें"
+    "search": {
+        "searchRotatingTexts": [
+            "कॉमन्स पर मौजूद कंटेंट",
+            "ट्रेंडिंग रिसोर्स",
+            "कोई भी शैक्षिक संसाधन"
+        ],
+        "searchBarContent": "AI सर्च",
+        "recording": "रिकॉर्डिंग... {{seconds}}से",
+        "convertingVoice": "आवाज़ को टेक्स्ट में बदला जा रहा है...",
+        "clearSearch": "खोज साफ़ करें",
+        "clearIconAlt": "साफ़ करें",
+        "searchIconAlt": "खोजें",
+        "microphoneAlt": "माइक्रोफ़ोन",
+        "sendIconAlt": "भेजें",
+        "startVoiceSearch": "वॉइस खोज शुरू करें",
+        "stopVoiceSearch": "वॉइस खोज बंद करें",
+        "searchResources": "संसाधन खोजें"
     }
 }

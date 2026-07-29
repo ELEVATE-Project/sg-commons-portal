@@ -72,14 +72,14 @@
         "publishedOn": "ప్రచురించబడిన తేదీ",
         "viewAllResources": "అన్ని వనరులను వీక్షించండి",
         "filters": {
-  "open": "ఫిల్టర్లను తెరవండి",
-  "title": "ఫిల్టర్లు",
-  "clearAll": "అన్నింటినీ తొలగించండి",
-  "apply": "వర్తింపజేయండి",
-  "selectAll": "అన్నింటినీ ఎంచుకోండి",
-  "deselectAll": "అన్నింటి ఎంపికను తొలగించండి",
-  "noOptionsFound": "ఎలాంటి ఎంపికలు కనుగొనబడలేదు"
-},
+            "open": "ఫిల్టర్లను తెరవండి",
+            "title": "ఫిల్టర్లు",
+            "clearAll": "అన్నింటినీ తొలగించండి",
+            "apply": "వర్తింపజేయండి",
+            "selectAll": "అన్నింటినీ ఎంచుకోండి",
+            "deselectAll": "అన్నింటి ఎంపికను తొలగించండి",
+            "noOptionsFound": "ఎలాంటి ఎంపికలు కనుగొనబడలేదు"
+        },
         "hero": {
             "tags": {
                 "openAccess": "ఓపెన్-యాక్సెస్",
@@ -89,24 +89,26 @@
             "description": "భారతదేశంలోని ప్రజా పాఠశాలలను బలోపేతం చేయడానికి పనిచేస్తున్న విద్యా నాయకుల కోసం పరిష్కారాలు, వనరులు మరియు ఆస్తుల యొక్క శ్రేష్టంగా ఎంపిక చేయబడిన జ్ఞాన నిల్వ.",
             "scrollDown": "కిందికి స్క్రోల్ చేయండి"
         },
-        "invalidDownloadURL": "చెల్లని డౌన్‌లోడ్ URL"
+        "invalidDownloadURL": "చెల్లని డౌన్‌లోడ్ URL",
+        "categories": "వర్గాలు",
+        "resourceType": "వనరుల రకం"
     },
-    "search":{
-                "searchRotatingTexts": [
-  "కామన్స్ అంతటా ఉన్న కంటెంట్",
-  "ట్రెండింగ్ వనరులు",
-  "ఏవైనా విద్యా వనరులు"
-],
-"searchBarContent": "దీని కోసం AI శోధన",
-"recording": "రికార్డింగ్... {{seconds}}సె",
-"convertingVoice": "వాయిస్‌ను టెక్స్ట్‌గా మార్చుతోంది...",
-"clearSearch": "శోధనను క్లియర్ చేయండి",
-"clearIconAlt": "క్లియర్ చేయండి",
-"searchIconAlt": "శోధించండి",
-"microphoneAlt": "మైక్రోఫోన్",
-"sendIconAlt": "పంపండి",
-"startVoiceSearch": "వాయిస్ శోధన ప్రారంభించండి",
-"stopVoiceSearch": "వాయిస్ శోధనను ఆపండి",
-"searchResources": "వనరులను శోధించండి"
+    "search": {
+        "searchRotatingTexts": [
+            "కామన్స్ అంతటా ఉన్న కంటెంట్",
+            "ట్రెండింగ్ వనరులు",
+            "ఏవైనా విద్యా వనరులు"
+        ],
+        "searchBarContent": "దీని కోసం AI శోధన",
+        "recording": "రికార్డింగ్... {{seconds}}సె",
+        "convertingVoice": "వాయిస్‌ను టెక్స్ట్‌గా మార్చుతోంది...",
+        "clearSearch": "శోధనను క్లియర్ చేయండి",
+        "clearIconAlt": "క్లియర్ చేయండి",
+        "searchIconAlt": "శోధించండి",
+        "microphoneAlt": "మైక్రోఫోన్",
+        "sendIconAlt": "పంపండి",
+        "startVoiceSearch": "వాయిస్ శోధన ప్రారంభించండి",
+        "stopVoiceSearch": "వాయిస్ శోధనను ఆపండి",
+        "searchResources": "వనరులను శోధించండి"
     }
 }
