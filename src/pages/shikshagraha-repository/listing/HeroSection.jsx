@@ -49,7 +49,7 @@ useEffect(() => {
 
   return (
     <div
-      className="relative w-full overflow-hidden min-h-[78vh] md:min-h-[80vh] flex items-center justify-center bg-heroGradient"
+      className="relative w-full overflow-hidden min-h-[78vh] md:min-h-[80vh] flex flex-col bg-heroGradient"
     >
       <div
         className="absolute inset-0 z-0 pointer-events-none md:hidden"
@@ -77,8 +77,8 @@ useEffect(() => {
     <div className="absolute bottom-20 right-20 z-0 w-40 h-40 rounded-full bg-white/10 blur-3xl" />
     <div className="absolute top-40 right-40 z-0 w-24 h-24 rounded-full bg-white/10 blur-2xl" />
 
-    <div className="absolute inset-0 z-10 flex items-center justify-center text-center p-4 sm:px-6">
-      <div className="flex w-full max-w-7xl flex-col items-center gap-4 md:gap-5 -mt-10">
+    <div className="relative z-10 flex flex-1 flex-col items-center text-center px-4 py-6 sm:px-6">
+      <div className="flex flex-1 w-full max-w-7xl flex-col items-center justify-center gap-4 md:gap-5">
 
         {/* Tags */}
         {/* <div className="flex gap-3 flex-wrap justify-center">
@@ -121,30 +121,29 @@ useEffect(() => {
         
 
       </div>
-    </div>
-    {/* Scroll */}
-<button
-  type="button"
-  onClick={handleScrollDown}
-  aria-label={t("repository.hero.scrollDown")}
-  className="
-    absolute
-    bottom-[0.9375rem]
-    left-1/2
-    -translate-x-1/2
-    z-20
-    flex
-    flex-col
-    items-center
-    border-0
-    bg-transparent
-    pb-5
-    focus-visible:outline
-    focus-visible:outline-2
-    focus-visible:outline-offset-2
-    focus-visible:outline-white
-  "
->
+
+      {/* Scroll */}
+      <button
+        type="button"
+        onClick={handleScrollDown}
+        aria-label={t("repository.hero.scrollDown")}
+        className="
+          relative
+          mt-8
+          shrink-0
+          z-20
+          flex
+          flex-col
+          items-center
+          border-0
+          bg-transparent
+          pb-5
+          focus-visible:outline
+          focus-visible:outline-2
+          focus-visible:outline-offset-2
+          focus-visible:outline-white
+        "
+      >
   <p className="text-[1rem] font-medium text-[var(--listing-text-light)]">
     {t("repository.hero.scrollDown")}
   </p>
@@ -157,7 +156,8 @@ useEffect(() => {
       animation: "scrollDown 1.4s steps(1, end) infinite",
     }}
   />
-</button>
+      </button>
+    </div>
   </div>
   );
 }
