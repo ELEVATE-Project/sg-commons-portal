@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "../../../components/header/Header.jsx";
 import BrowseResources from "../listing/BrowseResources.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
@@ -28,6 +28,9 @@ export default function RepositoryPage() {
   const [searchParams] = useSearchParams();
   const navigationType = useNavigationType();
   const hasRestoredScrollRef = useRef(false);
+  const loaderSeenRef = useRef(false);
+  const noLoaderWaitsRef = useRef(0);
+  const [scrollTick, setScrollTick] = useState(0);
   // NOTE: Do not auto-clear `org`/`theme` params on initial mount. Listing
   // (`BrowseResources`) handles mapping URL -> filters and will control when
   // to clear transient params (on Back / clear actions). This effect was
@@ -79,9 +82,31 @@ export default function RepositoryPage() {
 }, [mediaList, q, loadingList, navigationType]);
 
 useEffect(() => {
-  if (navigationType !== "POP") return;
+  const history = window.history;
+  if (!history || !("scrollRestoration" in history)) return;
 
+  const previous = history.scrollRestoration;
+  history.scrollRestoration = "manual";
+
+  return () => {
+    history.scrollRestoration = previous;
+  };
+}, []);
+
+useEffect(() => {
+  if (navigationType !== "POP") return;
   if (hasRestoredScrollRef.current) return;
+  if (showBlockingLoader) {
+    loaderSeenRef.current = true;
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    return;
+  }
+  if (!loaderSeenRef.current && noLoaderWaitsRef.current < 4) {
+    noLoaderWaitsRef.current += 1;
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    const timer = setTimeout(() => setScrollTick((n) => n + 1), 120);
+    return () => clearTimeout(timer);
+  }
 
   if (!mediaList?.length) return;
 
@@ -138,7 +163,7 @@ useEffect(() => {
   rafId = requestAnimationFrame(restore);
 
   return () => cancelAnimationFrame(rafId);
-}, [mediaList, navigationType]);
+}, [mediaList, navigationType, showBlockingLoader, scrollTick]);
 
   return (
     <div className="bg-[var(--listing-white)]  relative listing-pages overflow-x-hidden overflow-y-visible" style={{...theme.vars, overflowY: 'visible'}}>

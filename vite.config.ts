@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 
 dotenv.config({ path: '.env' })
 
-const rootPath = process.env.VITE_ROOT_PATH ? `/${process.env.VITE_ROOT_PATH}` : ''
+const rootPath = process.env.VITE_ROOT_PATH ? `/${process.env.VITE_ROOT_PATH}/`: "/";
 
 export default defineConfig({
   base: rootPath,

@@ -428,7 +428,7 @@ function ResourceMeta({ resource }) {
 
         {/* Buttons */}
         <div className="mt-5 flex justify-between items-center flex-wrap gap-4">
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3 min-w-0">
 <button
   onClick={() => {
     const success = openSafeUrl(resource?.file);
@@ -459,6 +459,7 @@ if (resource?.id) {
     text-white
     transition-colors
     flex-none
+    max-w-full
   "
 >
   <Download className="w-[1.125rem] h-[1.125rem] shrink-0" />
@@ -487,9 +488,9 @@ if (resource?.id) {
                 navigator.clipboard.writeText(window.location.href);
                 toast("Link copied");
               }}
-              className="border border-repository-controlBorder px-4 py-2 rounded-[0.438rem] flex items-center gap-2 font-medium font-manrope text-[1.10rem] text-black"
+              className="border border-repository-controlBorder px-4 py-2 rounded-[0.438rem] flex items-center justify-center gap-2 font-medium font-manrope text-[1.10rem] text-black max-w-full shrink whitespace-nowrap"
             >
-              <Share2 size={18} />
+              <Share2 size={18} className="shrink-0" />
               {t("common.share")}
             </button>
           </div>
@@ -542,8 +543,8 @@ if (resource?.id) {
   items-center
   justify-center
   box-border
-  w-full
-  sm:w-auto
+  w-auto
+  max-w-full
   min-h-[3.254rem]
   px-[0.726rem]
   py-[0.5rem]
@@ -556,7 +557,7 @@ if (resource?.id) {
   ${!resolvedOrgParam ? "opacity-50 cursor-not-allowed" : ""}
 `}
 >
-  <span className="inline-flex items-center flex-wrap sm:flex-nowrap gap-[0.5rem] w-full sm:w-auto">
+  <span className="inline-flex items-center justify-center flex-wrap gap-[0.5rem] w-auto max-w-full min-w-0">
   {resource?.org_logo && (
     <span
       className="
@@ -585,16 +586,18 @@ if (resource?.id) {
 
   <span
     className="
-      inline-flex
-      items-center
+      inline-block
       min-w-0
       sm:w-[8.625rem]
       font-dm
       font-normal
       text-[1.033rem]
-      leading-[0.938rem]
+      leading-[1.2]
+      text-center
       text-repository-viewAllText
-      whitespace-nowrap
+      break-words
+      whitespace-normal
+      sm:whitespace-nowrap
     "
   >
     {t("repository.viewAllResources")}

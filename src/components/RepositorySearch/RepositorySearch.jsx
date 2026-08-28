@@ -270,7 +270,7 @@ return (
     className={`flex flex-row flex-nowrap items-center bg-white ${
       isHeader
         ? "gap-1 rounded-xl px-3 py-4 w-full max-w-[44rem]"
-        : "gap-3 h-[4.1rem] w-full max-w-[43.9rem] rounded-[0.563rem] px-4"
+        : "gap-3 min-h-[4.1rem] py-2 w-full max-w-[43.9rem] rounded-[0.563rem] px-4"
     } shadow-[0.464rem_0.464rem_1.857rem_rgba(127,50,137,0.2)] ${className}`}
   >
 <img
@@ -281,10 +281,10 @@ return (
   }`}
 />
 
-    <div className="relative flex-1">
+    <div className="relative flex-1 min-w-0">
       {!search.trim() && !hasStartedRecording && !isConvertingVoiceToText && (
         <div
-  className="pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center overflow-hidden"
+  className="pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center overflow-hidden whitespace-nowrap"
   style={{
     paddingRight: isMobile ? "5.5rem" : "0",
   }}
@@ -344,7 +344,7 @@ return (
             ? t("search.convertingVoice")
             : ""
         }
-        className={`w-full bg-transparent outline-none text-[var(--listing-strong-text)] ${
+        className={`w-full min-w-0 bg-transparent outline-none leading-normal text-[var(--listing-strong-text)] ${
           isHeader ? "text-[0.8rem]" : "text-[0.9rem]"
         }`}
       />
