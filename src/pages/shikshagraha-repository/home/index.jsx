@@ -70,12 +70,7 @@ export default function RepositoryPage() {
 
 
   useEffect(() => {
-  // Browser back/forward restores the previous scroll position further below.
   if (navigationType === "POP") return;
-
-  // On a fresh navigation into the home page (e.g. the "Home" icon on the
-  // resources page), land at the top instead of auto-scrolling down to the
-  // results grid.
   window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 }, [navigationType, location.key]);
 
