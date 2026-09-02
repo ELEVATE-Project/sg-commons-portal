@@ -4,7 +4,7 @@ import BrowseResources from "../listing/BrowseResources.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
 import MitraAiAssistantAside from "../listing/MitraAiAssistantAside.jsx";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore.js";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
@@ -26,6 +26,7 @@ export default function RepositoryPage() {
   const resetFilters = useRepositoryStore((state) => state.resetFilters);
 
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const navigationType = useNavigationType();
   const hasRestoredScrollRef = useRef(false);
   const loaderSeenRef = useRef(false);
@@ -70,16 +71,8 @@ export default function RepositoryPage() {
 
   useEffect(() => {
   if (navigationType === "POP") return;
-
-  if (!!mediaList?.length && q && !loadingList) {
-    const browseSection = document.querySelector("[data-browse-resources]");
-
-    browseSection?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }
-}, [mediaList, q, loadingList, navigationType]);
+  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+}, [navigationType, location.key]);
 
 useEffect(() => {
   const history = window.history;

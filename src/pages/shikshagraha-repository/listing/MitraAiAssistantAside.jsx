@@ -11,10 +11,9 @@ export default function MitraAiAssistantAside({ defaultBottom = 70 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [renderCard, setRenderCard] = useState(false);
-  const [bottomOffset, setBottomOffset] = useState(defaultBottom);
   const [isMobile, setIsMobile] = useState(false);
 
-  const buttonBottom = bottomOffset + (isMobile ? 10 : 0);
+  const buttonBottom = defaultBottom;
   const buttonHeight = isMobile ? 56 : 64;
   const cardGap = 12;
   const cardBottom = buttonBottom + buttonHeight + cardGap;
@@ -43,52 +42,14 @@ export default function MitraAiAssistantAside({ defaultBottom = 70 }) {
     return () => clearTimeout(timeout);
   }, [open]);
 
-useEffect(() => {
-  const footer = document.querySelector("footer, section.footer, .footer");
-  if (!footer) return;
-
-  const scrollContainer = document.getElementById(
-    "repository-scroll-container"
-  );
-
-  const DEFAULT_BOTTOM = defaultBottom;
-  const GAP = 16;
-
-  const updateOffset = () => {
-    const footerRect = footer.getBoundingClientRect();
-    const visibleOverlap = window.innerHeight - footerRect.top;
-
-    setBottomOffset(
-      visibleOverlap > 0 ? visibleOverlap + GAP : DEFAULT_BOTTOM
-    );
-  };
-
-  updateOffset();
-
-  const scrollTarget = scrollContainer || window;
-
-  scrollTarget.addEventListener("scroll", updateOffset, {
-    passive: true,
-  });
-
-  window.addEventListener("resize", updateOffset);
-
-  return () => {
-    scrollTarget.removeEventListener("scroll", updateOffset);
-    window.removeEventListener("resize", updateOffset);
-  };
-}, [defaultBottom]);
-
   return (
     <>
       {/* Floating Button */}
       <button
         onClick={() => setOpen(!open)}
-        className={`fixed ${isMobile ? "right-4" : "right-10"} z-[9999] bg-[var(--listing-primary)] text-white border border-white ${isMobile ? "w-14 h-14" : "w-16 h-16"} rounded-full shadow-[0_1.125rem_2.5rem_rgba(0,0,0,0.45)] flex items-center justify-center hover:scale-105`}
+        className={`fixed ${isMobile ? "right-4" : "right-10"} z-[9999] bg-[var(--listing-primary)] text-white border border-white ${isMobile ? "w-14 h-14" : "w-16 h-16"} rounded-full shadow-[0_1.125rem_2.5rem_rgba(0,0,0,0.45)] flex items-center justify-center`}
         style={{
           bottom: `${buttonBottom}px`,
-          transition: "bottom 220ms ease-out, transform 220ms ease-out",
-          willChange: "bottom, transform",
         }}
       >
         {open ? (
