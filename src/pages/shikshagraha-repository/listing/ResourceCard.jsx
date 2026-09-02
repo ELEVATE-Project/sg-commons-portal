@@ -378,13 +378,13 @@ title={resource.organization}
         {resource.organization}
       </span>
 
-{sourceProviderIcon && (
+{/* {sourceProviderIcon && (
   <img
     src={sourceProviderIcon}
     alt={resource?.source_provider || t("repository.organization")}
     className="w-5 h-5 object-contain flex-shrink-0"
   />
-)}
+)} */}
     </button>
   )}
 </div>
@@ -579,7 +579,7 @@ title={resource.organization}
               >
                 {resource.organization}
               </span>
-{sourceProviderIcon && (
+{/* {sourceProviderIcon && (
 <img
   src={sourceProviderIcon}
   alt={resource?.source_provider || t("repository.organization")}
@@ -590,7 +590,7 @@ title={resource.organization}
     flex-shrink-0
   "
 />
-)}
+)} */}
             </button>
           )}
         </div>
