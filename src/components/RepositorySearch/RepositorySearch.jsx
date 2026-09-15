@@ -16,15 +16,27 @@ import { useSearchParams } from "react-router-dom";
 import ROUTES from "../../url";
 
 const scrollToBrowseResources = () => {
+  // The browse-resources header lives inside a fixed-position bar, so
+  // scrollIntoView on it is a no-op; scroll the actual results container instead.
+  // Use "instant" (not "smooth") because the results grid empties out as soon as
+  // the new search kicks off, collapsing page height mid-animation and causing
+  // the footer/header to flash into view while a smooth scroll is still in transit.
+  const scrollContainer = document.getElementById("repository-scroll-container");
+  if (scrollContainer) {
+    scrollContainer.scrollTo({ top: 0, behavior: "instant" });
+    return;
+  }
+
   const browseSection = document.querySelector("[data-browse-resources]");
   if (browseSection) {
-    browseSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    browseSection.scrollIntoView({ behavior: "instant", block: "start" });
   }
 };
 
 export default function RepositorySearch({ variant = "hero", className = "",onSearch = null  }) {
   const { t } = useTranslation();
   const search = useRepositoryStore((state) => state.searchInput);
+  const submittedSearch = useRepositoryStore((state) => state.q);
   const setGlobalSearch = useRepositoryStore((state) => state.setSearch);
   const setSearchInput = useRepositoryStore((state) => state.setSearchInput);
   const loadingList = useRepositoryStore((state) => state.loadingList);
@@ -141,9 +153,10 @@ useEffect(() => {
     if (loadingList) return;
 
     setSearchInput(value);
-    if (value.trim() === "") {
+    if (value.trim() === "" && submittedSearch.trim() !== "") {
       syncSearchParam("");
       setGlobalSearch("");
+      scrollToBrowseResources();
     }
   };
 
@@ -259,9 +272,12 @@ useEffect(() => {
   };
 
 const clearSearch = () => {
-  syncSearchParam("");
   setSearchInput("");
-  setGlobalSearch("");
+  if (submittedSearch.trim() !== "") {
+    syncSearchParam("");
+    setGlobalSearch("");
+    scrollToBrowseResources();
+  }
 };
 
 return (

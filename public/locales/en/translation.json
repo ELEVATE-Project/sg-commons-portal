@@ -159,7 +159,7 @@
     "placeholder1": "Listening... Speak now",
     "placeholder2": "Processing speech... Please wait",
     "search_placeholder": "Search with AI",
-    "noResourceFoundTitle": "No matching solutions found. Please modify your prompt.",
+    "noResourceFoundTitle": "No matching solutions found. Please modify your search request.",
     "sortDisabledTooltipText": "AI Search sorts results by relevance automatically. Manual sorting is disabled.",
     "heroTitle": "Shikshagraha Commons",
     "heroDescription": "Catalyzing collective action for empowering education leaders through shared knowledge.",
