@@ -427,11 +427,9 @@ export default function RepositoryPage() {
     if (navigationType === "POP") return;
 
     if (!!mediaList?.length && q && !loadingList) {
-      const browseSection = document.querySelector("[data-browse-resources]");
-
-      browseSection?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
+      scrollContainerRef.current?.scrollTo({
+        top: 0,
+        behavior: "instant",
       });
     }
   }, [mediaList, q, loadingList, navigationType]);
