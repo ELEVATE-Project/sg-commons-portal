@@ -427,10 +427,6 @@ export default function RepositoryPage() {
     if (navigationType === "POP") return;
 
     if (!!mediaList?.length && q && !loadingList) {
-      // BrowseResources' header lives in the fixed top bar, so scrollIntoView
-      // on it doesn't move the actual results container; scroll that instead.
-      // "instant" avoids a mid-animation flash of the footer/header as the
-      // grid's height collapses and grows while the new results swap in.
       scrollContainerRef.current?.scrollTo({
         top: 0,
         behavior: "instant",
