@@ -33,21 +33,21 @@ export default function Header({ isHeroSection = true, isBackButton = false, onS
 
   return (
     <>
-      <header className={`flex flex-col w-full bg-white  ${isMobile && isBackButton ? "items-start" : "items-end"}`}>
+      <header className={`relative left-1/2 -translate-x-1/2 w-screen flex flex-col bg-white  ${isMobile && isBackButton ? "items-start" : "items-end"}`}>
         {(isHeroSection || !isMobile) && <div className="w-full">
-          <>
+          <div className="container max-w-[93.75rem] mx-auto">
             <div data-animation="default" data-collapse="all" data-duration={400} data-easing="ease" data-easing2="ease" data-doc-height={1} role="banner" className="navbar-2 w-nav" style={{ zIndex: 40 }}>
               <div className="header-container">
                 <a href="https://shikshagraha.org/" className="brand w-nav-brand">
                   <img src="https://shikshagraha.org/wp-content/themes/twentytwentythree-child/images/Group-22x.png" loading="lazy" alt="" className="image-12" />
                 </a>
 
-            
+
               </div>
             </div>
-          </>
+          </div>
         </div>}
-        
+
       </header>
       {isHeroSection && (
         <div className="relative left-1/2 -translate-x-1/2 w-[100vw] max-w-[100vw] overflow-hidden">
