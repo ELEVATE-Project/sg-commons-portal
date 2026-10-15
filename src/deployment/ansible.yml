@@ -1,84 +1,288 @@
-- hosts: elevate
+
+---
+- name: Deploy SG Commons Frontend
+  hosts: all
+  become: true
+  gather_facts: true
+
   vars:
-    project_path: /opt/frontend/sg-commons-portal
     root_path: /opt/frontend
+    project_path: "{{ root_path }}/sg-commons-portal"
+    vault_token_path: /opt/deployment/.token
     node_version: "20.20.2"
+    pm2_home: /root/.pm2
+
+    # Environment-specific Vault path passed from Jenkins
+    vault_env_path: "{{ vaultEnvPath }}"
 
   tasks:
-    - name: Slurp host file
-      slurp:
-        src: "/opt/backend/deployment/.token"
+
+    # 1. Install and resolve required Node.js version
+
+    - name: Ensure required Node.js version is installed
+      ansible.builtin.shell: |
+        set -euo pipefail
+        export NVM_DIR=/root/.nvm
+        . "$NVM_DIR/nvm.sh"
+        nvm install "{{ node_version }}"
+      args:
+        executable: /bin/bash
+      register: nvm_install
+      changed_when: "'is already installed' not in nvm_install.stdout"
+
+    - name: Resolve Node.js binary directory
+      ansible.builtin.shell: |
+        set -euo pipefail
+        export NVM_DIR=/root/.nvm
+        . "$NVM_DIR/nvm.sh"
+        dirname "$(nvm which {{ node_version }})"
+      args:
+        executable: /bin/bash
+      register: nvm_node_bin
+      changed_when: false
+
+    - name: Set Node binary directory
+      ansible.builtin.set_fact:
+        node_bin_dir: "{{ nvm_node_bin.stdout | trim }}"
+
+    - name: Verify Node.js and npm versions
+      ansible.builtin.shell: |
+        set -e
+        node --version
+        npm --version
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ node_bin_dir }}:{{ ansible_env.PATH }}"
+      register: node_version_check
+      changed_when: false
+
+    - name: Validate Node.js version
+      ansible.builtin.assert:
+        that:
+          - "'v20.20.2' in node_version_check.stdout"
+        fail_msg: "Expected Node.js 20.20.2 but found a different version."
+
+    # 2. Verify deployment variables
+
+    - name: Verify required deployment variables
+      ansible.builtin.assert:
+        that:
+          - repo_url is defined
+          - gitBranch is defined
+          - vaultAddress is defined
+          - vaultEnvPath is defined
+          - repo_url | length > 0
+          - gitBranch | length > 0
+          - vaultAddress | length > 0
+          - vaultEnvPath | length > 0
+        fail_msg: "Required deployment variables are missing. Check Jenkins parameters."
+
+    # 3. Read Vault token
+
+    - name: Read Vault token file
+      ansible.builtin.slurp:
+        src: "{{ vault_token_path }}"
       register: slurpfile
+      no_log: true
+
+    - name: Set Vault token
+      ansible.builtin.set_fact:
+        vault_token: "{{ slurpfile.content | b64decode | trim }}"
+      no_log: true
+
+    - name: Validate Vault token
+      ansible.builtin.assert:
+        that:
+          - vault_token | length > 0
+        fail_msg: "Vault token is empty."
+      no_log: true
+
+    # 4. Prepare project directory
 
     - name: Ensure project directory exists
-      file:
+      ansible.builtin.file:
         path: "{{ project_path }}"
         state: directory
-        mode: '0755'
+        mode: "0755"
 
-    - name: Fetch the latest code
-      git:
-        repo: https://github.com/ELEVATE-Project/sg-commons-portal
+    # 5. Checkout source code
+
+    - name: Fetch latest source code
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
         dest: "{{ project_path }}"
         version: "{{ gitBranch }}"
-        force: yes
-    
-    - name: set permission
-      shell: chmod 744 {{ project_path }}/src/scripts/json2env.sh  
+        force: true
 
-    - name: Fetch .env from Vault
-      shell: >
-        curl --location --request GET '{{ vaultAddress }}sg-commons-frontend' 
-        --header 'X-Vault-Token: {{ slurpfile['content'] | b64decode }}' | jq '.data' > '{{ project_path }}/data2.json'""
-      register: env_response
-
-    - name: generate .env 
-      shell: cat {{ project_path }}/data2.json | {{ project_path }}/src/scripts/json2env.sh > {{ project_path }}/.env
-      register: envConfig 
-    - debug: 
-        msg: " cred {{ envConfig }} "    
-
-    - name: Remove the old build
-      shell: "rm -rf {{project_path}}/build"
-
-    - name: Remove node_modules folder
-      shell: "rm -rf {{ project_path }}/node_modules"
-
-    - name: Clear npm cache
-      shell: "npm cache clean --force"
-
-    - name: Install dependencies
-      shell: |
-        source ~/.nvm/nvm.sh
-        nvm use {{ node_version }}
-        cd {{ project_path }}
-        npm i --force
-      args:
-        executable: /bin/bash
+    # 6. Generate frontend environment
 
     - name: Set permission for json2env.sh
-      shell: "chmod 744 {{ project_path }}/src/scripts/json2env.sh"
+      ansible.builtin.file:
+        path: "{{ project_path }}/src/scripts/json2env.sh"
+        mode: "0744"
 
-    - name: Fetch pm2 config file
-      shell: >
-        curl --location --request GET '{{ vaultAddress }}sg-commons-frontend'
-        --header 'X-Vault-Token: {{ slurpfile['content'] | b64decode }}' 
-        | jq '.data.data' > '{{ project_path }}/pm2.config.json'
-  
-    - name: Build sg-commons frontend
-      shell: |
-        source ~/.nvm/nvm.sh
-        nvm use {{ node_version }}
-        cd {{ project_path }}
+    - name: Fetch frontend environment from Vault
+      block:
+
+        - name: Request frontend environment from Vault
+          ansible.builtin.uri:
+            url: "{{ vaultAddress }}{{ vault_env_path }}"
+            method: GET
+            headers:
+              X-Vault-Token: "{{ vault_token }}"
+            return_content: true
+            validate_certs: false
+            status_code: 200
+          register: env_response
+          no_log: true
+
+        - name: Validate frontend Vault response
+          ansible.builtin.assert:
+            that:
+              - env_response.json.data.data is defined
+              - env_response.json.data.data is mapping
+            fail_msg: "Invalid frontend environment response from Vault."
+          no_log: true
+
+        - name: Save frontend environment JSON
+          ansible.builtin.copy:
+            content: "{{ env_response.json.data.data | to_nice_json }}"
+            dest: "{{ project_path }}/data2.json"
+            mode: "0600"
+          no_log: true
+
+        - name: Generate frontend .env file
+          ansible.builtin.shell: |
+            set -e
+            ./src/scripts/json2env.sh < data2.json > .env
+          args:
+            chdir: "{{ project_path }}"
+            executable: /bin/bash
+          no_log: true
+
+        - name: Set frontend environment permissions
+          ansible.builtin.file:
+            path: "{{ project_path }}/.env"
+            mode: "0600"
+
+      always:
+
+        - name: Remove temporary environment JSON
+          ansible.builtin.file:
+            path: "{{ project_path }}/data2.json"
+            state: absent
+          no_log: true
+
+    # 7. Verify existing PM2 configuration
+
+    - name: Check PM2 configuration exists
+      ansible.builtin.stat:
+        path: "{{ project_path }}/pm2.config.json"
+      register: pm2_config_file
+
+    - name: Validate PM2 configuration exists
+      ansible.builtin.assert:
+        that:
+          - pm2_config_file.stat.exists
+          - pm2_config_file.stat.isreg
+        fail_msg: "pm2.config.json is missing from the Git repository."
+
+    - name: Validate PM2 configuration JSON
+      ansible.builtin.command:
+        argv:
+          - python3
+          - -m
+          - json.tool
+          - "{{ project_path }}/pm2.config.json"
+      changed_when: false
+
+    # 8. Remove previous build and dependencies
+
+    - name: Remove old build
+      ansible.builtin.file:
+        path: "{{ project_path }}/build"
+        state: absent
+
+    - name: Remove old node_modules
+      ansible.builtin.file:
+        path: "{{ project_path }}/node_modules"
+        state: absent
+
+    # 9. Install npm dependencies
+
+    - name: Install npm dependencies
+      ansible.builtin.shell: |
+        set -e
+        npm install --force
+      args:
+        chdir: "{{ project_path }}"
+        executable: /bin/bash
+      environment:
+        PATH: "{{ node_bin_dir }}:{{ ansible_env.PATH }}"
+
+    # 10. Build frontend
+
+    - name: Build SG Commons frontend
+      ansible.builtin.shell: |
+        set -e
         npm run build
       args:
+        chdir: "{{ project_path }}"
         executable: /bin/bash
+      environment:
+        PATH: "{{ node_bin_dir }}:{{ ansible_env.PATH }}"
+        NODE_OPTIONS: "--max-old-space-size=4096"
 
-    - name: Start pm2
-      shell: |
-        source ~/.nvm/nvm.sh
-        nvm use {{ node_version }}
-        cd {{ project_path }}
-        pm2 start pm2.config.json
+    # 11. Install PM2 for selected Node.js version
+
+    - name: Check PM2 binary
+      ansible.builtin.stat:
+        path: "{{ node_bin_dir }}/pm2"
+      register: pm2_binary
+
+    - name: Install PM2 globally
+      ansible.builtin.command:
+        argv:
+          - "{{ node_bin_dir }}/npm"
+          - install
+          - --global
+          - pm2
+      environment:
+        PATH: "{{ node_bin_dir }}:{{ ansible_env.PATH }}"
+      when: not pm2_binary.stat.exists
+
+    - name: Verify PM2 installation
+      ansible.builtin.shell: |
+        set -e
+        command -v pm2
+        pm2 --version
       args:
         executable: /bin/bash
+      environment:
+        PATH: "{{ node_bin_dir }}:{{ ansible_env.PATH }}"
+        PM2_HOME: "{{ pm2_home }}"
+      changed_when: false
+
+    # 12. Start or reload PM2
+
+    - name: Start or reload SG Commons PM2 application
+      ansible.builtin.shell: |
+        set -e
+        pm2 startOrReload pm2.config.json --update-env
+      args:
+        chdir: "{{ project_path }}"
+        executable: /bin/bash
+      environment:
+        PATH: "{{ node_bin_dir }}:{{ ansible_env.PATH }}"
+        PM2_HOME: "{{ pm2_home }}"
+
+    - name: Save PM2 process list
+      ansible.builtin.command:
+        argv:
+          - pm2
+          - save
+      environment:
+        PATH: "{{ node_bin_dir }}:{{ ansible_env.PATH }}"
+        PM2_HOME: "{{ pm2_home }}"
+      changed_when: false
