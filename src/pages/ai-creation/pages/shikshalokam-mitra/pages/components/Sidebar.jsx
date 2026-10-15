@@ -1,0 +1,76 @@
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { FaRegPlusSquare } from "react-icons/fa";
+import { CgPlayPauseR } from "react-icons/cg";
+import { ACTIVE_TABS } from "../../../../constants/mitra.constants";
+
+function Action({ icon: Icon, text, onClick, disabled = false }) {
+  return (
+    <button
+      className={`flex items-center gap-3 bg-transparent p-0 border-0 w-full text-left ${
+        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+      }`}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+    >
+      <Icon className={`w-6 h-6 flex-shrink-0 ${disabled ? "text-gray-400" : "text-repository-sidebarIcon"}`} />
+      <p className={`font-medium text-base leading-[1.5rem] break-words ${disabled ? "text-gray-400" : "text-repository-sidebarIcon"}`}>
+        {text}
+      </p>
+    </button>
+  );
+}
+
+export default function Sidebar({
+  setActiveTab,
+  isSidebarOpen = false,
+  setIsSidebarOpen,
+  isMobile = false,
+  handleNewMIPClick,
+  isNewChatDisabled = false,
+}) {
+  const { t } = useTranslation();
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    if (tab === ACTIVE_TABS.WELCOME) {
+      handleNewMIPClick();
+    }
+    // Close sidebar on mobile after clicking an action
+    if (isMobile && setIsSidebarOpen) {
+      setIsSidebarOpen(false);
+    }
+  };
+
+  return (
+    <>
+      {/* Overlay for mobile */}
+      {isSidebarOpen && isMobile && (
+        <div
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`fixed md:relative top-0 left-0 h-full z-40 transform transition-transform duration-300 ease-in-out ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
+        <div className="w-[17.5rem] md:w-[13.75rem] lg:w-[15.625rem] h-full flex flex-col gap-8 rounded-[1.25rem] p-10 border border-repository-neutralGray bg-repository-pageBackground shadow-[0rem_0rem_0.5rem_0rem_#0000001A] pt-20 md:pt-10">
+          <Action
+            icon={FaRegPlusSquare}
+            text={t("sidebar.newMIP")}
+            onClick={() => handleTabClick(ACTIVE_TABS.WELCOME)}
+            disabled={isNewChatDisabled}
+          />
+          <Action
+            icon={CgPlayPauseR}
+            text={t("sidebar.faq")}
+            onClick={() => handleTabClick(ACTIVE_TABS.FAQ)}
+          />
+        </div>
+      </div>
+    </>
+  );
+}

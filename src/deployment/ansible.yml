@@ -1,0 +1,84 @@
+- hosts: elevate
+  vars:
+    project_path: /opt/frontend/sg-commons-portal
+    root_path: /opt/frontend
+    node_version: "20.20.2"
+
+  tasks:
+    - name: Slurp host file
+      slurp:
+        src: "/opt/backend/deployment/.token"
+      register: slurpfile
+
+    - name: Ensure project directory exists
+      file:
+        path: "{{ project_path }}"
+        state: directory
+        mode: '0755'
+
+    - name: Fetch the latest code
+      git:
+        repo: https://github.com/ELEVATE-Project/sg-commons-portal
+        dest: "{{ project_path }}"
+        version: "{{ gitBranch }}"
+        force: yes
+    
+    - name: set permission
+      shell: chmod 744 {{ project_path }}/src/scripts/json2env.sh  
+
+    - name: Fetch .env from Vault
+      shell: >
+        curl --location --request GET '{{ vaultAddress }}sg-commons-frontend' 
+        --header 'X-Vault-Token: {{ slurpfile['content'] | b64decode }}' | jq '.data' > '{{ project_path }}/data2.json'""
+      register: env_response
+
+    - name: generate .env 
+      shell: cat {{ project_path }}/data2.json | {{ project_path }}/src/scripts/json2env.sh > {{ project_path }}/.env
+      register: envConfig 
+    - debug: 
+        msg: " cred {{ envConfig }} "    
+
+    - name: Remove the old build
+      shell: "rm -rf {{project_path}}/build"
+
+    - name: Remove node_modules folder
+      shell: "rm -rf {{ project_path }}/node_modules"
+
+    - name: Clear npm cache
+      shell: "npm cache clean --force"
+
+    - name: Install dependencies
+      shell: |
+        source ~/.nvm/nvm.sh
+        nvm use {{ node_version }}
+        cd {{ project_path }}
+        npm i --force
+      args:
+        executable: /bin/bash
+
+    - name: Set permission for json2env.sh
+      shell: "chmod 744 {{ project_path }}/src/scripts/json2env.sh"
+
+    - name: Fetch pm2 config file
+      shell: >
+        curl --location --request GET '{{ vaultAddress }}sg-commons-frontend'
+        --header 'X-Vault-Token: {{ slurpfile['content'] | b64decode }}' 
+        | jq '.data.data' > '{{ project_path }}/pm2.config.json'
+  
+    - name: Build sg-commons frontend
+      shell: |
+        source ~/.nvm/nvm.sh
+        nvm use {{ node_version }}
+        cd {{ project_path }}
+        npm run build
+      args:
+        executable: /bin/bash
+
+    - name: Start pm2
+      shell: |
+        source ~/.nvm/nvm.sh
+        nvm use {{ node_version }}
+        cd {{ project_path }}
+        pm2 start pm2.config.json
+      args:
+        executable: /bin/bash
