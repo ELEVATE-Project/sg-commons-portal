@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import RepositorySearch from "../../../components/RepositorySearch/RepositorySearch";
 import left1 from "assets/hero-section-image-1.svg";
@@ -16,9 +16,16 @@ export default function HeroSection() {
   const handleSearchFromHero = (searchQuery) => {
     navigate(`${ROUTES.SHIKSHAGRAHA_REPOSITORY_LIST}?searchResourceText=${encodeURIComponent(searchQuery)}`);
   };
+  const heroRef = useRef(null);
   const handleScrollDown = () => {
   if (typeof window === "undefined") return;
-  window.scrollBy({ top: 600, left: 0, behavior: "smooth" });
+  const el = heroRef.current;
+  if (el) {
+    const { bottom } = el.getBoundingClientRect();
+    window.scrollBy({ top: bottom, left: 0, behavior: "smooth" });
+  } else {
+    window.scrollBy({ top: 600, left: 0, behavior: "smooth" });
+  }
 };
 
 useEffect(() => {
@@ -49,6 +56,7 @@ useEffect(() => {
 
   return (
     <div
+      ref={heroRef}
       className="relative w-full overflow-hidden min-h-[78vh] md:min-h-[80vh] flex flex-col bg-heroGradient"
     >
       <div

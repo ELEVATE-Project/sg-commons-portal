@@ -97,6 +97,12 @@
     }, [loadingList, shouldScrollToTop])
 
     function scrollToBrowseResources() {
+      const scrollContainer = document.getElementById('repository-scroll-container')
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+        return
+      }
+
       const browseSection = document.querySelector('[data-browse-resources]')
       if (browseSection) {
         browseSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
