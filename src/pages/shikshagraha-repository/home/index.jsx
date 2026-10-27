@@ -53,8 +53,8 @@ export default function RepositoryPage() {
   // If there are no org/theme params in URL, ensure repository filters are cleared
   useEffect(() => {
     const org = searchParams.get("org");
-    const categories = searchParams.get("categories");
-    if (!org && !categories) {
+    const themeParam = searchParams.get("theme");
+    if (!org && !themeParam) {
       try {
         const forceReset = useRepositoryStore.getState().forceResetFilters;
         if (forceReset) {
@@ -167,7 +167,7 @@ useEffect(() => {
             <Header />
           </div>
            <div className="">
-          {/* <ExploreByTheme /> */}
+          <ExploreByTheme />
 
           <main className="w-full mx-auto">
             {!!mediaList?.length && (
@@ -179,12 +179,14 @@ useEffect(() => {
     compact={true}
     title="repository.library"
   />
-  <BrowseResourcesGrid
-    displayedResources={mediaList.slice(0, 6)}
-    viewMode="grid"
-    cardsSpacing={true}
-    filtersInitialized={true}
-  />
+  <div className="mb-10 md:mb-16">
+    <BrowseResourcesGrid
+      displayedResources={mediaList.slice(0, 3)}
+      viewMode="grid"
+      cardsSpacing={true}
+      filtersInitialized={true}
+    />
+  </div>
 </>
             )}
          

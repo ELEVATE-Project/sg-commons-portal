@@ -1,156 +1,185 @@
-import React from "react";
-import {
-  BookOpen,
-  Settings,
-  Users,
-  Layers,
-  GraduationCap,
-  Scale,
-  Globe,
-  Heart,
-} from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRepositoryStore } from "../repository-hooks/useRepositoryStore";
 import { useTranslation } from "react-i18next";
+import { listThemes } from "../repository-api";
 
-const themes = [
-  {
-    title: "Foundational Learning",
-    count: 18,
-    icon: BookOpen,
-  },
-  {
-    title: "School Governance",
-    count: 16,
-    icon: Settings,
-  },
-  {
-    title: "Community Engagement",
-    count: 12,
-    icon: Users,
-  },
-  {
-    title: "System Thinking",
-    count: 10,
-    icon: Layers,
-  },
-  {
-    title: "Teacher Training",
-    count: 8,
-    icon: GraduationCap,
-  },
-  {
-    title: "Child Rights",
-    count: 6,
-    icon: Scale,
-  },
-  {
-    title: "Network Health",
-    count: 6,
-    icon: Globe,
-  },
-  {
-    title: "Inclusive Pedagogy",
-    count: 5,
-    icon: Heart,
-  },
-];
+const SKELETON_COUNT = 6;
+
+const getThemeIconSrc = icon => {
+  if (!icon) return null;
+
+  const trimmed = icon.trim();
+
+  if (trimmed.startsWith("data:")) return trimmed;
+  if (trimmed.startsWith("<svg")) {
+    return `data:image/svg+xml;utf8,${encodeURIComponent(trimmed)}`;
+  }
+
+  return `data:image/svg+xml;base64,${trimmed}`;
+};
+
+function ThemeIcon({ src, alt }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return null;
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-[4.375rem] h-[4.375rem] object-contain"
+      onError={() => setFailed(true)}
+    />
+  );
+}
 
 export default function ExploreByTheme() {
   const navigate = useNavigate();
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const replaceRepositoryQueryState = useRepositoryStore((s) => s.replaceRepositoryQueryState);
-  
+
+  const [themes, setThemes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    (async () => {
+      try {
+        const data = await listThemes();
+        if (isMounted) setThemes(data?.result ?? []);
+      } catch {
+        if (isMounted) setThemes([]);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (!isLoading && themes.length === 0) return null;
+
   return (
-    <section className="w-full mt-8 md:mt-10 px-4 md:px-12 mb-5">
-      <h2 className="text-[1.25rem] md:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading capitalize mb-5">
+    <section className="w-full mt-8 md:mt-10 mb-5">
+      <div className="px-4 sm:px-6 lg:px-0 lg:w-[92.5%] mx-auto">
+      <h2 className="text-[1.25rem] md:text-[1.375rem] font-comfortaa font-semibold tracking-[0.0625rem] text-repository-heading mb-5">
         {t("repository.exploreByTheme")}
       </h2>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {themes.map((theme) => {
-          const Icon = theme.icon;
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 lg:gap-3 px-2 sm:px-3 lg:px-4">
+        {isLoading
+          ? Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+              <div
+                key={index}
+                className="
+                  bg-white
+                  border
+                  border-repository-border
+                  rounded-[1rem]
+                  p-4
+                  sm:py-4 px-6
+                  flex
+                  flex-col
+                  sm:flex-row
+                  items-center
+                  gap-3
+                  sm:gap-5
+                  animate-pulse
+                "
+              >
+                <div className="w-16 h-16 rounded-[0.625rem] bg-repository-iconBg shrink-0" />
+                <div className="flex-1 flex flex-col items-center sm:items-start gap-[0.563rem]">
+                  <div className="h-4 bg-repository-iconBg rounded w-3/4" />
+                  <div className="h-3 bg-repository-iconBg rounded w-1/2" />
+                </div>
+              </div>
+            ))
+          : themes.map((theme) => {
+              const iconSrc = getThemeIconSrc(theme.icon);
 
-          return (
+              return (
+                <div
+                  key={theme.id ?? theme.code}
+                  onClick={async () => {
+                    await replaceRepositoryQueryState(
+                      { filters: { themes: [{ value: theme.code, display: theme.name }] } },
+                      { skipFetch: true }
+                    );
+                    navigate(`/resources?theme=${encodeURIComponent(theme.code)}`);
+                  }
+                  }
+                  className="
+                    bg-white
+                    border
+                    border-repository-border
+                    rounded-[0.75rem]
+                    p-4
+                    sm:py-4 px-5
+                    flex
+                    flex-col
+                    sm:flex-row
+                    items-center
+                    gap-3
+                    sm:gap-5
+                    text-center
+                    sm:text-left
+                    cursor-pointer
+                    transition-all
+                    duration-200
+                    shadow-sm
+                    hover:shadow-md
+                    hover:border-repository-borderHover
+                  "
+                >
 <div
-  key={theme.title}
-  onClick={async () => {
-    await replaceRepositoryQueryState(
-      { filters: { tags: [{ value: theme.title, display: theme.title }] } },
-      { skipFetch: true }
-    );
-    navigate(`/resources?theme=${encodeURIComponent(theme.title)}`);
-  }
-  }
   className="
-    bg-white
-    border
-    border-repository-border
-    rounded-[0.75rem]
-    h-[9.125rem]
-    p-[0.875rem]
-    pt-[0.625rem]
-    flex
-    flex-col
-    items-center
-    justify-center
-    gap-[0.5rem]
-    cursor-pointer
-    transition-all
-    duration-200
-    hover:border-repository-borderHover
-  "
->
-<div
-  className="
-    w-[3.125rem]
-    h-[3.125rem]
-    rounded-[0.5rem]
+    w-16
+    h-16
+    rounded-[0.625rem]
     bg-repository-iconBg
     flex
     items-center
     justify-center
-    mb-1
     shrink-0
   "
 >
-  <Icon
-    size={24}
-    strokeWidth={1.33}
-    className="text-repository-iconColor"
-  />
+  <ThemeIcon src={iconSrc} alt={theme.name} />
 </div>
 
-             <h3
-  className="
-    font-sourceSans
-    text-[1rem]
-    font-bold
-    leading-[0.9375rem]
-    text-repository-title
-    text-center
-    w-full
-    px-3
-  "
->
-                {theme.title}
-              </h3>
-<p
-  style={{ fontFamily: "'Source Sans 3', sans-serif" }}
-  className="
-    text-[0.875rem]
-    font-medium
-    leading-[1rem]
-    text-repository-subtitle
-    text-center
-    mt-[-0.375rem]
-  "
->
-  {theme.count} items
-</p>
+<div className="flex flex-col items-center sm:items-start gap-[0.563rem]">
+  <h3
+    className="
+      font-sourceSans
+      text-[1rem]
+      font-bold
+      leading-[1.25rem]
+      text-repository-title
+    "
+  >
+    {theme.name}
+  </h3>
+  <p
+    style={{ fontFamily: "'Source Sans 3', sans-serif" }}
+    className="
+      text-[0.875rem]
+      font-medium
+      leading-[1rem]
+      text-repository-subtitle
+    "
+  >
+    {theme.media_count} {t("repository.items")}
+  </p>
+</div>
             </div>
-          );
-        })}
+              );
+            })}
+      </div>
       </div>
     </section>
   );

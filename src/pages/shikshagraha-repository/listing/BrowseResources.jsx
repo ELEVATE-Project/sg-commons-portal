@@ -220,7 +220,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   const searchResourceText = searchParams.get("searchResourceText");
   const isAISearch = !!searchResourceText?.trim();
   const orgParam = searchParams.get("org");
-  const categoriesParam = searchParams.get("categories");
+  const themeParam = searchParams.get("theme");
   const fromResourceParam = searchParams.get("fromResource");
   const hasResults = resources?.length > 0;
   const safeSetSearchParams = (next, opts = { replace: true }) => {
@@ -236,7 +236,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     return next;
   };
   const filters = useRepositoryStore((state) => state.filters);
-  const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || categoriesParam));
+  const [filtersInitialized, setFiltersInitialized] = useState(!(orgParam || themeParam));
   // Prevent URL filter sync from rerunning on page-only query changes.
   const previousUrlFilterKeyRef = useRef(null);
 
@@ -246,10 +246,10 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
 
   const selectedSingleLabel = useMemo(() => {
     const orgs = filters?.organizations || [];
-    const tags = filters?.tags || [];
+    const themes = filters?.themes || [];
 
     // If exactly one organisation selected, prefer its full display name from masterList
-    if (Array.isArray(orgs) && orgs.length === 1 && (!tags || tags.length <= 1)) {
+    if (Array.isArray(orgs) && orgs.length === 1 && (!themes || themes.length <= 1)) {
       const selected = orgs[0] || {};
       let name = selected.display || selected.value || "";
       try {
@@ -266,18 +266,18 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       return { type: "Organisation", name };
     }
 
-    // If exactly one theme (tag) selected, prefer its full display name from masterList
-    if (Array.isArray(tags) && tags.length === 1 && (!orgs || orgs.length !== 1)) {
-      const selected = tags[0] || {};
+    // If exactly one theme selected, prefer its full display name from masterList
+    if (Array.isArray(themes) && themes.length === 1 && (!orgs || orgs.length !== 1)) {
+      const selected = themes[0] || {};
       let name = selected.display || selected.value || "";
       try {
-        const tagDropdown = masterList?.find(d => d.key === 'tags');
-        const match = tagDropdown?.options?.find(o => String(o.value) === String(selected.value));
+        const themeDropdown = masterList?.find(d => d.key === 'themes');
+        const match = themeDropdown?.options?.find(o => String(o.value) === String(selected.value));
         if (match && match.display) name = match.display;
       } catch (e) {
         // ignore
       }
-      return { type: "Categories", name };
+      return { type: "Themes", name };
     }
 
     return null;
@@ -296,7 +296,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   // Labels for group chips
   const filterGroupLabels = {
     organizations: "Organization",
-    tags: "Categories",
+    themes: "Themes",
     resource_types: "Resource Type",
     resource_type: "Resource Type",
     file_types: "File Type",
@@ -461,19 +461,19 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   ]);
 
   useEffect(() => {
-    if (!orgParam && !categoriesParam) {
+    if (!orgParam && !themeParam) {
       previousUrlFilterKeyRef.current = null;
       return;
     }
     if (!masterList) return;
 
-    const urlFilterKey = JSON.stringify({ orgParam, categoriesParam });
+    const urlFilterKey = JSON.stringify({ orgParam, themeParam });
     // Same org/theme with a new page param is pagination, not a new filter.
     if (previousUrlFilterKeyRef.current === urlFilterKey) return;
     previousUrlFilterKeyRef.current = urlFilterKey;
 
     const orgDropdown = masterList.find((d) => d.key === "organizations");
-    const tagDropdown = masterList.find((d) => d.key === "tags");
+    const themeDropdown = masterList.find((d) => d.key === "themes");
 
     const decodeFilterValue = (value) => {
       try {
@@ -506,8 +506,8 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     if (orgParam) {
       nextFilters.organizations = toSelectedOptions(orgParam, orgDropdown?.options);
     }
-    if (categoriesParam) {
-      nextFilters.tags = toSelectedOptions(categoriesParam, tagDropdown?.options);
+    if (themeParam) {
+      nextFilters.themes = toSelectedOptions(themeParam, themeDropdown?.options);
     }
 
     if (!Object.keys(nextFilters).length) return;
@@ -532,7 +532,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     replaceRepositoryQueryState,
     searchParams,
     setSearchParams,
-    categoriesParam,
+    themeParam,
   ]);
 
   useEffect(() => {
@@ -891,7 +891,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
                           setFilters({ [chip.group]: [] }, true);
                           const paramMap = {
                             organizations: ["org", "fromResource"],
-                            tags: ["categories"],
+                            themes: ["theme"],
                             resource_types: ["resource_types", "resource_type"],
                             resource_type: ["resource_type", "resource_types"],
                             file_types: ["file_type", "filetype"],

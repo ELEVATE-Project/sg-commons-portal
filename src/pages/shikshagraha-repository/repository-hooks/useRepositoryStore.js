@@ -269,10 +269,10 @@ clearLastOpenedResourceId: () => {
             })),
           },
           {
-            key: REPOSITORY_FILTER_KEYS.TAGS,
-            label: i18n.t("repository.categories"),
-            options: master?.tags?.map((x) => ({
-              value: x?.name,
+            key: REPOSITORY_FILTER_KEYS.THEMES,
+            label: i18n.t("repository.themes"),
+            options: master?.themes?.map((x) => ({
+              value: x?.code,
               display: x?.name,
             })),
           },
@@ -492,27 +492,33 @@ clearLastOpenedResourceId: () => {
     get().fetchMediaList();
   },
   getTransformedFilters: (filters) => {
+    // Internal filter state key -> API query param name (only when they differ)
+    const FILTER_PARAM_KEY_MAP = {
+      [REPOSITORY_FILTER_KEYS.THEMES]: "theme",
+    };
+
     const transformedFilters = Object.entries(filters || {}).reduce((acc, [key, value]) => {
+      const paramKey = FILTER_PARAM_KEY_MAP[key] || key;
       try {
         if (Array.isArray(value)) {
           // value may be array of strings or objects like { value, label }
-          acc[key] = value
+          acc[paramKey] = value
             .map((x) => (typeof x === "string" ? x : (x && x.value != null ? String(x.value) : String(x))))
             .filter(Boolean)
             .join(",");
         } else if (value && typeof value === "string") {
-          acc[key] = value;
+          acc[paramKey] = value;
         } else if (value && typeof value === "object") {
           // single object: try to extract .value or stringify
-          acc[key] = value.value != null ? String(value.value) : JSON.stringify(value);
+          acc[paramKey] = value.value != null ? String(value.value) : JSON.stringify(value);
         } else if (value == null) {
           // skip
         } else {
-          acc[key] = String(value);
+          acc[paramKey] = String(value);
         }
       } catch (e) {
         // fallback to string conversion
-        acc[key] = String(value);
+        acc[paramKey] = String(value);
       }
       return acc;
     }, {});

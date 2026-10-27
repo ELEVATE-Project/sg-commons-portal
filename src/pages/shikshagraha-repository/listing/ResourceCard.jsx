@@ -137,6 +137,10 @@ const { bg: tagBg, text: tagText } = getTagStyles(
   resource?.media_type_display
 )
 
+const primaryThemeName = resource?.primary_theme?.name
+const hasTags = resource?.tag_names?.length > 0
+const hasPrimaryTheme = !!primaryThemeName
+
 const sourceProviderIcon = getSourceProviderIcon(
   resource?.source_provider
 );
@@ -308,7 +312,6 @@ px-1.5 sm:px-2
       </div>
     )}
   </div>
-</div>
   {/* Right Side - Stats + Organization */}
 <div
   className="
@@ -316,7 +319,6 @@ px-1.5 sm:px-2
     items-center
     justify-end
     gap-2
-    mt-2
     text-repository-cardMeta
   "
 >
@@ -388,6 +390,7 @@ title={resource.organization}
     </button>
   )}
 </div>
+</div>
       </div>
     </div>
   )
@@ -409,7 +412,7 @@ title={resource.organization}
       rounded-[0.75rem]
       py-[1.6875rem]
       px-[1.1875rem]
-      h-[17.75rem]
+      h-[20rem]
       cursor-pointer
       transition-all
       hover:shadow-sm
@@ -470,11 +473,13 @@ title={resource.organization}
         </div>
       </div>
 
-      {/* Description */}
+      {/* Description - fixed height (always reserves 3 lines) so cards line up
+          the same regardless of how long the description actually is */}
       <p
         className="
         font-sourceSans
           w-full
+          h-[3.75rem]
           text-[0.875rem]
           leading-[1.25rem]
           text-repository-cardDescription
@@ -484,33 +489,62 @@ title={resource.organization}
         {resource?.description || t("repository.notAvailable")}
       </p>
 
-      {/* Tags + Footer Section */}
-      <div className="w-full flex flex-col gap-[0.3125rem] mt-auto">
-        {/* Tags */}
-<div className="pb-[0.75rem] border-b border-repository-subtitle min-h-[2.25rem]">
-  {resource?.tag_names?.length > 0 && (
-    <div className="flex items-center gap-[0.25rem] overflow-hidden">
-      {resource.tag_names.slice(0, 2).map((tag, index) => (
-        <span
-          key={index}
-          className={`
-            ${tagBg}
-            ${tagText}
-            px-[0.625rem]
-            py-[0.125rem]
-            rounded-full
-            text-[0.875rem]
-            leading-[1.25rem]
-            font-sourceSans
-            whitespace-nowrap
-            ${index === 1 ? "max-w-full truncate" : "flex-shrink-0"}
-          `}
+      {/* Theme + Tags + Footer Section */}
+      <div className="w-full flex flex-col gap-[0.375rem] mt-auto">
+        {/* Theme - kept in the layout (just hidden) when there's nothing to show here, so the
+            border line and footer below always sit at the same fixed position */}
+        <div
+          className={`flex items-center gap-[0.375rem] text-[0.8125rem] leading-[1.25rem] font-sourceSans overflow-hidden ${
+            hasTags && hasPrimaryTheme ? "" : "invisible"
+          }`}
         >
-          {tag}
-        </span>
-      ))}
-    </div>
-  )}
+          <span className="font-semibold text-repository-cardTitle shrink-0">
+            {t("repository.theme")}:
+          </span>
+          <span className="font-semibold text-repository-cardTitle truncate">
+            {primaryThemeName}
+          </span>
+        </div>
+
+        {/* Tags, or Theme in the tags' place when there are no tags */}
+<div className="pb-[0.75rem] border-b border-repository-subtitle min-h-[2.25rem] flex items-center gap-[0.375rem] overflow-hidden">
+  {hasTags ? (
+    <>
+      <span className="font-semibold text-[0.8125rem] font-sourceSans text-repository-cardTitle shrink-0">
+        {t("repository.tagsLabel")}:
+      </span>
+      <div className="flex items-center gap-[0.25rem] overflow-hidden">
+        {resource.tag_names.slice(0, 2).map((tag, index) => (
+          <span
+            key={index}
+            className={`
+              ${tagBg}
+              ${tagText}
+              px-[0.625rem]
+              py-[0.125rem]
+              rounded-full
+              text-[0.875rem]
+              leading-[1.25rem]
+              font-sourceSans
+              whitespace-nowrap
+              ${index === 1 ? "max-w-full truncate" : "flex-shrink-0"}
+            `}
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    </>
+  ) : hasPrimaryTheme ? (
+    <>
+      <span className="font-semibold text-[0.8125rem] font-sourceSans text-repository-cardTitle shrink-0">
+        {t("repository.theme")}:
+      </span>
+      <span className="font-semibold text-[0.8125rem] font-sourceSans text-repository-cardTitle truncate">
+        {primaryThemeName}
+      </span>
+    </>
+  ) : null}
 </div>
 
         {/* Footer */}

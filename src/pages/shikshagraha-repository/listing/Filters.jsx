@@ -1062,7 +1062,7 @@ const optionsList = [...normalizedOptions].sort((a, b) => {
             .filter(Boolean)
 const selectedValues = new Set(selectedItems.map(getOptionKey).filter(Boolean))
       const compareOptionsList =
-        sectionKey === "tags" && !isFiltered ? normalizeOptions(allOptions) : optionsList
+        sectionKey === "themes" && !isFiltered ? normalizeOptions(allOptions) : optionsList
       const allSelectedByValue =
         compareOptionsList.length > 0 &&
         compareOptionsList.every(o => selectedValues.has(getOptionKey(o)))

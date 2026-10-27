@@ -60,7 +60,7 @@ export default function RepositoryPage() {
   const searchParamsString = searchParams.toString();
   const hasRepositoryUrlFilters =
     searchParams.has("org") ||
-    searchParams.has("categories") ||
+    searchParams.has("theme") ||
     searchParams.has("fromResource");
   const fixedTopRef = useRef(null);
   const [fixedTopHeight, setFixedTopHeight] = useState(0);

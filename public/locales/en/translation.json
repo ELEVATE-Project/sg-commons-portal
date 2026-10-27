@@ -210,7 +210,7 @@
         },
         "items": "items",
         "browseAll": "Browse all",
-        "exploreByTheme": "Explore By Theme",
+        "exploreByTheme": "Explore by Theme",
         "file": "File",
         "organization": "Organization",
         "googleDrive": "Google Drive",
@@ -238,6 +238,9 @@
             "scrollDown": "Scroll down"
         },
         "invalidDownloadURL": "Invalid download URL",
+        "theme": "Theme",
+        "themes": "Themes",
+        "tagsLabel": "Tags",
         "categories": "Categories",
         "resourceType": "Resource Type"
     },

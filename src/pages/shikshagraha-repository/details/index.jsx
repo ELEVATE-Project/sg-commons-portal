@@ -400,8 +400,25 @@ function ResourceMeta({ resource }) {
           {resource?.description}
         </p>
 
+        {/* Theme */}
+{resource?.primary_theme?.name && (
+  <div className="flex items-center gap-2 mt-3 text-[0.95rem] font-sourceSans">
+    <span className="font-semibold text-repository-title">
+      {t("repository.theme")}:
+    </span>
+    <span className="text-repository-title">
+      {resource.primary_theme.name}
+    </span>
+  </div>
+)}
+
         {/* Tags */}
-<div className="flex flex-wrap gap-2 mt-3">
+<div className="flex flex-wrap items-center gap-2 mt-3">
+  {resource?.tags?.length > 0 && (
+    <span className="font-semibold text-[0.95rem] font-sourceSans text-repository-title">
+      {t("repository.tagsLabel")}:
+    </span>
+  )}
   {resource?.tags?.map((tag, idx) => (
     <span
       key={tag.id || idx}

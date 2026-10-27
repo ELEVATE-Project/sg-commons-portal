@@ -17,6 +17,15 @@ const apiClientV2 = axios.create({
   timeout: 20000,
   headers: { "Content-Type": "application/json" },
 })
+
+const API_BASE_URL_THEMES = `${env.LOCAL_PROXY()}/api/themes`
+
+const apiClientThemes = axios.create({
+  baseURL: API_BASE_URL_THEMES,
+  timeout: 10000,
+  headers: { "Content-Type": "application/json" },
+})
+
 let _lastListMediaController = null;
 
 /**
@@ -94,4 +103,14 @@ const getMasterList = async () => {
   return response.data
 }
 
-export { listMedia, getMediaById, searchSimilarMedia, getMasterList }
+/**
+ * Fetch list of themes with name, media count and icon.
+ *
+ * @returns {Promise<Object>} Response with { count, result }.
+ */
+const listThemes = async () => {
+  const response = await apiClientThemes.get("/list")
+  return response.data
+}
+
+export { listMedia, getMediaById, searchSimilarMedia, getMasterList, listThemes }
