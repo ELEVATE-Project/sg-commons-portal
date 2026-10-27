@@ -535,6 +535,48 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     themeParam,
   ]);
 
+  // Keep the `org`/`theme` URL params in sync with the applied filters, so a
+  // reload or a shared link reflects what's actually selected (e.g. drawer
+  // changes) instead of whatever org/theme the page was first opened with.
+  useEffect(() => {
+    if (!filtersInitialized) return;
+
+    const buildParamValue = (selected) =>
+      Array.isArray(selected) && selected.length
+        ? selected.map((item) => (item?.value ?? item)).join(",")
+        : null;
+
+    const nextOrgParam = buildParamValue(filters?.organizations);
+    const nextThemeParam = buildParamValue(filters?.themes);
+
+    if (nextOrgParam === orgParam && nextThemeParam === themeParam) return;
+
+    const next = new URLSearchParams(searchParams.toString());
+
+    if (nextOrgParam) next.set("org", nextOrgParam);
+    else next.delete("org");
+
+    if (nextThemeParam) next.set("theme", nextThemeParam);
+    else next.delete("theme");
+
+    // Pre-empt the URL -> store hydration effect above from treating this
+    // self-triggered URL change as a new external filter to re-apply.
+    previousUrlFilterKeyRef.current = JSON.stringify({
+      orgParam: nextOrgParam,
+      themeParam: nextThemeParam,
+    });
+
+    setSearchParams(next, { replace: true });
+  }, [
+    filters?.organizations,
+    filters?.themes,
+    filtersInitialized,
+    orgParam,
+    themeParam,
+    searchParams,
+    setSearchParams,
+  ]);
+
   useEffect(() => {
     const sort = searchParams.get("sort");
 

@@ -220,7 +220,7 @@
         headers:
           X-Vault-Token: "{{ vault_token }}"
         return_content: true
-        validate_certs: false
+        validate_certs: "{{ vault_validate_certs | default(true) | bool }}"
         status_code: 200
       register: vault_response
       no_log: true
@@ -253,6 +253,7 @@
         - name: Generate .env file
           ansible.builtin.shell: |
             set -euo pipefail
+            umask 077
             ./src/scripts/json2env.sh < data2.json > .env
           args:
             chdir: "{{ project_path }}"

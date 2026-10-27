@@ -103,17 +103,26 @@ export default function ExploreByTheme() {
           : themes.map((theme) => {
               const iconSrc = getThemeIconSrc(theme.icon);
 
+              const openTheme = async () => {
+                await replaceRepositoryQueryState(
+                  { filters: { themes: [{ value: theme.code, display: theme.name }] } },
+                  { skipFetch: true }
+                );
+                navigate(`/resources?theme=${encodeURIComponent(theme.code)}`);
+              };
+
               return (
                 <div
                   key={theme.id ?? theme.code}
-                  onClick={async () => {
-                    await replaceRepositoryQueryState(
-                      { filters: { themes: [{ value: theme.code, display: theme.name }] } },
-                      { skipFetch: true }
-                    );
-                    navigate(`/resources?theme=${encodeURIComponent(theme.code)}`);
-                  }
-                  }
+                  role="button"
+                  tabIndex={0}
+                  onClick={openTheme}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      openTheme();
+                    }
+                  }}
                   className="
                     bg-white
                     border
@@ -135,6 +144,10 @@ export default function ExploreByTheme() {
                     shadow-sm
                     hover:shadow-md
                     hover:border-repository-borderHover
+                    focus-visible:outline
+                    focus-visible:outline-2
+                    focus-visible:outline-offset-2
+                    focus-visible:outline-repository-borderHover
                   "
                 >
 <div
