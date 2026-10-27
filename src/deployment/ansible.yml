@@ -160,7 +160,7 @@
           - vault_token is defined
           - vault_token | length > 0
         fail_msg: "Vault token is empty or unavailable."
-      no_log: true
+      no_log: false
 
     # --------------------------------------------------
     # 5. Prepare project directory
