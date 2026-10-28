@@ -539,6 +539,11 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
   // reload or a shared link reflects what's actually selected (e.g. drawer
   // changes) instead of whatever org/theme the page was first opened with.
   useEffect(() => {
+    // Compact mode (home page) has no org/theme filter UI of its own; it only
+    // ever reads these from the URL it was opened with. Echoing the store's
+    // filters back into the URL here causes a stale theme filter (left over
+    // from navigating to /resources and back) to be re-appended to `/`.
+    if (compact) return;
     if (!filtersInitialized) return;
 
     const buildParamValue = (selected) =>
@@ -568,6 +573,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
 
     setSearchParams(next, { replace: true });
   }, [
+    compact,
     filters?.organizations,
     filters?.themes,
     filtersInitialized,
