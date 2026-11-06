@@ -752,12 +752,24 @@ useEffect(() => {
               <div className="flex-none border-t bg-white py-3">
                 <div className="max-w-full mx-auto px-0">
                   <div className="flex items-center justify-between">
-	                    <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-sourceSans font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={async () => {
+	                    <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-sourceSans font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={() => {
 	                      setIsDrawerOpen(false);
+	                        // Build the full cleared URL directly here instead of
+	                        // deleting individual keys and leaving the rest to
+	                        // other effects: depending on effect timing, those
+	                        // effects can disagree about what the URL should
+	                        // look like and fight this update. Preserve only
+	                        // limit/sort; drop every filter-related param (org,
+	                        // theme, page, fromResource, etc.) in one write.
 	                        try {
-	                          setSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
-	                          await replaceRepositoryQueryState();
-	                        } catch (e) { console.error('[Filters] clear filters error', e); }
+	                          const next = new URLSearchParams();
+	                          const limit = searchParams.get("limit");
+	                          const sort = searchParams.get("sort");
+	                          if (limit) next.set("limit", limit);
+	                          if (sort) next.set("sort", sort);
+	                          setSearchParams(next, { replace: true });
+	                        } catch (e) { }
+	                        replaceRepositoryQueryState().catch((e) => console.error('[Filters] clear filters error', e));
                         setPendingFilters({}); setQueryMap({}); scrollToBrowseResources();
                       }}>
                         {t('repository.filters.clearAll')}
