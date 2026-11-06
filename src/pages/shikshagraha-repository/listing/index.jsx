@@ -176,19 +176,32 @@ export default function RepositoryPage() {
   }, [filters, q, searchInput, pagination, sortBy]);
 
   useEffect(() => {
+    // This component's very first run of this effect is the initial URL ->
+    // pagination sync for this mount (e.g. landing on /resources?limit=12
+    // from a link). A filters-driven reset that happened on a *different*
+    // page before this one mounted (home's chip clear, say) must not
+    // suppress that initial sync, or the listing page would silently ignore
+    // the URL's limit/page on first load. Only honor the suppress flag once
+    // this effect has already run at least once for this mount.
+    const isInitialSyncForThisMount = !hasInitializedPageSizeRef.current;
     hasInitializedPageSizeRef.current = true;
 
-    // A filters/clear action just reset `pagination.offset` to 0 directly
-    // (synchronously, in the click handler). Its own URL update (removing
-    // `page`) is a separate, asynchronous navigation that may not have
-    // landed in `pageParam` yet by this render. Blindly trusting `pageParam`
-    // here would re-derive the *old* page's offset from that stale value and
-    // stomp the fresh reset — this is exactly what made "page 2/3, then
-    // clear" leave the resource list unfiltered-but-still-on-the-old-page.
-    // Skip this one sync pass and let `pageParam` catch up naturally; once
-    // it does (reflecting the now-cleared URL), this effect's normal check
-    // below is a no-op anyway since offset is already correct.
-    if (consumePendingOffsetResetFromFilters()) {
+    if (isInitialSyncForThisMount) {
+      // Discard any stale flag left over from elsewhere; it has nothing to
+      // do with this mount's initial sync.
+      consumePendingOffsetResetFromFilters();
+    } else if (consumePendingOffsetResetFromFilters()) {
+      // A filters/clear action just reset `pagination.offset` to 0 directly
+      // (synchronously, in the click handler) while this page was already
+      // mounted. Its own URL update (removing `page`) is a separate,
+      // asynchronous navigation that may not have landed in `pageParam` yet
+      // by this render. Blindly trusting `pageParam` here would re-derive
+      // the *old* page's offset from that stale value and stomp the fresh
+      // reset — this is exactly what made "page 2/3, then clear" leave the
+      // resource list unfiltered-but-still-on-the-old-page. Skip this one
+      // sync pass and let `pageParam` catch up naturally; once it does
+      // (reflecting the now-cleared URL), this effect's normal check below
+      // is a no-op anyway since offset is already correct.
       return;
     }
 

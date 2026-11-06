@@ -344,15 +344,20 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     // keys from the current params and leaving the rest to other effects:
     // depending on effect timing, those other effects can disagree about
     // what the URL should look like and fight this update. Preserve only
-    // limit/sort; drop every filter-related param (org, theme, page,
-    // fromResource, etc.) in one deterministic write.
+    // limit/sort/view/searchResourceText (an active search is a separate
+    // concern from filters); drop every filter-related param (org, theme,
+    // page, fromResource, etc.) in one deterministic write.
     const next = new URLSearchParams();
     if (pagination?.limit) next.set("limit", pagination.limit);
     if (sortBy) next.set("sort", sortBy);
+    const view = searchParams.get("view");
+    if (view) next.set("view", view);
+    if (searchResourceText) next.set("searchResourceText", searchResourceText);
     safeSetSearchParams(next, { replace: true });
 
     replaceRepositoryQueryState({
       filters: {},
+      q: searchResourceText || "",
       pagination: {
         limit: pagination.limit,
         offset: 0,
