@@ -330,7 +330,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
     setFilters({ [group]: [] }, true);
   }, [setFilters]);
 
-  const handleClearAll = async () => {
+  const handleClearAll = () => {
     const container = document.getElementById("repository-scroll-container");
 
     if (container) {
@@ -340,30 +340,30 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
       });
     }
 
-    try {
-      await replaceRepositoryQueryState({
-        filters: {},
-        pagination: {
-          limit: pagination.limit,
-          offset: 0,
-        },
-        sortBy,
-      });
+    // Build the full cleared URL directly here instead of deleting individual
+    // keys from the current params and leaving the rest to other effects:
+    // depending on effect timing, those other effects can disagree about
+    // what the URL should look like and fight this update. Preserve only
+    // limit/sort/view/searchResourceText (an active search is a separate
+    // concern from filters); drop every filter-related param (org, theme,
+    // page, fromResource, etc.) in one deterministic write.
+    const next = new URLSearchParams();
+    if (pagination?.limit) next.set("limit", pagination.limit);
+    if (sortBy) next.set("sort", sortBy);
+    const view = searchParams.get("view");
+    if (view) next.set("view", view);
+    if (searchResourceText) next.set("searchResourceText", searchResourceText);
+    safeSetSearchParams(next, { replace: true });
 
-      const next = resetPageParam(new URLSearchParams());
-
-      if (pagination?.limit) {
-        next.set("limit", pagination.limit);
-      }
-
-      if (sortBy) {
-        next.set("sort", sortBy);
-      }
-
-      safeSetSearchParams(next, { replace: true });
-    } catch (error) {
-      console.error("Failed to clear filters:", error);
-    }
+    replaceRepositoryQueryState({
+      filters: {},
+      q: searchResourceText || "",
+      pagination: {
+        limit: pagination.limit,
+        offset: 0,
+      },
+      sortBy,
+    }).catch((error) => console.error("Failed to clear filters:", error));
   };
 
   useEffect(() => {
@@ -563,6 +563,16 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
 
     if (nextThemeParam) next.set("theme", nextThemeParam);
     else next.delete("theme");
+
+    // A filter change always goes back to page 1.
+    next.delete("page");
+
+    // `fromResource` is a one-shot hint used only to resolve `org` on first
+    // load; once filters have changed its job is done. Carrying it forward
+    // from whatever the URL happened to show at this render can resurrect it
+    // right after a clear handler elsewhere explicitly removed it, if that
+    // handler's own URL write hasn't landed yet by the time this effect runs.
+    next.delete("fromResource");
 
     // Pre-empt the URL -> store hydration effect above from treating this
     // self-triggered URL change as a new external filter to re-apply.
@@ -937,6 +947,12 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
                         e.stopPropagation();
                         try {
                           setFilters({ [chip.group]: [] }, true);
+                          // Delete every URL param tied to this filter group
+                          // directly, in one write, rather than only clearing
+                          // the deep-link-only extras and leaving `org`/`theme`
+                          // to a separate sync effect: that effect's timing
+                          // relative to other effects isn't guaranteed, and it
+                          // only knows about `org`/`theme`, not `fromResource`.
                           const paramMap = {
                             organizations: ["org", "fromResource"],
                             themes: ["theme"],
@@ -949,7 +965,7 @@ export default function BrowseResources({ resources, viewMode, setViewMode, titl
                           const params = paramMap[chip.group] || [];
                           const next = new URLSearchParams(searchParams.toString());
                           params.forEach((param) => next.delete(param));
-                          next.set("page", "1");
+                          next.delete("page");
                           try { setSearchParams(next, { replace: true }); } catch (err) { }
                         } catch (err) {
                           // ignore

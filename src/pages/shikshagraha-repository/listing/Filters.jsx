@@ -43,6 +43,8 @@
     const setSearchInput = useRepositoryStore(state => state.setSearchInput)
     const search = useRepositoryStore(state => state.searchInput)
     const loadingList = useRepositoryStore(state => state.loadingList)
+    const sortBy = useRepositoryStore(state => state.sortBy)
+    const pagination = useRepositoryStore(state => state.pagination)
 
     const languageToUse = useSiteDataLocalStore(state => state.chatLanguage)
     const sessionId = useChatStorage()(state => state.sessionId)
@@ -752,12 +754,40 @@ useEffect(() => {
               <div className="flex-none border-t bg-white py-3">
                 <div className="max-w-full mx-auto px-0">
                   <div className="flex items-center justify-between">
-	                    <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-sourceSans font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={async () => {
+	                    <button className="px-3 py-2 rounded-[0.75rem] text-repository-cardDescription bg-transparent pl-6 font-sourceSans font-medium text-[1rem] leading-[1.125rem] capitalize" onClick={() => {
 	                      setIsDrawerOpen(false);
+	                        // Build the full cleared URL directly here instead of
+	                        // deleting individual keys and leaving the rest to
+	                        // other effects: depending on effect timing, those
+	                        // effects can disagree about what the URL should
+	                        // look like and fight this update. Preserve only
+	                        // limit/sort/view/searchResourceText (an active
+	                        // search is a separate concern from filters); drop
+	                        // every filter-related param (org, theme, page,
+	                        // fromResource, etc.) in one write.
+	                        const searchResourceText = searchParams.get("searchResourceText");
 	                        try {
-	                          setSearchParams(resetPageParam(new URLSearchParams()), { replace: true });
-	                          await replaceRepositoryQueryState();
-	                        } catch (e) { console.error('[Filters] clear filters error', e); }
+	                          const next = new URLSearchParams();
+	                          const limit = searchParams.get("limit");
+	                          const sort = searchParams.get("sort");
+	                          const view = searchParams.get("view");
+	                          if (limit) next.set("limit", limit);
+	                          if (sort) next.set("sort", sort);
+	                          if (view) next.set("view", view);
+	                          if (searchResourceText) next.set("searchResourceText", searchResourceText);
+	                          setSearchParams(next, { replace: true });
+	                        } catch (e) { }
+	                        // Pass the current sortBy/limit/search through explicitly:
+	                        // calling this with no arguments resets sortBy and
+	                        // pagination to their defaults and clears the active
+	                        // search too, disagreeing with the URL above until the
+	                        // sort/pagination sync effects elsewhere self-correct it
+	                        // (an extra render + fetch for no reason).
+	                        replaceRepositoryQueryState({
+	                          q: searchResourceText || "",
+	                          pagination: { limit: pagination.limit, offset: 0 },
+	                          sortBy,
+	                        }).catch((e) => console.error('[Filters] clear filters error', e));
                         setPendingFilters({}); setQueryMap({}); scrollToBrowseResources();
                       }}>
                         {t('repository.filters.clearAll')}

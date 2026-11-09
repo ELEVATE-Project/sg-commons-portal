@@ -3,7 +3,7 @@ import BrowseResources from "./BrowseResources.jsx";
 import Pagination from "./Pagination.jsx";
 import Footer from "../../../components/footer/Footer.jsx";
 import MitraAiAssistantAside from "./MitraAiAssistantAside.jsx";
-import { useRepositoryStore } from "../repository-hooks/useRepositoryStore.js";
+import { useRepositoryStore, consumePendingOffsetResetFromFilters } from "../repository-hooks/useRepositoryStore.js";
 import { GrResources } from "react-icons/gr";
 import { useTranslation } from "react-i18next";
 import { theme } from "../../../theme";
@@ -176,6 +176,35 @@ export default function RepositoryPage() {
   }, [filters, q, searchInput, pagination, sortBy]);
 
   useEffect(() => {
+    // This component's very first run of this effect is the initial URL ->
+    // pagination sync for this mount (e.g. landing on /resources?limit=12
+    // from a link). A filters-driven reset that happened on a *different*
+    // page before this one mounted (home's chip clear, say) must not
+    // suppress that initial sync, or the listing page would silently ignore
+    // the URL's limit/page on first load. Only honor the suppress flag once
+    // this effect has already run at least once for this mount.
+    const isInitialSyncForThisMount = !hasInitializedPageSizeRef.current;
+    hasInitializedPageSizeRef.current = true;
+
+    if (isInitialSyncForThisMount) {
+      // Discard any stale flag left over from elsewhere; it has nothing to
+      // do with this mount's initial sync.
+      consumePendingOffsetResetFromFilters();
+    } else if (consumePendingOffsetResetFromFilters()) {
+      // A filters/clear action just reset `pagination.offset` to 0 directly
+      // (synchronously, in the click handler) while this page was already
+      // mounted. Its own URL update (removing `page`) is a separate,
+      // asynchronous navigation that may not have landed in `pageParam` yet
+      // by this render. Blindly trusting `pageParam` here would re-derive
+      // the *old* page's offset from that stale value and stomp the fresh
+      // reset — this is exactly what made "page 2/3, then clear" leave the
+      // resource list unfiltered-but-still-on-the-old-page. Skip this one
+      // sync pass and let `pageParam` catch up naturally; once it does
+      // (reflecting the now-cleared URL), this effect's normal check below
+      // is a no-op anyway since offset is already correct.
+      return;
+    }
+
     const rawPage = Number(pageParam);
     const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
     const targetLimit =
@@ -183,8 +212,6 @@ export default function RepositoryPage() {
         ? limitParam
         : LISTING_RESOURCE_LIMIT;
     const nextOffset = (page - 1) * targetLimit;
-
-    hasInitializedPageSizeRef.current = true;
 
     if (pagination.limit === targetLimit && pagination.offset === nextOffset) {
       return;
@@ -194,7 +221,14 @@ export default function RepositoryPage() {
       offset: nextOffset,
       limit: targetLimit,
     });
-  }, [pageParam, limitParam, pagination.offset, setPagination]);
+    // `filters` is read only via the module-level suppress flag above, not
+    // in this effect's body directly, but it must stay a dependency: a
+    // filters change is what sets that flag, and this effect needs to
+    // re-run (and consume it) even on renders where `pagination.offset`
+    // itself didn't numerically change (e.g. clearing filters while already
+    // on page 1) so the flag can't leak into suppressing a later, unrelated
+    // pagination click.
+  }, [pageParam, limitParam, pagination.offset, setPagination, filters]);
 
   useEffect(() => {
     const resultSetKey = JSON.stringify({ filters, q });
@@ -214,7 +248,26 @@ export default function RepositoryPage() {
 
     previousResultSetKeyRef.current = resultSetKey;
 
-    if (pageParam !== "1") {
+    // Derive `org`/`theme` from the current filters (same logic
+    // BrowseResources' filters -> URL sync effect uses) rather than carrying
+    // forward whatever happens to still be in the URL. Both effects can fire
+    // for the same filters change (e.g. clearing a filter); if they disagree
+    // on what org/theme should be, whichever runs last wins and can leave a
+    // stale param behind. Computing the same target here avoids that race.
+    const buildParamValue = (selected) =>
+      Array.isArray(selected) && selected.length
+        ? selected.map((item) => (item?.value ?? item)).join(",")
+        : null;
+    const nextOrgParam = buildParamValue(filters?.organizations);
+    const nextThemeParam = buildParamValue(filters?.themes);
+    const currentOrgParam = new URLSearchParams(searchParamsString).get("org");
+    const currentThemeParam = new URLSearchParams(searchParamsString).get("theme");
+
+    if (
+      pageParam !== "1" ||
+      nextOrgParam !== currentOrgParam ||
+      nextThemeParam !== currentThemeParam
+    ) {
       const next = new URLSearchParams(searchParamsString);
       const trimmedSearch = q.trim();
       if (trimmedSearch) {
@@ -224,6 +277,22 @@ export default function RepositoryPage() {
       }
       next.delete("searchText");
       next.set("page", "1");
+
+      if (nextOrgParam) next.set("org", nextOrgParam);
+      else next.delete("org");
+
+      if (nextThemeParam) next.set("theme", nextThemeParam);
+      else next.delete("theme");
+
+      // `fromResource` is a one-shot hint used only to resolve `org` on first
+      // load (see BrowseResources' resolveOrgFromResource effect); once
+      // filters have changed for any reason its job is done. Carrying it
+      // forward here, cloned from whatever the URL happened to show at this
+      // render, can resurrect it right after a clear handler elsewhere
+      // explicitly removed it, if that handler's own URL write hasn't landed
+      // yet by the time this effect runs.
+      next.delete("fromResource");
+
       setSearchParams(next, { replace: true });
     }
 

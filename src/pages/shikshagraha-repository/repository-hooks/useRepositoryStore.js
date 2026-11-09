@@ -22,6 +22,19 @@ const _recentQueryCache = {};
 const _inFlightDetailMap = {};
 let _masterListInFlight = null;
 
+// Set (synchronously, from the same click that clears/changes filters) right
+// before a store action resets `pagination.offset` to 0. The listing page's
+// "URL page param -> pagination.offset" sync effect consumes this to avoid
+// fighting that reset with a `page` URL param that hasn't caught up yet
+// (its own `setSearchParams` call lands asynchronously, so a render can see
+// the fresh offset alongside the stale page param without this flag).
+let _pendingOffsetResetFromFilters = false;
+export function consumePendingOffsetResetFromFilters() {
+  const value = _pendingOffsetResetFromFilters;
+  _pendingOffsetResetFromFilters = false;
+  return value;
+}
+
 const DEFAULT_PAGINATION = {
   limit: 6,
   offset: 0,
@@ -374,13 +387,14 @@ clearLastOpenedResourceId: () => {
       return;
     }
 
+    if (resetPagination) _pendingOffsetResetFromFilters = true;
     set((state) => ({
       filters: merged,
       pagination: resetPagination
         ? { ...state.pagination, offset: 0 }
         : state.pagination,
     }));
-    
+
     if (!options.skipFetch) {
       get().fetchMediaList();
     }
@@ -396,11 +410,13 @@ clearLastOpenedResourceId: () => {
       
       return;
     }
+    _pendingOffsetResetFromFilters = true;
     set((state) => ({ filters: {}, pagination: { ...state.pagination, offset: 0 } }));
     if (!options.skipFetch) get().fetchMediaList();
   },
   forceResetFilters: (options = {}) => {
-    
+
+    _pendingOffsetResetFromFilters = true;
     set((state) => ({ filters: {}, pagination: { ...state.pagination, offset: 0 } }));
     if (!options.skipFetch) get().fetchMediaList();
   },
@@ -411,6 +427,7 @@ clearLastOpenedResourceId: () => {
       ...(nextState.pagination || {}),
     };
 
+    if (nextPagination.offset === 0) _pendingOffsetResetFromFilters = true;
     set({
       filters: nextState.filters || {},
       q: nextState.q || "",
