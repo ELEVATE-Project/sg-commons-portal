@@ -259,8 +259,20 @@ useEffect(() => {
                 });
               } else {
                 const sanitizedTranscript = sanitizeSearchQuery(transcriptResult);
-                setSearchInput(sanitizedTranscript);
-                submitSearch(sanitizedTranscript);
+                if (!sanitizedTranscript.trim()) {
+                  showNotification({
+                    message: t("asrError"),
+                    type: "error",
+                    options: {
+                      position: "top-center",
+                      autoClose: 6000,
+                      style: { fontWeight: "bold" },
+                    },
+                  });
+                } else {
+                  setSearchInput(sanitizedTranscript);
+                  submitSearch(sanitizedTranscript);
+                }
               }
             }
 

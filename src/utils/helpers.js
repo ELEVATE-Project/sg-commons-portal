@@ -94,7 +94,7 @@ export const isSilentAudio = async (blob, silenceThreshold = 0.01) => {
   return rms < silenceThreshold
 }
 
-const SEARCH_QUERY_DISALLOWED_CHARS = /[^\p{L}\p{N}\s]/gu
+const SEARCH_QUERY_DISALLOWED_CHARS = /[^\p{L}\p{M}\p{N}\s]/gu
 
 export const hasDisallowedSearchChars = value => (value ?? "").search(SEARCH_QUERY_DISALLOWED_CHARS) !== -1
 
