@@ -260,6 +260,7 @@
         "sendIconAlt": "Send",
         "startVoiceSearch": "Start voice search",
         "stopVoiceSearch": "Stop voice search",
-        "searchResources": "Search resources"
+        "searchResources": "Search resources",
+        "specialCharsNotAllowed": "Special characters are not allowed"
     }
 }
