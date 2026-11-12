@@ -94,6 +94,12 @@ export const isSilentAudio = async (blob, silenceThreshold = 0.01) => {
   return rms < silenceThreshold
 }
 
+const SEARCH_QUERY_DISALLOWED_CHARS = /[^\p{L}\p{M}\p{N}\s]/gu
+
+export const hasDisallowedSearchChars = value => (value ?? "").search(SEARCH_QUERY_DISALLOWED_CHARS) !== -1
+
+export const sanitizeSearchQuery = value => (value ?? "").replace(SEARCH_QUERY_DISALLOWED_CHARS, "")
+
 export const formatTime = secs => {
   const minutes = Math.floor(secs / 60)
   const seconds = secs % 60

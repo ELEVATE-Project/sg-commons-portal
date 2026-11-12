@@ -6,7 +6,7 @@ import { useRepositoryStore } from "../../pages/shikshagraha-repository/reposito
 import { showNotification } from "../ToastMessage/TotastMessage";
 import { handleS3Upload } from "../../services/storage_service";
 import { ai4BharatASRApi } from "api/endpoints/ai";
-import { isSilentAudio } from "../../utils/helpers";
+import { isSilentAudio, sanitizeSearchQuery, hasDisallowedSearchChars } from "../../utils/helpers";
 import { bot_routes } from "configure";
 import SearchIcon from "assets/icons/search.svg";
 import MicIcon from "assets/icons/mic.svg";
@@ -144,9 +144,23 @@ useEffect(() => {
     submitSearch(search);
   };
 
-  const handleOnInputText = (value) => {
+  const handleOnInputText = (rawValue) => {
     if (loadingList) return;
 
+    if (hasDisallowedSearchChars(rawValue)) {
+      showNotification({
+        message: t("search.specialCharsNotAllowed"),
+        type: "warn",
+        options: {
+          position: "top-center",
+          autoClose: 3000,
+          toastId: "special-chars-not-allowed",
+          style: { fontWeight: "bold" },
+        },
+      });
+    }
+
+    const value = sanitizeSearchQuery(rawValue);
     setSearchInput(value);
     if (value.trim() === "" && submittedSearch.trim() !== "") {
       syncSearchParam("");
@@ -244,8 +258,21 @@ useEffect(() => {
                   },
                 });
               } else {
-                setSearchInput(transcriptResult);
-                submitSearch(transcriptResult);
+                const sanitizedTranscript = sanitizeSearchQuery(transcriptResult);
+                if (!sanitizedTranscript.trim()) {
+                  showNotification({
+                    message: t("asrError"),
+                    type: "error",
+                    options: {
+                      position: "top-center",
+                      autoClose: 6000,
+                      style: { fontWeight: "bold" },
+                    },
+                  });
+                } else {
+                  setSearchInput(sanitizedTranscript);
+                  submitSearch(sanitizedTranscript);
+                }
               }
             }
 
